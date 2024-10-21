@@ -1,0 +1,91 @@
+.bar {
+  background-color: #2b2b2b; /* Fundo escuro do IntelliJ */
+  color: #a9b7c6; /* Texto em cinza claro */
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  font-family: 'Ubuntu', sans-serif;
+  position: relative;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #3c3f41;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: #a9b7c6;
+  z-index: 1000; /* Garantir que o pop-up fique acima dos outros elementos */
+}
+
+.close-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  color: #a9b7c6;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.close-button:hover {
+  color: #ffffff;
+}
+
+.popup input {
+  margin-top: 10px;
+  margin-right: 10px; /* Espaçamento horizontal entre o input e o botão */
+  padding: 5px;
+  border: 1px solid #a9b7c6;
+  border-radius: 4px;
+  background-color: #2b2b2b;
+  color: #a9b7c6;
+}
+
+.popup button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #787878; /* Cinza escuro do IntelliJ */
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.popup button:hover {
+  background-color: #6b6b6b; /* Cinza mais escuro para hover */
+}
+
+.warning-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #3c3f41;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: #a9b7c6;
+  z-index: 1000;
+}
+
+.warning-popup button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #4a90e2;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.warning-popup button:hover {
+  background-color: #357ab8;
+}

@@ -1,0 +1,9 @@
+.home {
+    background-color: #3c3f41; /* Fundo principal do IntelliJ */
+    height: 100vh;
+    color: #a9b7c6;
+  }
+  
+  .content {
+    padding: 20px;
+  }
