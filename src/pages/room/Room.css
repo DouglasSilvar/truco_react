@@ -1,0 +1,26 @@
+.room {
+    background-color: #3c3f41;
+    color: #a9b7c6;
+    padding: 20px;
+    height: 100vh;
+  }
+  
+  .room-details {
+    margin-top: 20px;
+    background-color: #2b2b2b;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .room-details h2 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+  }
+  
+  .room-details p {
+    margin: 5px 0;
+    font-size: 16px;
+  }
+  

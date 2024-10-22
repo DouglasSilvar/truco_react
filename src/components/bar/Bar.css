@@ -1,12 +1,22 @@
 .bar {
-  background-color: #2b2b2b; /* Fundo escuro do IntelliJ */
-  color: #a9b7c6; /* Texto em cinza claro */
+  background-color: #2b2b2b;
+  color: #a9b7c6;
   padding: 10px;
   display: flex;
+  justify-content: space-between; /* Alinha o título à esquerda e o nome à direita */
   align-items: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   font-family: 'Ubuntu', sans-serif;
   position: relative;
+}
+
+.title {
+  margin: 0;
+}
+
+.user-name {
+  font-size: 16px;
+  color: #a9b7c6;
 }
 
 .popup {

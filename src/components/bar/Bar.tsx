@@ -43,7 +43,8 @@ const Bar: React.FC = () => {
 
   return (
     <div className="bar">
-      <h1>Truco Front</h1>
+      <h1 className="title">Truco</h1>
+      {userName && <span className="user-name">Olá, {userName}</span>}
       {showPopup && (
         <div className="popup">
           <button className="close-button" onClick={handleClosePopup}>X</button>
@@ -61,9 +62,9 @@ const Bar: React.FC = () => {
         <div className="warning-popup">
           <p>É necessário criar um usuário para entrar nas salas.</p>
           <button onClick={() => {
-  setShowPopup(false);
-  setShowWarning(false);
-}}>Ok</button>
+            setShowPopup(false);
+            setShowWarning(false);
+          }}>Ok</button>
         </div>
       )}
     </div>
