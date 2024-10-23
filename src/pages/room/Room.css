@@ -1,26 +1,42 @@
 .room {
-    background-color: #3c3f41;
-    color: #a9b7c6;
-    padding: 20px;
-    height: 100vh;
-  }
-  
-  .room-details {
-    margin-top: 20px;
-    background-color: #2b2b2b;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  }
-  
-  .room-details h2 {
-    margin: 0 0 10px 0;
-    font-size: 24px;
-  }
-  
-  .room-details p {
-    margin: 5px 0;
-    font-size: 16px;
-  }
-  
+  background-color: #3c3f41; /* Fundo principal do IntelliJ */
+  height: 100vh;
+  color: #a9b7c6;
+}
+
+.content-room {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Alinhar o conteúdo no topo */
+  height: calc(100vh - 100px); /* Ajusta a altura */
+  padding: 20px;
+}
+
+.room-card-room {
+  background-color: #3c3f41;
+  border: 1px solid #a9b7c6;
+  border-radius: 8px;
+  padding: 20px;
+  width: 250px;
+  color: #a9b7c6;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  margin-top: -10px; /* Aproximar o card do Bar */
+}
+
+.leave-room-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #607D8B; /* Mesma cor do botão Criar Sala */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px; /* Espaço entre o conteúdo e o botão */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.leave-room-button:hover {
+  background-color: #455A64; /* Mesma cor ao passar o mouse */
+}

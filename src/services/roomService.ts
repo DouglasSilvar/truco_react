@@ -35,3 +35,40 @@ export const createRoom = async (roomName: string, playerUuid: string) => {
   
     return response.json();
   };
+
+  // Função para entrar em uma sala
+export const joinRoom = async (roomUuid: string, playerUuid: string) => {
+  const response = await fetch(`${BASE_URL}/rooms/${roomUuid}/join`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      player_uuid: playerUuid,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao entrar na sala');
+  }
+
+  return response.json();
+};
+
+export const leaveRoom = async (roomUuid: string, playerUuid: string) => {
+  const response = await fetch(`${BASE_URL}/rooms/${roomUuid}/leave`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      player_uuid: playerUuid,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao sair da sala');
+  }
+
+  return response.json();
+};

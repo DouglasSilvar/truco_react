@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Bar from '../../components/bar/Bar';
 import './Home.css';
-import { fetchRooms, createRoom } from '../../services/roomService';
+import { fetchRooms, createRoom, joinRoom } from '../../services/roomService';
 import { useNavigate } from 'react-router-dom';
 
 interface Room {
@@ -54,6 +54,17 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleJoinRoom = async (roomUuid: string) => {
+    if (playerUuid) {
+      try {
+        await joinRoom(roomUuid, playerUuid);
+        navigate(`/room/${roomUuid}`);
+      } catch (error) {
+        console.error('Erro ao entrar na sala:', error);
+      }
+    }
+  };
+
   const handleClosePopup = () => {
     setShowPopup(false);
   };
@@ -79,6 +90,13 @@ const Home: React.FC = () => {
               <h3>{room.name}</h3>
               <p>Dono: {room.owner.name}</p>
               <p>Jogadores: {room.players_count}</p>
+              {/* Botão Entrar */}
+              <button
+                className="enter-room-button"
+                onClick={() => handleJoinRoom(room.uuid)}
+              >
+                Entrar
+              </button>
             </div>
           ))}
         </div>

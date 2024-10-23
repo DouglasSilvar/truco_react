@@ -107,3 +107,20 @@
     background-color: #455A64;
   }
   
+  .enter-room-button {
+    width: 100%; /* O botão ocupa toda a largura no card */
+    padding: 10px;
+    background-color: #607D8B; /* Mesma cor do botão Criar Sala */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px; /* Espaço entre os jogadores e o botão */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .enter-room-button:hover {
+    background-color: #455A64; /* Mesma cor ao passar o mouse */
+  }
+  

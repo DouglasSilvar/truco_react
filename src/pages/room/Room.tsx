@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Bar from '../../components/bar/Bar';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './Room.css';
+import { leaveRoom } from '../../services/roomService';
 
 interface RoomDetails {
   uuid: string;
@@ -17,6 +18,8 @@ const Room: React.FC = () => {
   const [roomDetails, setRoomDetails] = useState<RoomDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [playerUuid, setPlayerUuid] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRoomDetails = async () => {
@@ -35,7 +38,22 @@ const Room: React.FC = () => {
     };
 
     fetchRoomDetails();
+
+    // Recupera o player_uuid do localStorage
+    const storedPlayerUuid = localStorage.getItem('user_uuid');
+    setPlayerUuid(storedPlayerUuid);
   }, [uuid]);
+
+  const handleLeaveRoom = async () => {
+    if (playerUuid) {
+      try {
+        await leaveRoom(uuid!, playerUuid);
+        navigate('/'); // Volta para a home após sair da sala
+      } catch (error) {
+        console.error('Erro ao sair da sala:', error);
+      }
+    }
+  };
 
   if (loading) {
     return <div className="room">Carregando...</div>;
@@ -48,13 +66,19 @@ const Room: React.FC = () => {
   return (
     <div className="room">
       <Bar />
-      {roomDetails && (
-        <div className="room-details">
-          <h2>{roomDetails.name}</h2>
-          <p>Dono: {roomDetails.owner.name}</p>
-          <p>Jogadores na sala: {roomDetails.players_count}</p>
-        </div>
-      )}
+      <div className="content-room">
+        {roomDetails && (
+          <div className="room-card-room">
+            <h2>{roomDetails.name}</h2>
+            <p>Dono: {roomDetails.owner.name}</p>
+            <p>Jogadores na sala: {roomDetails.players_count}</p>
+            {/* Botão Sair */}
+            <button className="leave-room-button" onClick={handleLeaveRoom}>
+              Sair
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
