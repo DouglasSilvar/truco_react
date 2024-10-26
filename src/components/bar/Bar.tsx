@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import './Bar.css';
 import { createPlayer } from '../../services/playerService';
 
-const Bar: React.FC = () => {
+interface BarProps {
+  updatePlayerUuid: (uuid: string) => void; // Função passada via props
+}
+
+const Bar: React.FC<BarProps> = ({ updatePlayerUuid }) => {
   const [userName, setUserName] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
@@ -27,6 +31,7 @@ const Bar: React.FC = () => {
           localStorage.setItem('user_uuid', data.uuid);
           setUserName(data.name);
           setShowPopup(false);
+          updatePlayerUuid(data.uuid); // Chama a função de atualização
         } else {
           console.error('Failed to create user: Unexpected response status', response.status);
         }

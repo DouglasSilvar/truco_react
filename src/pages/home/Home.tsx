@@ -22,6 +22,10 @@ const Home: React.FC = () => {
   const [playerUuid, setPlayerUuid] = useState<string | null>(null);
   const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
+  const updatePlayerUuid = (uuid: string) => {
+    setPlayerUuid(uuid);
+  };
+
   useEffect(() => {
     const getRooms = async () => {
       try {
@@ -40,6 +44,7 @@ const Home: React.FC = () => {
     const storedPlayerUuid = localStorage.getItem('user_uuid');
     setPlayerUuid(storedPlayerUuid);
   }, []);
+
 
   const handleCreateRoom = async () => {
     if (inputValue.trim() && inputValue.length <= 36 && playerUuid) {
@@ -79,7 +84,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="home">
-      <Bar />
+      <Bar updatePlayerUuid={updatePlayerUuid} />
       <div className="content">
         <button className="create-room-button" onClick={() => setShowPopup(true)}>
           Criar Sala

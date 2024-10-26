@@ -24,19 +24,64 @@
   margin-top: -10px; /* Aproximar o card do Bar */
 }
 
+.chairs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px; /* Espaço entre os retângulos e o botão sair */
+  margin-top: 10px; /* Espaçamento entre o parâmetro e o primeiro retângulo */
+}
+
+
+/* Outras classes existentes para os botões e container */
 .leave-room-button {
   width: 100%;
   padding: 10px;
-  background-color: #607D8B; /* Mesma cor do botão Criar Sala */
+  background-color: #607d8b; /* Mesma cor do botão Criar Sala */
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
-  margin-top: 10px; /* Espaço entre o conteúdo e o botão */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .leave-room-button:hover {
-  background-color: #455A64; /* Mesma cor ao passar o mouse */
+  background-color: #455a64; /* Mesma cor ao passar o mouse */
+}
+
+
+/* Cadeiras disponíveis ficam clicáveis */
+.chair-box.clickable {
+  cursor: pointer;
+  background-color: #4caf50; /* Cor para indicar que a cadeira está disponível */
+  transition: background-color 0.3s ease;
+}
+
+.chair-box.clickable:hover {
+  background-color: #388e3c; /* Cor ao passar o mouse na cadeira disponível */
+}
+
+.chair-box {
+  background-color: #3c3f41;
+  border: 1px solid #a9b7c6;
+  border-radius: 8px;
+  padding: 10px;
+  color: #a9b7c6;
+  height: 40px; /* Altura fixa para manter o tamanho */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cadeiras do Time A/B */
+.chair-box.team-ab {
+  background-color: #45494c; /* Cor ligeiramente mais clara para diferenciar */
+  border-color: #a9b7c6;
+}
+
+/* Cadeiras do Time C/D */
+.chair-box.team-cd {
+  background-color: #3a3d40; /* Cor sutilmente mais escura para o outro time */
+  border-color: #87939d;
 }
