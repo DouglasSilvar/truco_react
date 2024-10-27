@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Bar from '../../components/bar/Bar';
 import { useParams, useNavigate } from 'react-router-dom';
 import './Room.css';
-import { leaveRoom, fetchRoomDetails, changeChair } from '../../services/roomService';
+import { leaveRoom, fetchRoomDetails, changeChair, kickPlayer } from '../../services/roomService';
 
 interface RoomDetails {
   uuid: string;
@@ -83,11 +83,22 @@ const Room: React.FC = () => {
     }
   };
 
+  const handleKickPlayer = async (playerName: string) => {
+    try {
+      await kickPlayer(uuid!, playerName);
+      // Atualizar a sala após remover o jogador
+      const updatedDetails = await fetchRoomDetails(uuid!);
+      setRoomDetails(updatedDetails);
+    } catch (error) {
+      console.error('Erro ao remover o jogador:', error);
+    }
+  };
 
   const isChairAvailable = (chair: string | null) => {
     return chair === '' || chair === null; // Cadeira está vazia se for uma string vazia ou null
   };
 
+  const isOwner = localStorage.getItem('user_name') === roomDetails?.owner.name;
 
   if (loading) {
     return <div className="room">Carregando...</div>;
@@ -96,7 +107,6 @@ const Room: React.FC = () => {
   if (error) {
     return <div className="room">{error}</div>;
   }
-
 
   return (
     <div className="room">
@@ -108,33 +118,34 @@ const Room: React.FC = () => {
             <p>Dono: {roomDetails.owner.name}</p>
             <p>Jogadores na sala: {roomDetails.players_count}</p>
 
-            {/* Renderizando as cadeiras com a função de clique */}
             <div className="chairs-container">
-              <div
-                className={`chair-box ${isChairAvailable(roomDetails.chairs.chair_a) ? 'clickable team-ab' : 'team-ab'}`}
-                onClick={() => isChairAvailable(roomDetails.chairs.chair_a) && handleChairClick('chair_a')}
-              >
-                {roomDetails.chairs.chair_a && roomDetails.chairs.chair_a}
-              </div>
-              <div
-                className={`chair-box ${isChairAvailable(roomDetails.chairs.chair_b) ? 'clickable team-ab' : 'team-ab'}`}
-                onClick={() => isChairAvailable(roomDetails.chairs.chair_b) && handleChairClick('chair_b')}
-              >
-                {roomDetails.chairs.chair_b && roomDetails.chairs.chair_b}
-              </div>
-              <div
-                className={`chair-box ${isChairAvailable(roomDetails.chairs.chair_c) ? 'clickable team-cd' : 'team-cd'}`}
-                onClick={() => isChairAvailable(roomDetails.chairs.chair_c) && handleChairClick('chair_c')}
-              >
-                {roomDetails.chairs.chair_c && roomDetails.chairs.chair_c}
-              </div>
-              <div
-                className={`chair-box ${isChairAvailable(roomDetails.chairs.chair_d) ? 'clickable team-cd' : 'team-cd'}`}
-                onClick={() => isChairAvailable(roomDetails.chairs.chair_d) && handleChairClick('chair_d')}
-              >
-                {roomDetails.chairs.chair_d && roomDetails.chairs.chair_d}
-              </div>
+              {Object.entries(roomDetails.chairs).map(([chairKey, playerName]) => {
+                const teamClass = chairKey === 'chair_a' || chairKey === 'chair_b' ? 'team-ab' : 'team-cd';
+                
+                return (
+                  <div
+                    key={chairKey}
+                    className={`chair-box ${isChairAvailable(playerName) ? `clickable ${teamClass}` : teamClass}`}
+                    onClick={() => isChairAvailable(playerName) && handleChairClick(chairKey)}
+                  >
+                    {playerName && (
+                      <div className="chair-content">
+                        <span>{playerName}</span>
+                        {isOwner && playerName !== roomDetails.owner.name && (
+                          <button
+                            className="kick-button"
+                            onClick={() => handleKickPlayer(playerName)}
+                          >
+                            X
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
+  
             {/* Botão Sair */}
             <button className="leave-room-button" onClick={handleLeaveRoom}>
               Sair
@@ -144,6 +155,7 @@ const Room: React.FC = () => {
       </div>
     </div>
   );
+  
 };
 
 export default Room;

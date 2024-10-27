@@ -85,3 +85,17 @@
   background-color: #3a3d40; /* Cor sutilmente mais escura para o outro time */
   border-color: #87939d;
 }
+
+.kick-button {
+  background: none;
+  border: none;
+  color: #a9b7c6; /* Cor dos textos no IntelliJ */
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: color 0.3s ease;
+}
+
+.kick-button:hover {
+  color: #ff6b68; /* Cor de destaque ao passar o mouse */
+}

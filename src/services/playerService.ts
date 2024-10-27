@@ -10,3 +10,15 @@ export const createPlayer = async (name: string) => {
   });
   return response;
 };
+
+export const validatePlayer = async (name: string, uuid: string) => {
+  const response = await fetch(`${BASE_URL}/players/valid`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'name': name,
+      'uuid': uuid,
+    },
+  });
+  return response;
+};

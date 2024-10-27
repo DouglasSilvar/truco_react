@@ -106,3 +106,19 @@ export const changeChair = async (roomUuid: string, body: { player_name: string;
 
   return response.json();
 };
+
+export const kickPlayer = async (roomUuid: string, playerName: string) => {
+  const response = await fetch(`${BASE_URL}/rooms/${roomUuid}/kick`, {
+    method: 'POST',
+    headers: getUserHeaders(),
+    body: JSON.stringify({
+      player_name: playerName,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao remover o jogador da sala');
+  }
+
+  return response.json();
+};

@@ -99,3 +99,31 @@
 .warning-popup button:hover {
   background-color: #357ab8;
 }
+
+.error-message {
+
+  margin-top: 10px; /* Espaçamento acima da mensagem */
+  font-size: 14px; /* Tamanho da fonte da mensagem */
+}
+
+.profile-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
+}
+
+.profile-icon:hover {
+  color: #607D8B;
+}
+
+.logout-icon {
+  cursor: pointer;
+  margin-left: 10px;
+  transition: color 0.3s;
+}
+
+.logout-icon:hover {
+  color: #607D8B;
+}
