@@ -66,6 +66,15 @@ const Room: React.FC = () => {
     const storedPlayerUuid = localStorage.getItem('user_uuid');
     setPlayerUuid(storedPlayerUuid);
   }, [uuid, navigate]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      loadRoomDetails();
+    }, 1000); // Executa a cada 1 segundo
+
+    // Limpa o intervalo quando o componente for desmontado
+    return () => clearInterval(intervalId);
+  }, [uuid, roomDetails, navigate]); 
   
 
   // Novo useEffect para redirecionar o jogador se ele for expulso
