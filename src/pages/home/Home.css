@@ -1,126 +1,181 @@
 .home {
-    background-color: #3c3f41; /* Fundo principal do IntelliJ */
-    height: 100vh;
-    color: #a9b7c6;
-  }
-  
-  .content {
-    padding: 20px;
-  }
+  background-color: #3c3f41;
+  /* Fundo principal do IntelliJ */
+  height: 100vh;
+  color: #a9b7c6;
+}
 
-  .rooms-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-  }
-  
-  .room-card {
-    background-color: #3c3f41;
-    border: 1px solid #a9b7c6;
-    border-radius: 8px;
-    padding: 20px;
-    width: 250px; /* Largura fixa */
-    color: #a9b7c6;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  }
-  
-  .room-card h3 {
-    margin: 0;
-    font-size: 18px;
-  }
-  
-  .room-card p {
-    margin: 10px 0;
-    font-size: 14px;
-  }
+.content {
+  padding: 20px;
+}
 
-  .create-room-button {
-    width: 100%; /* O botão ocupa toda a largura na tela mobile */
-    padding: 15px;
-    background-color: #607D8B; /* Cinza escuro */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-bottom: 20px; /* Espaço entre o botão e as salas */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  }
-  
-  .create-room-button:hover {
-    background-color: #455A64;
-  }
-  
-  .popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #3c3f41;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    color: #a9b7c6;
-    z-index: 1000; /* Garantir que o pop-up fique acima dos outros elementos */
-  }
-  
-  .close-button {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: none;
-    border: none;
-    color: #a9b7c6;
-    font-size: 10px;
-    line-height: 1;
-    cursor: pointer;
-    padding: 2px;
-  }
-  
-  .close-button:hover {
-    color: #ffffff;
-  }
-  
-  .popup input {
-    margin-top: 10px;
-    margin-right: 10px; /* Espaçamento horizontal entre o input e o botão */
-    padding: 5px;
-    border: 1px solid #a9b7c6;
-    border-radius: 4px;
-    background-color: #2b2b2b;
-    color: #a9b7c6;
-  }
-  
-  .popup button {
-    margin-top: 10px;
-    padding: 5px 10px;
-    background-color: #607D8B;
-    border: none;
-    border-radius: 4px;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .popup button:hover {
-    background-color: #455A64;
-  }
-  
-  .enter-room-button {
-    width: 100%; /* O botão ocupa toda a largura no card */
-    padding: 10px;
-    background-color: #607D8B; /* Mesma cor do botão Criar Sala */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px; /* Espaço entre os jogadores e o botão */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  }
-  
-  .enter-room-button:hover {
-    background-color: #455A64; /* Mesma cor ao passar o mouse */
-  }
-  
+.rooms-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.room-card {
+  background-color: #3c3f41;
+  border: 1px solid #a9b7c6;
+  border-radius: 8px;
+  padding: 20px;
+  width: 250px;
+  /* Largura fixa */
+  color: #a9b7c6;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.room-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.room-card p {
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.create-room-button {
+  width: 100%;
+  /* O botão ocupa toda a largura na tela mobile */
+  padding: 15px;
+  background-color: #607D8B;
+  /* Cinza escuro */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+  /* Espaço entre o botão e as salas */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.create-room-button:hover {
+  background-color: #455A64;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #3c3f41;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: #a9b7c6;
+  z-index: 1000;
+  /* Garantir que o pop-up fique acima dos outros elementos */
+}
+
+.popup input[type="number"] {
+  margin-top: 10px;
+  padding: 5px;
+  border: 1px solid #a9b7c6;
+  border-radius: 4px;
+  background-color: #2b2b2b;
+  color: #a9b7c6;
+  width: 100px;
+  /* Definir uma largura apropriada para o campo de senha */
+}
+
+/* Adicionando uma classe para o contêiner do checkbox e do campo de senha */
+.password-container {
+  display: flex;
+  flex-direction: column;
+  /* Organiza os itens em coluna */
+  align-items: flex-start;
+  /* Alinha os itens à esquerda */
+  margin-top: 10px;
+  /* Espaçamento entre o campo de nome e o checkbox */
+}
+
+.password-container label {
+  margin-bottom: 5px;
+  /* Espaçamento entre o checkbox e o campo de senha */
+}
+
+.close-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  color: #a9b7c6;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.popup p {
+  margin-right: 30px; /* Adicione espaço extra para o texto */
+}
+
+.close-button:hover {
+  color: #ffffff;
+}
+
+.popup input {
+  margin-top: 10px;
+  margin-right: 10px;
+  /* Espaçamento horizontal entre o input e o botão */
+  padding: 5px;
+  border: 1px solid #a9b7c6;
+  border-radius: 4px;
+  background-color: #2b2b2b;
+  color: #a9b7c6;
+}
+
+.popup button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #607D8B;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.popup button:hover {
+  background-color: #455A64;
+}
+
+.enter-room-button {
+  width: 100%;
+  /* O botão ocupa toda a largura no card */
+  padding: 10px;
+  background-color: #607D8B;
+  /* Mesma cor do botão Criar Sala */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+  /* Espaço entre os jogadores e o botão */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.enter-room-button:hover {
+  background-color: #455A64;
+  /* Mesma cor ao passar o mouse */
+}
+
+.room-card h3 {
+  position: relative;
+  font-size: 18px;
+  text-align: center;
+  margin: 0;
+}
+
+.room-card h3 .lock-icon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}

@@ -49,7 +49,7 @@ const Bar: React.FC<BarProps> = ({ updatePlayerUuid }) => {
         if (response.status === 201) {
           const data = await response.json();
           localStorage.setItem('user_name', data.name);
-          localStorage.setItem('user_uuid', data.uuid);
+          localStorage.setItem('user_uuid', data.player_id);
           setUserName(data.name);
           setShowPopup(false);
           updatePlayerUuid(data.uuid);

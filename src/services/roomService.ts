@@ -31,6 +31,10 @@ export const fetchRoomDetails = async (roomUuid: string) => {
     headers: getUserHeaders(),
   });
 
+  if (response.status === 404) {
+    throw new Error('RoomNotFound');
+  }
+
   if (!response.ok) {
     throw new Error('Erro ao buscar os detalhes da sala');
   }
@@ -38,12 +42,14 @@ export const fetchRoomDetails = async (roomUuid: string) => {
   return response.json();
 };
 
-export const createRoom = async (roomName: string, playerUuid: string) => {
+
+export const createRoom = async (roomName: string, playerUuid: string, password?: string) => {
   const response = await fetch(`${BASE_URL}/rooms`, {
     method: 'POST',
     headers: getUserHeaders(),
     body: JSON.stringify({
       player_uuid: playerUuid,
+      password: password,
       room: {
         name: roomName,
       },
@@ -58,14 +64,19 @@ export const createRoom = async (roomName: string, playerUuid: string) => {
 };
 
 // Função para entrar em uma sala
-export const joinRoom = async (roomUuid: string, playerUuid: string) => {
+export const joinRoom = async (roomUuid: string, playerUuid: string, password?: string) => {
   const response = await fetch(`${BASE_URL}/rooms/${roomUuid}/join`, {
     method: 'POST',
     headers: getUserHeaders(),
     body: JSON.stringify({
       player_uuid: playerUuid,
+      password: password,
     }),
   });
+
+  if (response.status === 403) {
+    return { status: 403 };  // Retorna o status 403 explicitamente
+  }
 
   if (!response.ok) {
     throw new Error('Erro ao entrar na sala');
@@ -73,6 +84,7 @@ export const joinRoom = async (roomUuid: string, playerUuid: string) => {
 
   return response.json();
 };
+
 
 export const leaveRoom = async (roomUuid: string, playerUuid: string) => {
   const response = await fetch(`${BASE_URL}/rooms/${roomUuid}/leave`, {
