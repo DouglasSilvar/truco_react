@@ -134,3 +134,16 @@ export const kickPlayer = async (roomUuid: string, playerName: string) => {
 
   return response.json();
 };
+
+export const setPlayerReady = async (roomUuid: string, readyStatus: boolean) => {
+  const response = await fetch(`${BASE_URL}/rooms/${roomUuid}/ready/${readyStatus}`, {
+    method: 'POST',
+    headers: getUserHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao marcar como pronto');
+  }
+
+  return response.json();
+};

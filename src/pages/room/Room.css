@@ -17,7 +17,7 @@
   border: 1px solid #a9b7c6;
   border-radius: 8px;
   padding: 20px;
-  width: 250px;
+  width: 320px;
   color: #a9b7c6;
   text-align: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -98,4 +98,40 @@
 
 .kick-button:hover {
   color: #ff6b68; /* Cor de destaque ao passar o mouse */
+}
+
+/* Estilos para o botão "Pronto" */
+.ready-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #607d8b; /* Cor inicial */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.ready-button.ready {
+  background-color: #4caf50; /* Cor verde para 'Pronto' */
+}
+
+.ready-button.waiting {
+  background-color: #f44336; /* Cor vermelha para 'Esperar' */
+}
+
+.ready-button:hover {
+  background-color: #388e3c; /* Cor mais escura ao passar o mouse para 'Pronto' */
+}
+
+.ready-button.waiting:hover {
+  background-color: #d32f2f; /* Cor mais escura ao passar o mouse para 'Esperar' */
+}
+
+.ready-check-icon {
+  color: #4caf50; /* Verde para indicar que o jogador está pronto */
+  margin-left: 8px; /* Espaçamento entre o nome e o ícone */
 }

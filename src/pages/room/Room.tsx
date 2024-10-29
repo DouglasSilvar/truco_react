@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Bar from '../../components/bar/Bar';
 import { useParams, useNavigate } from 'react-router-dom';
 import './Room.css';
-import { leaveRoom, fetchRoomDetails, changeChair, kickPlayer, joinRoom } from '../../services/roomService';
+import { leaveRoom, fetchRoomDetails, changeChair, kickPlayer, joinRoom, setPlayerReady } from '../../services/roomService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faLock, faXmark } from '@fortawesome/free-solid-svg-icons';
+
+interface ReadyPlayer {
+  player: string;
+}
 
 interface RoomDetails {
   uuid: string;
@@ -16,11 +20,12 @@ interface RoomDetails {
     name: string;
   };
   chairs: {
-    chair_a: string;
-    chair_b: string;
-    chair_c: string;
-    chair_d: string;
+    chair_a: string | null;
+    chair_b: string | null;
+    chair_c: string | null;
+    chair_d: string | null;
   };
+  ready: ReadyPlayer[]; // Corrigido para um array de objetos com o campo 'player'
 }
 
 const Room: React.FC = () => {
@@ -33,6 +38,8 @@ const Room: React.FC = () => {
   const [password, setPassword] = useState<string>(''); // Senha do popup
   const [isInRoom, setIsInRoom] = useState<boolean>(false); // Verifica se o jogador está na sala
   const [joining, setJoining] = useState<boolean>(false);
+  const [isReady, setIsReady] = useState<boolean>(false);
+  const isOwner = roomDetails && localStorage.getItem('user_name') === roomDetails.owner.name;
   const navigate = useNavigate();
 
   const updatePlayerUuid = (uuid: string) => {
@@ -41,25 +48,26 @@ const Room: React.FC = () => {
 
   const loadRoomDetails = async () => {
     try {
-      const data = await fetchRoomDetails(uuid!);
-      setRoomDetails(data);
+      const data = await fetchRoomDetails(uuid!); // Pega os detalhes da sala via API
+      setRoomDetails(data); // Atualiza o estado com os detalhes da sala
 
-      // Verifica se o jogador está na sala
+      // Verifica se o jogador atual está pronto
       const playerName = localStorage.getItem('user_name');
       if (playerName) {
-        const isPlayerInRoom = Object.values(data.chairs).includes(playerName);
-        setIsInRoom(isPlayerInRoom);
+        data.ready?.some((readyPlayer: ReadyPlayer) => readyPlayer.player === playerName);
       }
     } catch (error: any) {
       if (error.message === 'RoomNotFound') {
-        navigate('/'); // Redireciona para a página principal se a sala não for encontrada (404)
+        navigate('/'); // Redireciona para a página principal se a sala não for encontrada
       } else {
         setError('Erro ao carregar a sala');
       }
     } finally {
-      setLoading(false);
+      setLoading(false); // Desativa o estado de loading
     }
   };
+
+
 
   useEffect(() => {
     loadRoomDetails();
@@ -74,8 +82,8 @@ const Room: React.FC = () => {
 
     // Limpa o intervalo quando o componente for desmontado
     return () => clearInterval(intervalId);
-  }, [uuid, roomDetails, navigate]); 
-  
+  }, [uuid, roomDetails, navigate]);
+
 
   // Novo useEffect para redirecionar o jogador se ele for expulso
   useEffect(() => {
@@ -105,18 +113,17 @@ const Room: React.FC = () => {
         }
 
         await changeChair(uuid!, {
-          player_name: playerName, // Pega o nome do jogador do localStorage
-          chair_destination: chairDestination,
+          player_name: playerName, // Nome do jogador a ser mudado de cadeira
+          chair_destination: chairDestination, // Cadeira de destino
         });
 
-        // Atualiza os detalhes da sala após a mudança
-        const updatedDetails = await fetchRoomDetails(uuid!);
-        setRoomDetails(updatedDetails);
+        await loadRoomDetails(); // Recarregar os detalhes da sala após a mudança
       } catch (error) {
         console.error('Erro ao trocar de cadeira:', error);
       }
     }
   };
+
 
   const handleKickPlayer = async (playerName: string) => {
     try {
@@ -154,7 +161,7 @@ const Room: React.FC = () => {
       }
     }
   };
-  
+
 
   const handleSubmitPassword = async () => {
     if (playerUuid && roomDetails) {
@@ -182,7 +189,23 @@ const Room: React.FC = () => {
     return chair === '' || chair === null; // Cadeira está vazia se for uma string vazia ou null
   };
 
-  const isOwner = localStorage.getItem('user_name') === roomDetails?.owner.name;
+  const isPlayerInChairs = () => {
+    const playerName = localStorage.getItem('user_name');
+    return roomDetails?.chairs.chair_a === playerName ||
+      roomDetails?.chairs.chair_b === playerName ||
+      roomDetails?.chairs.chair_c === playerName ||
+      roomDetails?.chairs.chair_d === playerName;
+  };
+
+  const handleSetReady = async () => {
+    try {
+      await setPlayerReady(uuid!, !isReady); // Envia o valor oposto do estado atual
+      setIsReady(!isReady); // Alterna o estado após a requisição
+      await loadRoomDetails(); // Recarregar os detalhes da sala
+    } catch (error) {
+      console.error('Erro ao alternar o estado de pronto:', error);
+    }
+  };
 
   if (loading) {
     return <div className="room">Carregando...</div>;
@@ -205,7 +228,8 @@ const Room: React.FC = () => {
             <div className="chairs-container">
               {Object.entries(roomDetails.chairs).map(([chairKey, playerName]) => {
                 const teamClass = chairKey === 'chair_a' || chairKey === 'chair_b' ? 'team-ab' : 'team-cd';
-                
+                const isPlayerReady = roomDetails.ready.some((readyPlayer) => readyPlayer.player === playerName);
+
                 return (
                   <div
                     key={chairKey}
@@ -215,6 +239,10 @@ const Room: React.FC = () => {
                     {playerName && (
                       <div className="chair-content">
                         <span>{playerName}</span>
+                        {/* Exibir o X vermelho ao lado do nome se o jogador estiver pronto */}
+                        {isPlayerReady && (
+                          <FontAwesomeIcon icon={faCheck} className="ready-check-icon" />
+                        )}
                         {isOwner && playerName !== roomDetails.owner.name && (
                           <button
                             className="kick-button"
@@ -229,9 +257,18 @@ const Room: React.FC = () => {
                 );
               })}
             </div>
-  
+
+            {/* Botão Pronto/Esperar */}
+            {!isOwner && (
+              <button
+                className={`ready-button ${isReady ? 'waiting' : 'ready'}`} // Adiciona a classe correta com base no estado
+                onClick={handleSetReady}
+              >
+                {isReady ? 'Esperar' : 'Pronto'}
+              </button>
+            )}
             {/* Botão Sair */}
-            {isInRoom ? (
+            {isInRoom || isPlayerInChairs() || isOwner ? (
               <button className="leave-room-button" onClick={handleLeaveRoom}>
                 Sair
               </button>
@@ -242,20 +279,20 @@ const Room: React.FC = () => {
             )}
           </div>
         )}
-              {/* Popup para inserir senha em salas protegidas */}
-      {showPasswordPopup && (
-        <div className="popup">
-          <button className="close-button" onClick={handleClosePasswordPopup}>X</button>
-          <p>Senha da sala:</p>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Senha"
-          />
-          <button onClick={handleSubmitPassword}>Entrar</button>
-        </div>
-      )}
+        {/* Popup para inserir senha em salas protegidas */}
+        {showPasswordPopup && (
+          <div className="popup">
+            <button className="close-button" onClick={handleClosePasswordPopup}>X</button>
+            <p>Senha da sala:</p>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Senha"
+            />
+            <button onClick={handleSubmitPassword}>Entrar</button>
+          </div>
+        )}
       </div>
     </div>
   );
