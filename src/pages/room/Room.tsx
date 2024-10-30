@@ -40,6 +40,7 @@ const Room: React.FC = () => {
   const [joining, setJoining] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
   const isOwner = roomDetails && localStorage.getItem('user_name') === roomDetails.owner.name;
+  const allPlayersReady = roomDetails && roomDetails.ready.length === 4;
   const navigate = useNavigate();
 
   const updatePlayerUuid = (uuid: string) => {
@@ -185,6 +186,10 @@ const Room: React.FC = () => {
     setPassword('');
   };
 
+  const handleStartGame = async () => {
+    navigate(`/game/${uuid}`);
+  }
+
   const isChairAvailable = (chair: string | null) => {
     return chair === '' || chair === null; // Cadeira está vazia se for uma string vazia ou null
   };
@@ -257,6 +262,12 @@ const Room: React.FC = () => {
                 );
               })}
             </div>
+                      {/* Botão Iniciar Partida, aparece apenas se o dono da sala e todos os jogadores estiverem prontos */}
+          {isOwner && allPlayersReady && (
+            <button className="start-game-button" onClick={handleStartGame}>
+              Iniciar Partida
+            </button>
+          )}
 
             {/* Botão Pronto/Esperar */}
             {!isOwner && (

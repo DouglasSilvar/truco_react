@@ -135,3 +135,21 @@
   color: #4caf50; /* Verde para indicar que o jogador está pronto */
   margin-left: 8px; /* Espaçamento entre o nome e o ícone */
 }
+
+.start-game-button {
+  width: 100%; /* Para ocupar toda a largura, como o botão "Sair" */
+  padding: 10px;
+  background-color: #4caf50; /* Cor verde semelhante ao botão "Pronto" */
+  color: white;
+  border: none;
+  border-radius: 8px; /* Arredondar os cantos */
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 10px; /* Espaçamento acima do botão */
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Sombra semelhante ao botão "Sair" */
+}
+
+.start-game-button:hover {
+  background-color: #388e3c; /* Cor verde mais escura ao passar o mouse */
+}
