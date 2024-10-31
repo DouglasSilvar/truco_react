@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Bar from '../../components/bar/Bar';
 import { useParams, useNavigate } from 'react-router-dom';
 import './Room.css';
-import { leaveRoom, fetchRoomDetails, changeChair, kickPlayer, joinRoom, setPlayerReady } from '../../services/roomService';
+import { leaveRoom, fetchRoomDetails, changeChair, kickPlayer, joinRoom, setPlayerReady, startGame } from '../../services/roomService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faLock, faXmark } from '@fortawesome/free-solid-svg-icons';
 
@@ -187,7 +187,8 @@ const Room: React.FC = () => {
   };
 
   const handleStartGame = async () => {
-    navigate(`/game/${uuid}`);
+    //navigate(`/game/${uuid}`);
+    await startGame(uuid!);
   }
 
   const isChairAvailable = (chair: string | null) => {
