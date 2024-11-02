@@ -179,3 +179,9 @@
   top: 50%;
   transform: translateY(-50%);
 }
+
+.warning-text-home {
+  margin-top: 8px; /* Ajuste o valor conforme o espaçamento desejado */
+  font-size: 0.9rem;
+  color: #ff5c5c; /* Ajuste a cor conforme o tema */
+}

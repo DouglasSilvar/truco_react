@@ -194,9 +194,13 @@ const Room: React.FC = () => {
   };
 
   const handleStartGame = async () => {
-    await startGame(uuid!);
-    navigate(`/game/${uuid}`);
-  }
+    try {
+      const response = await startGame(uuid!);
+      navigate(`/game/${response.game_id}`);
+    } catch (error) {
+      console.error('Erro ao iniciar o jogo:', error);
+    }
+  };
 
   const isChairAvailable = (chair: string | null) => {
     return chair === '' || chair === null; // Cadeira está vazia se for uma string vazia ou null

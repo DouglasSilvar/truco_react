@@ -31,6 +31,7 @@ interface GameDetails {
     score_them: number;
     created_at: string;
     updated_at: string;
+    room_name: string;
     chairs: {
         chair_a: string;
         chair_b: string;
@@ -107,21 +108,100 @@ const Game: React.FC = () => {
             gameDetails?.step.cards_chair_c.length ? gameDetails.step.cards_chair_c :
                 gameDetails?.step.cards_chair_d.length ? gameDetails.step.cards_chair_d : [];
 
+    const name = localStorage.getItem('user_name');
+    const { chair_a, chair_b, chair_c, chair_d } = gameDetails?.chairs || {};
+
+    const getChairPositions = () => {
+        if (name === chair_a) {
+            return { bottom: chair_a, left: chair_c, top: chair_b, right: chair_d };
+        }
+        if (name === chair_b) {
+            return { bottom: chair_b, left: chair_d, top: chair_a, right: chair_c };
+        }
+        if (name === chair_c) {
+            return { bottom: chair_c, left: chair_b, top: chair_d, right: chair_a };
+        }
+        if (name === chair_d) {
+            return { bottom: chair_d, left: chair_a, top: chair_c, right: chair_b };
+        }
+        return { bottom: '', left: '', top: '', right: '' }; // Caso o usuário não esteja em nenhuma das cadeiras
+    };
+
+    const chairPositions = getChairPositions();
+
     return (
         <div className="game-container">
-            <div className="game-table">
-                <div className="vira-card">
-                    <span className="card-value">{gameDetails?.step.vira?.slice(0, -1) || ''}</span>
-                    <span className="card-suit">{formatSuitSymbol(gameDetails?.step.vira?.slice(-1) || '')}</span>
+            <div className="game-info">
+                <div className="room-name">
+                    Sala: {gameDetails?.room_name}
                 </div>
-
-                {/* Cadeiras ao redor da mesa */}
-                <div className="chair chair-a">{gameDetails?.chairs.chair_a || 'A'}</div>
-                <div className="chair chair-b">{gameDetails?.chairs.chair_b || 'B'}</div>
-                <div className="chair chair-c">{gameDetails?.chairs.chair_c || 'C'}</div>
-                <div className="chair chair-d">{gameDetails?.chairs.chair_d || 'D'}</div>
+                <div className="score-board">
+    <span className="score-team">
+        <span className="team-name us">NÓS</span>: {gameDetails?.score_us}
+    </span>
+    <span className="score-team">
+        <span className="team-name them">ELES</span>: {gameDetails?.score_them}
+    </span>
+</div>
+<div className="round-status">
+    <div className="round-field">
+        <span>Primeira:</span>
+        <span className={`round-result ${gameDetails?.step.first === 'US' ? 'us' : 'them'}`}>
+            {gameDetails?.step.first === 'US' ? 'NÓS' : gameDetails?.step.first === 'THEM' ? 'ELES' : ' '}
+        </span>
+    </div>
+    <div className="round-field">
+        <span>Segunda:</span>
+        <span className={`round-result ${gameDetails?.step.second === 'US' ? 'us' : 'them'}`}>
+            {gameDetails?.step.second === 'US' ? 'NÓS' : gameDetails?.step.second === 'THEM' ? 'ELES' : ' '}
+        </span>
+    </div>
+</div>
             </div>
+            
+            <div className="game-table">
+    <div className="vira-card">
+        <span className="card-value">{gameDetails?.step.vira?.slice(0, -1) || ''}</span>
+        <span className="card-suit">{formatSuitSymbol(gameDetails?.step.vira?.slice(-1) || '')}</span>
+    </div>
 
+    {/* Cadeiras ao redor da mesa com posições dinâmicas */}
+    <div className={`chair bottom ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'team-us' : 'team-them'}`}>
+        <div className="chair-content">
+            <div className={`team-name ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'us' : 'them'}`}>
+                {chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'NÓS' : 'ELES'}
+            </div>
+            <div>{chairPositions.bottom || 'A'}</div>
+        </div>
+    </div>
+    <div className={`chair left ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'team-us' : 'team-them'}`}>
+        <div className="chair-content">
+            <div className={`team-name ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'us' : 'them'}`}>
+                {chairPositions.left === chair_a || chairPositions.left === chair_b ? 'NÓS' : 'ELES'}
+            </div>
+            <div>{chairPositions.left || 'C'}</div>
+        </div>
+    </div>
+    <div className={`chair top ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'team-us' : 'team-them'}`}>
+        <div className="chair-content">
+            <div className={`team-name ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'us' : 'them'}`}>
+                {chairPositions.top === chair_a || chairPositions.top === chair_b ? 'NÓS' : 'ELES'}
+            </div>
+            <div>{chairPositions.top || 'B'}</div>
+        </div>
+    </div>
+    <div className={`chair right ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'team-us' : 'team-them'}`}>
+        <div className="chair-content">
+            <div className={`team-name ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'us' : 'them'}`}>
+                {chairPositions.right === chair_a || chairPositions.right === chair_b ? 'NÓS' : 'ELES'}
+            </div>
+            <div>{chairPositions.right || 'D'}</div>
+        </div>
+    </div>
+</div>
+
+
+    
             {/* Painel do jogador com cartas */}
             <div className="player-panel">
                 {playerCards.map((card, index) => (
@@ -131,8 +211,9 @@ const Game: React.FC = () => {
                 ))}
             </div>
         </div>
-
     );
+    
+
 };
 
 export default Game;

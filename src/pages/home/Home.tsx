@@ -20,15 +20,16 @@ const Home: React.FC = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [showCreateRoomPopup, setShowCreateRoomPopup] = useState<boolean>(false); // Popup para criação de sala
-  const [showPasswordPopup, setShowPasswordPopup] = useState<boolean>(false); // Popup para senha
+  const [showCreateRoomPopup, setShowCreateRoomPopup] = useState<boolean>(false);
+  const [showPasswordPopup, setShowPasswordPopup] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
   const [playerUuid, setPlayerUuid] = useState<string | null>(null);
   const navigate = useNavigate();
-  const [password, setPassword] = useState<string>(''); // Senha do popup
-  const [usePassword, setUsePassword] = useState<boolean>(false); // Checkbox para usar senha na criação
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null); // Sala protegida selecionada
+  const [password, setPassword] = useState<string>('');
+  const [usePassword, setUsePassword] = useState<boolean>(false);
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [incorrectPasswordPopup, setIncorrectPasswordPopup] = useState<boolean>(false);
+  const [showRoomNameWarning, setShowRoomNameWarning] = useState<boolean>(false);
 
   const updatePlayerUuid = (uuid: string) => {
     setPlayerUuid(uuid);
@@ -59,7 +60,17 @@ const Home: React.FC = () => {
     }
   }, [playerUuid]);
 
-  // Função para criar uma sala
+  const handleCreateRoomClick = () => {
+    const userName = localStorage.getItem('user_name');
+    const userUuid = localStorage.getItem('user_uuid');
+
+    if (!userName || !userUuid) {
+      alert("É necessário criar um usuário antes de criar uma sala.");
+    } else {
+      setShowCreateRoomPopup(true);
+    }
+  };
+
   const handleCreateRoom = async () => {
     if (inputValue.trim() && inputValue.length <= 36 && playerUuid) {
       try {
@@ -74,15 +85,12 @@ const Home: React.FC = () => {
     }
   };
 
-  // Função para lidar com a entrada na sala
   const handleJoinRoom = async (room: Room) => {
     if (playerUuid) {
       if (room.protected) {
-        // Sala protegida, exibir popup para inserir senha
         setSelectedRoom(room);
         setShowPasswordPopup(true);
       } else {
-        // Sala não protegida, entrar diretamente
         try {
           const result = await joinRoom(room.uuid, playerUuid);
           if (result.status === 403) {
@@ -96,7 +104,7 @@ const Home: React.FC = () => {
       }
     }
   };
-  
+
   const handleSubmitPassword = async () => {
     if (selectedRoom && playerUuid) {
       try {
@@ -113,8 +121,6 @@ const Home: React.FC = () => {
       }
     }
   };
-  
-  
 
   const handleCloseIncorrectPasswordPopup = () => {
     setIncorrectPasswordPopup(false);
@@ -129,7 +135,9 @@ const Home: React.FC = () => {
   const handleCloseCreateRoomPopup = () => {
     setShowCreateRoomPopup(false);
     setInputValue('');
+    setUsePassword(false);
     setPassword('');
+    setShowRoomNameWarning(false);
   };
 
   if (loading) {
@@ -144,7 +152,7 @@ const Home: React.FC = () => {
     <div className="home">
       <Bar updatePlayerUuid={updatePlayerUuid} />
       <div className="content">
-        <button className="create-room-button" onClick={() => setShowCreateRoomPopup(true)}>
+        <button className="create-room-button" onClick={handleCreateRoomClick}>
           Criar Sala
         </button>
         <div className="rooms-container">
@@ -153,7 +161,6 @@ const Home: React.FC = () => {
               <h3>{room.name} {room.protected && <FontAwesomeIcon icon={faLock} className="lock-icon" />}</h3>
               <p><strong>Dono:</strong> {room.owner.name}</p>
               <p><strong>Jogadores:</strong> {room.players_count}</p>
-              {/* Botão Entrar */}
               <button
                 className="enter-room-button"
                 onClick={() => handleJoinRoom(room)}
@@ -165,7 +172,6 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Popup de criação de sala */}
       {showCreateRoomPopup && (
         <div className="popup">
           <button className="close-button" onClick={handleCloseCreateRoomPopup}>X</button>
@@ -173,8 +179,11 @@ const Home: React.FC = () => {
           <input
             type="text"
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            maxLength={36}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setShowRoomNameWarning(e.target.value.length === 20);
+            }}
+            maxLength={20}
             placeholder="Nome da sala"
           />
           <div className="password-container">
@@ -206,7 +215,7 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      {/* Popup para inserir senha em salas protegidas */}
+      {showRoomNameWarning && <p className="warning-text-home">O nome da sala está limitado a 20 caracteres.</p>}
       {showPasswordPopup && selectedRoom && (
         <div className="popup">
           <button className="close-button" onClick={handleClosePasswordPopup}>X</button>

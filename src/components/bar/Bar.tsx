@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Bar.css';
 import { createPlayer, validatePlayer } from '../../services/playerService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'; // Ícones de perfil e logout
+import { faUserCircle, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface BarProps {
   updatePlayerUuid: (uuid: string) => void;
@@ -13,7 +13,9 @@ const Bar: React.FC<BarProps> = ({ updatePlayerUuid }) => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
   const [showWarning, setShowWarning] = useState<boolean>(false);
-  const [nameError, setNameError] = useState<string | null>(null); // Estado para o erro de nome já utilizado
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [showCharacterLimitWarning, setShowCharacterLimitWarning] = useState<boolean>(false);
+
 
   useEffect(() => {
     const storedUserName = localStorage.getItem('user_name');
@@ -23,7 +25,6 @@ const Bar: React.FC<BarProps> = ({ updatePlayerUuid }) => {
       try {
         const response = await validatePlayer(name, uuid);
         if (response.status !== 200) {
-          // Se a validação falhar, remove o usuário e mostra o popup
           localStorage.removeItem('user_name');
           localStorage.removeItem('user_uuid');
           setShowPopup(true);
@@ -43,7 +44,7 @@ const Bar: React.FC<BarProps> = ({ updatePlayerUuid }) => {
   }, []);
 
   const handleCreateUser = async () => {
-    if (inputValue.trim() && inputValue.length <= 36) {
+    if (inputValue.trim() && inputValue.length <= 10) {
       try {
         const response = await createPlayer(inputValue);
         if (response.status === 201) {
@@ -73,11 +74,17 @@ const Bar: React.FC<BarProps> = ({ updatePlayerUuid }) => {
   };
 
   const handleLogout = () => {
-    // Remove o usuário do localStorage e atualiza o estado
     localStorage.removeItem('user_name');
     localStorage.removeItem('user_uuid');
     setUserName(null);
-    updatePlayerUuid(''); // Limpa o UUID
+    updatePlayerUuid('');
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    setNameError(null);
+    setShowCharacterLimitWarning(value.length === 10); // Exibe o aviso de limite de caracteres
   };
 
   return (
@@ -98,36 +105,34 @@ const Bar: React.FC<BarProps> = ({ updatePlayerUuid }) => {
           <FontAwesomeIcon icon={faUserCircle} size="2x" />
         </div>
       )}
-      {showPopup && (
-        <div className="popup">
-          <button className="close-button" onClick={handleClosePopup}>X</button>
-          <p>Crie o nome do seu usuário.</p>
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              setNameError(null); // Limpa o erro ao mudar o nome
-            }}
-            maxLength={36}
-          />
-          <button onClick={handleCreateUser}>Criar</button>
-          {nameError && <p className="error-message">{nameError}</p>}
-        </div>
+    {showPopup && (
+      <div className="popup">
+        <button className="close-button" onClick={handleClosePopup}>X</button>
+        <p>Crie o nome do seu usuário.</p>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          maxLength={10}
+        />
+        {showCharacterLimitWarning && <p className="warning-text">O nome de usuário está limitado a 10 caracteres.</p>}
+        <button onClick={handleCreateUser}>Criar</button>
+        {nameError && <p className="error-message">{nameError}</p>}
+      </div>
       )}
-      {showWarning && (
-        <div className="warning-popup">
-          <p>É necessário criar um usuário para entrar nas salas.</p>
-          <button
-            onClick={() => {
-              setShowPopup(false);
-              setShowWarning(false);
-            }}
-          >
-            Ok
-          </button>
-        </div>
-      )}
+    {showWarning && (
+      <div className="warning-popup">
+        <p>É necessário criar um usuário para entrar nas salas.</p>
+        <button
+          onClick={() => {
+            setShowPopup(false);
+            setShowWarning(false);
+          }}
+        >
+          Ok
+        </button>
+      </div>
+    )}
     </div>
   );
 };

@@ -127,3 +127,9 @@
 .logout-icon:hover {
   color: #607D8B;
 }
+
+.warning-text {
+  margin-top: 8px; /* Ajuste o valor conforme o espaçamento desejado */
+  font-size: 0.9rem;
+  color: #ff5c5c; /* Ajuste a cor conforme o tema */
+}

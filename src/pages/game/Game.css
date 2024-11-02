@@ -8,6 +8,8 @@
     --card-border: #a9b7c6;
     --red-suit: #d16d6d; /* Cor vermelha para naipes de Ouro e Copas */
     --green-border: #6a8759; /* Cor verde para a borda da carta vira */
+    --accent-light: #5cacee; /* Exemplo: um tom mais claro */
+    --accent-dark: #2e86ab;  /* Exemplo: um tom mais escuro */
 }
 
 body {
@@ -28,7 +30,7 @@ body {
 .chair {
     position: absolute;
     width: 120px;
-    height: 40px;
+    height: 55px;
     background-color: var(--background);
     border: 2px solid var(--accent);
     border-radius: 10px;
@@ -39,28 +41,34 @@ body {
     font-size: 1rem;
 }
 
-.chair-a {
-    top: -50px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.chair-b {
-    top: 50%;
-    right: -50px;
-    transform: translateY(-50%);
-}
-
-.chair-c {
+/* Posições dinâmicas */
+.chair.bottom {
     bottom: -50px;
     left: 50%;
     transform: translateX(-50%);
+    border-color: var(--accent); /* Cor padrão da borda */
 }
 
-.chair-d {
+.chair.left {
+
     top: 50%;
     left: -50px;
     transform: translateY(-50%);
+    border-color: var(--accent-dark); /* Cor um pouco mais clara */
+}
+
+.chair.top {
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: var(--accent); /* Cor padrão da borda */
+}
+
+.chair.right {
+    top: 50%;
+    right: -50px;
+    transform: translateY(-50%);
+    border-color: var(--accent-dark); /* Cor um pouco mais escura */
 }
 
 .player-panel {
@@ -68,7 +76,7 @@ body {
     padding: 15px;
     width: 80%;
     text-align: center;
-    border-radius: 8px;
+    border-radius: 10px;
     margin-top: 20px;
     display: flex;
     justify-content: space-around;
@@ -104,7 +112,7 @@ body {
     width: 300px;
     height: 300px;
     background-color: var(--highlight);
-    border-radius: 20px;
+    border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -136,4 +144,68 @@ body {
     font-size: 1.6rem; /* Tamanho reduzido para o naipe */
     color: var(--foreground);
 }
+
+.chair-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-info {
+    background-color: var(--highlight);
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: var(--foreground);
+    width: 80%; /* Largura igual à da mesa e do painel do jogador */
+    text-align: center;
+    margin-bottom: 60px; /* Espaço entre o bloco de informações e a mesa */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.room-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.score-board, .round-status {
+    display: flex;
+    justify-content: space-around; /* Distribui os elementos de forma mais compacta */
+    font-size: 1rem;
+    font-weight: bold;
+
+}
+
+.round-field {
+    display: flex;
+    gap: 5px;
+}
+
+.team-name {
+    font-weight: bold;
+    font-size: 1.0rem;
+}
+
+.team-name.us {
+    color: var(--accent); /* Cor para o time "NÓS" */
+}
+
+.team-name.them {
+    color: var(--accent-dark); /* Cor para o time "ELES" */
+}
+
+.team-name.us, .round-result.us {
+    color: var(--accent); /* Cor para o time "NÓS" */
+    font-weight: bold;
+}
+
+.team-name.them, .round-result.them {
+    color: var(--accent-dark); /* Cor para o time "ELES" */
+    font-weight: bold;
+}
+
+
+
 
