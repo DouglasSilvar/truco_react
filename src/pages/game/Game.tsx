@@ -136,72 +136,68 @@ const Game: React.FC = () => {
                     Sala: {gameDetails?.room_name}
                 </div>
                 <div className="score-board">
-    <span className="score-team">
-        <span className="team-name us">NÓS</span>: {gameDetails?.score_us}
-    </span>
-    <span className="score-team">
-        <span className="team-name them">ELES</span>: {gameDetails?.score_them}
-    </span>
-</div>
-<div className="round-status">
-    <div className="round-field">
-        <span>Primeira:</span>
-        <span className={`round-result ${gameDetails?.step.first === 'US' ? 'us' : 'them'}`}>
-            {gameDetails?.step.first === 'US' ? 'NÓS' : gameDetails?.step.first === 'THEM' ? 'ELES' : ' '}
-        </span>
-    </div>
-    <div className="round-field">
-        <span>Segunda:</span>
-        <span className={`round-result ${gameDetails?.step.second === 'US' ? 'us' : 'them'}`}>
-            {gameDetails?.step.second === 'US' ? 'NÓS' : gameDetails?.step.second === 'THEM' ? 'ELES' : ' '}
-        </span>
-    </div>
-</div>
+                    <span className="score-team">
+                        <span className="team-name us">NÓS</span>: {gameDetails?.score_us}
+                    </span>
+                    <span className="score-team">
+                        <span className="team-name them">ELES</span>: {gameDetails?.score_them}
+                    </span>
+                </div>
+                <div className="round-status">
+                    <div className="round-field">
+                        <span>Primeira:</span>
+                        <span className={`round-result ${gameDetails?.step.first === 'US' ? 'us' : 'them'}`}>
+                            {gameDetails?.step.first === 'US' ? 'NÓS' : gameDetails?.step.first === 'THEM' ? 'ELES' : ' '}
+                        </span>
+                    </div>
+                    <div className="round-field">
+                        <span>Segunda:</span>
+                        <span className={`round-result ${gameDetails?.step.second === 'US' ? 'us' : 'them'}`}>
+                            {gameDetails?.step.second === 'US' ? 'NÓS' : gameDetails?.step.second === 'THEM' ? 'ELES' : ' '}
+                        </span>
+                    </div>
+                </div>
             </div>
-            
             <div className="game-table">
-    <div className="vira-card">
-        <span className="card-value">{gameDetails?.step.vira?.slice(0, -1) || ''}</span>
-        <span className="card-suit">{formatSuitSymbol(gameDetails?.step.vira?.slice(-1) || '')}</span>
-    </div>
+                <div className="vira-card">
+                    <span className="card-value">{gameDetails?.step.vira?.slice(0, -1) || ''}</span>
+                    <span className="card-suit">{formatSuitSymbol(gameDetails?.step.vira?.slice(-1) || '')}</span>
+                </div>
 
-    {/* Cadeiras ao redor da mesa com posições dinâmicas */}
-    <div className={`chair bottom ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'team-us' : 'team-them'}`}>
-        <div className="chair-content">
-            <div className={`team-name ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'us' : 'them'}`}>
-                {chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'NÓS' : 'ELES'}
+                {/* Cadeiras ao redor da mesa com posições dinâmicas */}
+                <div className={`chair bottom ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'team-us' : 'team-them'} ${chairPositions.bottom === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
+                    <div className="chair-content">
+                        <div className={`team-name ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'us' : 'them'}`}>
+                            {chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'NÓS' : 'ELES'}
+                        </div>
+                        <div>{chairPositions.bottom || 'A'}</div>
+                    </div>
+                </div>
+                <div className={`chair left ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'team-us' : 'team-them'} ${chairPositions.left === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
+                    <div className="chair-content">
+                        <div className={`team-name ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'us' : 'them'}`}>
+                            {chairPositions.left === chair_a || chairPositions.left === chair_b ? 'NÓS' : 'ELES'}
+                        </div>
+                        <div>{chairPositions.left || 'C'}</div>
+                    </div>
+                </div>
+                <div className={`chair top ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'team-us' : 'team-them'} ${chairPositions.top === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
+                    <div className="chair-content">
+                        <div className={`team-name ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'us' : 'them'}`}>
+                            {chairPositions.top === chair_a || chairPositions.top === chair_b ? 'NÓS' : 'ELES'}
+                        </div>
+                        <div>{chairPositions.top || 'B'}</div>
+                    </div>
+                </div>
+                <div className={`chair right ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'team-us' : 'team-them'} ${chairPositions.right === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
+                    <div className="chair-content">
+                        <div className={`team-name ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'us' : 'them'}`}>
+                            {chairPositions.right === chair_a || chairPositions.right === chair_b ? 'NÓS' : 'ELES'}
+                        </div>
+                        <div>{chairPositions.right || 'D'}</div>
+                    </div>
+                </div>
             </div>
-            <div>{chairPositions.bottom || 'A'}</div>
-        </div>
-    </div>
-    <div className={`chair left ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'team-us' : 'team-them'}`}>
-        <div className="chair-content">
-            <div className={`team-name ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'us' : 'them'}`}>
-                {chairPositions.left === chair_a || chairPositions.left === chair_b ? 'NÓS' : 'ELES'}
-            </div>
-            <div>{chairPositions.left || 'C'}</div>
-        </div>
-    </div>
-    <div className={`chair top ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'team-us' : 'team-them'}`}>
-        <div className="chair-content">
-            <div className={`team-name ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'us' : 'them'}`}>
-                {chairPositions.top === chair_a || chairPositions.top === chair_b ? 'NÓS' : 'ELES'}
-            </div>
-            <div>{chairPositions.top || 'B'}</div>
-        </div>
-    </div>
-    <div className={`chair right ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'team-us' : 'team-them'}`}>
-        <div className="chair-content">
-            <div className={`team-name ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'us' : 'them'}`}>
-                {chairPositions.right === chair_a || chairPositions.right === chair_b ? 'NÓS' : 'ELES'}
-            </div>
-            <div>{chairPositions.right || 'D'}</div>
-        </div>
-    </div>
-</div>
-
-
-    
             {/* Painel do jogador com cartas */}
             <div className="player-panel">
                 {playerCards.map((card, index) => (
@@ -212,7 +208,7 @@ const Game: React.FC = () => {
             </div>
         </div>
     );
-    
+
 
 };
 

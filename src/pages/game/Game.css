@@ -206,6 +206,10 @@ body {
     font-weight: bold;
 }
 
+.current-turn {
+    border-width: 6px;
+}
+
 
 
 
