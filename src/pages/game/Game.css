@@ -1,0 +1,139 @@
+/* Paleta de cores do IntelliJ */
+:root {
+    --background: #2b2b2b;
+    --foreground: #a9b7c6;
+    --highlight: #4e525a;
+    --accent: #6897bb;
+    --card-background: #3c3f41;
+    --card-border: #a9b7c6;
+    --red-suit: #d16d6d; /* Cor vermelha para naipes de Ouro e Copas */
+    --green-border: #6a8759; /* Cor verde para a borda da carta vira */
+}
+
+body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: Arial, sans-serif;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.chair {
+    position: absolute;
+    width: 120px;
+    height: 40px;
+    background-color: var(--background);
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--foreground);
+    font-size: 1rem;
+}
+
+.chair-a {
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.chair-b {
+    top: 50%;
+    right: -50px;
+    transform: translateY(-50%);
+}
+
+.chair-c {
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.chair-d {
+    top: 50%;
+    left: -50px;
+    transform: translateY(-50%);
+}
+
+.player-panel {
+    background-color: var(--highlight);
+    padding: 15px;
+    width: 80%;
+    text-align: center;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.card {
+    width: 80px;
+    height: 120px;
+    background-color: var(--background);
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.9rem;
+    color: var(--foreground);
+    font-weight: bold;
+    margin: 0 5px;
+    flex-direction: column;
+}
+
+.card-suit {
+    font-size: 2.4rem;
+    margin-left: 2px;
+}
+
+.red-suit {
+    color: var(--red-suit); /* Aplica a cor vermelha nos naipes de Ouro e Copas */
+}
+
+.game-table {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    background-color: var(--highlight);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.vira-card {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    border-radius: 10px;
+    background-color: var(--background);
+    border: 2px solid var(--green-border); /* Borda verde para a carta vira */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--foreground);
+}
+
+.vira-card .card-value {
+    font-size: 1.2rem; /* Tamanho reduzido para o valor */
+    color: var(--foreground);
+}
+
+.vira-card .card-suit {
+    font-size: 1.6rem; /* Tamanho reduzido para o naipe */
+    color: var(--foreground);
+}
+

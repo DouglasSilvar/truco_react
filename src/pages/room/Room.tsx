@@ -13,6 +13,7 @@ interface ReadyPlayer {
 interface RoomDetails {
   uuid: string;
   name: string;
+  game: string;
   players_count: number;
   player_kick_status: boolean;
   protected: boolean;
@@ -92,6 +93,12 @@ const Room: React.FC = () => {
       navigate('/'); // Redireciona para a página principal se o jogador for expulso
     }
   }, [roomDetails?.player_kick_status, navigate]);
+
+  useEffect(() => {
+    if (roomDetails?.game) {
+      navigate(`/game/${roomDetails.game}`);
+    }
+  }, [roomDetails, navigate]);
 
   const handleLeaveRoom = async () => {
     if (playerUuid) {
@@ -187,8 +194,8 @@ const Room: React.FC = () => {
   };
 
   const handleStartGame = async () => {
-    //navigate(`/game/${uuid}`);
     await startGame(uuid!);
+    navigate(`/game/${uuid}`);
   }
 
   const isChairAvailable = (chair: string | null) => {
