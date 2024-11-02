@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchRoomDetails } from '../../services/gameService';
+import { fetchRoomDetails, playMove } from '../../services/gameService';
 import './Game.css';
 
 interface StepDetails {
@@ -47,6 +47,7 @@ const Game: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const [isEncobrir, setIsEncobrir] = useState(false);
 
     useEffect(() => {
         const loadGameDetails = async () => {
@@ -64,7 +65,13 @@ const Game: React.FC = () => {
             }
         };
 
-        loadGameDetails();
+        // Inicia o polling a cada 1 segundo
+        const intervalId = setInterval(() => {
+            loadGameDetails();
+        }, 1000);
+
+        // Limpa o intervalo ao desmontar o componente
+        return () => clearInterval(intervalId);
     }, [uuid, navigate]);
 
     if (loading) {
@@ -128,6 +135,51 @@ const Game: React.FC = () => {
     };
 
     const chairPositions = getChairPositions();
+    const isPlayerTurn = gameDetails?.step.player_time === name;
+
+    const playTheCard = async (card: string, encoberta: boolean) => {
+        if (!gameDetails) return;
+
+        await playMove(gameDetails.uuid, card, encoberta, null, null)
+            .then(response => {
+                console.log('Jogada realizada com sucesso:', response);
+                // Aqui você pode adicionar lógica adicional após a jogada
+            })
+            .catch(error => {
+                console.error('Erro ao realizar a jogada:', error);
+            });
+    };
+
+    const toggleEncobrir = () => {
+        setIsEncobrir(!isEncobrir);
+    };
+
+    const handleTrucar = () => {
+        if (!gameDetails) return;
+
+        const { player_call_3, player_call_6, player_call_9, player_call_12 } = gameDetails.step;
+        let callValue: number | null = null;  // Define o tipo como number | null
+
+        if (player_call_3 === null && player_call_6 === null && player_call_9 === null && player_call_12 === null) {
+            callValue = 3;
+        } else if (player_call_6 === null && player_call_9 === null && player_call_12 === null) {
+            callValue = 6;
+        } else if (player_call_9 === null && player_call_12 === null) {
+            callValue = 9;
+        } else if (player_call_12 === null) {
+            callValue = 12;
+        }
+
+        if (callValue !== null) {
+            playMove(gameDetails.uuid, null, null, null, callValue)
+                .then(response => {
+                    console.log(`Trucada chamada com valor ${callValue}:`, response);
+                })
+                .catch(error => {
+                    console.error(`Erro ao chamar trucada com valor ${callValue}:`, error);
+                });
+        }
+    };
 
     return (
         <div className="game-container">
@@ -160,9 +212,36 @@ const Game: React.FC = () => {
             </div>
             <div className="game-table">
                 <div className="vira-card">
-                    <span className="card-value">{gameDetails?.step.vira?.slice(0, -1) || ''}</span>
-                    <span className="card-suit">{formatSuitSymbol(gameDetails?.step.vira?.slice(-1) || '')}</span>
+                    <span className={`card-value ${gameDetails?.step.vira?.slice(-1) === 'O' || gameDetails?.step.vira?.slice(-1) === 'C' ? 'red-suit' : ''}`}>
+                        {gameDetails?.step.vira?.slice(0, -1) || ''}
+                    </span>
+                    <span className={`card-suit ${gameDetails?.step.vira?.slice(-1) === 'O' || gameDetails?.step.vira?.slice(-1) === 'C' ? 'red-suit' : ''}`}>
+                        {formatSuitSymbol(gameDetails?.step.vira?.slice(-1) || '')}
+                    </span>
                 </div>
+
+
+                {/* Renderiza cartas nos cantos se existirem em table_cards */}
+                {gameDetails?.step.table_cards?.[0] && (
+                    <div className="table-card top-left">
+                        {formatCard(gameDetails.step.table_cards[0])}
+                    </div>
+                )}
+                {gameDetails?.step.table_cards?.[1] && (
+                    <div className="table-card top-right">
+                        {formatCard(gameDetails.step.table_cards[1])}
+                    </div>
+                )}
+                {gameDetails?.step.table_cards?.[2] && (
+                    <div className="table-card bottom-left">
+                        {formatCard(gameDetails.step.table_cards[2])}
+                    </div>
+                )}
+                {gameDetails?.step.table_cards?.[3] && (
+                    <div className="table-card bottom-right">
+                        {formatCard(gameDetails.step.table_cards[3])}
+                    </div>
+                )}
 
                 {/* Cadeiras ao redor da mesa com posições dinâmicas */}
                 <div className={`chair bottom ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'team-us' : 'team-them'} ${chairPositions.bottom === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
@@ -200,12 +279,43 @@ const Game: React.FC = () => {
             </div>
             {/* Painel do jogador com cartas */}
             <div className="player-panel">
-                {playerCards.map((card, index) => (
-                    <div key={index} className="card">
-                        {formatCard(card)}
-                    </div>
-                ))}
+                <div className="card-container">
+                    {playerCards.map((card, index) => (
+                        <div
+                            key={index}
+                            className="card"
+                            onClick={() => isPlayerTurn && playTheCard(card, isEncobrir)}
+                            style={{ cursor: isPlayerTurn ? 'pointer' : 'default' }}
+                        >
+                            {formatCard(card)}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Botões embaixo das cartas */}
+                <div className="action-buttons">
+                    <button className="action-button" onClick={toggleEncobrir} disabled={!gameDetails?.step.first || !gameDetails?.step.second}>
+                        {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
+                    </button>
+                    <button
+                        className="action-button"
+                        onClick={handleTrucar}
+                        disabled={
+                            gameDetails?.step.player_call_3 !== null &&
+                            gameDetails?.step.player_call_6 !== null &&
+                            gameDetails?.step.player_call_9 !== null &&
+                            gameDetails?.step.player_call_12 !== null ||
+                            !isPlayerTurn
+                        }
+                    >
+                        Trucar
+                    </button>
+                    <button className="action-button" disabled={!isPlayerTurn}>
+                        Correr
+                    </button>
+                </div>
             </div>
+
         </div>
     );
 

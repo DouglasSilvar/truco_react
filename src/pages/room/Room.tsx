@@ -242,7 +242,7 @@ const Room: React.FC = () => {
             <p><strong>Dono:</strong> {roomDetails.owner.name}</p>
             <p><strong>Jogadores na sala:</strong> {roomDetails.players_count}</p>
 
-            <div className="chairs-container">
+            <div className="chairs-container-room">
               {Object.entries(roomDetails.chairs).map(([chairKey, playerName]) => {
                 const teamClass = chairKey === 'chair_a' || chairKey === 'chair_b' ? 'team-ab' : 'team-cd';
                 const isPlayerReady = roomDetails.ready.some((readyPlayer) => readyPlayer.player === playerName);
@@ -254,7 +254,7 @@ const Room: React.FC = () => {
                     onClick={() => isChairAvailable(playerName) && handleChairClick(chairKey)}
                   >
                     {playerName && (
-                      <div className="chair-content">
+                      <div className="chair-content-room">
                         <span>{playerName}</span>
                         {/* Exibir o X vermelho ao lado do nome se o jogador estiver pronto */}
                         {isPlayerReady && (

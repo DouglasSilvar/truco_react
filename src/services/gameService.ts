@@ -27,3 +27,28 @@ export const fetchRoomDetails = async (gameUuid: string) => {
 
   return response.json();
 };
+
+export const playMove = async (
+  gameUuid: string,
+  card: string | null = null,
+  coverup: boolean | null = null,
+  accept: boolean | null = null,
+  call: number | null = null
+) => {
+  const response = await fetch(`${BASE_URL}/games/${gameUuid}/play_move`, {
+    method: 'POST',
+    headers: getUserHeaders(),
+    body: JSON.stringify({
+      card: card,
+      coverup: coverup,
+      accept: accept,
+      call: call
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao realizar o movimento');
+  }
+
+  return response.json();
+};

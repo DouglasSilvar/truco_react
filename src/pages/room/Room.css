@@ -24,7 +24,7 @@
   margin-top: -10px; /* Aproximar o card do Bar */
 }
 
-.chairs-container {
+.chairs-container-room {
   display: flex;
   flex-direction: column;
   gap: 10px;

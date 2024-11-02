@@ -79,8 +79,17 @@ body {
     border-radius: 10px;
     margin-top: 20px;
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Espaçamento entre as cartas */
+}
+
 
 .card {
     width: 80px;
@@ -125,7 +134,7 @@ body {
     height: 80px;
     border-radius: 10px;
     background-color: var(--background);
-    border: 2px solid var(--green-border); /* Borda verde para a carta vira */
+    border: 2px solid var(--green-border);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -136,13 +145,22 @@ body {
 }
 
 .vira-card .card-value {
-    font-size: 1.2rem; /* Tamanho reduzido para o valor */
+    font-size: 1.8rem; /* Tamanho reduzido para o valor */
     color: var(--foreground);
 }
 
 .vira-card .card-suit {
-    font-size: 1.6rem; /* Tamanho reduzido para o naipe */
+    font-size: 1.8rem; /* Tamanho reduzido para o naipe */
     color: var(--foreground);
+}
+
+.vira-card .card-suit {
+    font-size: 1.8rem;
+    color: inherit; /* Mantém a cor de acordo com a classe */
+}
+
+.vira-card .red-suit {
+    color: var(--red-suit); /* Aplica a cor vermelha para Ouro e Copas */
 }
 
 .chair-content {
@@ -210,6 +228,76 @@ body {
     border-width: 6px;
 }
 
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.action-button {
+    width: 160px;
+    padding: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--foreground);
+    background-color: var(--highlight);
+    border: 2px solid var(--accent);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.action-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-button:not(:disabled):hover {
+    background-color: var(--accent-light);
+}
+
+.table-card {
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--foreground);
+}
+
+.table-card .card-value {
+    font-size: 1.2rem;
+    color: var(--foreground);
+}
+
+.table-card .card-suit {
+    font-size: 1.6rem;
+    color: inherit; /* Mantém a cor de acordo com a classe */
+}
+
+.table-card .red-suit {
+    color: var(--red-suit); /* Aplica a cor vermelha aos naipes de Ouro e Copas */
+}
+
+.table-card.top-left {
+    top: -25px;
+    left: 20px;
+}
+
+.table-card.top-right {
+    top: 25px;
+    right: 20px;
+}
+
+.table-card.bottom-left {
+    bottom: 20px;
+    left: 20px;
+}
+
+.table-card.bottom-right {
+    bottom: -20px;
+    right: 20px;
+}
 
 
 
