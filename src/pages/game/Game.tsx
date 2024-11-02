@@ -181,6 +181,31 @@ const Game: React.FC = () => {
         }
     };
 
+    const renderTableCards = () => {
+        // Pega a posição atual do jogador na mesa
+        const currentPlayerPosition = name === chair_a ? 'bottom' :
+                                      name === chair_b ? 'right' :
+                                      name === chair_c ? 'top' :
+                                      name === chair_d ? 'left' : null;
+    
+        // Define a ordem das posições anti-horárias, iniciando do jogador atual
+        const positionOrder = {
+            bottom: ['bottom-right', 'top-right', 'top-left', 'bottom-left'],
+            right: ['top-left', 'bottom-left', 'bottom-right', 'top-right'],
+            top: ['top-right', 'top-left', 'bottom-left', 'bottom-right'],
+            left: ['bottom-left', 'bottom-right', 'top-right', 'top-left']
+        };
+    
+        const cardPositions = positionOrder[currentPlayerPosition || 'bottom'];
+    
+        // Renderiza as cartas com base na ordem do array `table_cards`
+        return gameDetails?.step.table_cards.map((card, index) => (
+            <div key={index} className={`table-card ${cardPositions[index]}`}>
+                {formatCard(card)}
+            </div>
+        ));
+    };
+
     return (
         <div className="game-container">
             <div className="game-info">
@@ -221,27 +246,7 @@ const Game: React.FC = () => {
                 </div>
 
 
-                {/* Renderiza cartas nos cantos se existirem em table_cards */}
-                {gameDetails?.step.table_cards?.[0] && (
-                    <div className="table-card top-left">
-                        {formatCard(gameDetails.step.table_cards[0])}
-                    </div>
-                )}
-                {gameDetails?.step.table_cards?.[1] && (
-                    <div className="table-card top-right">
-                        {formatCard(gameDetails.step.table_cards[1])}
-                    </div>
-                )}
-                {gameDetails?.step.table_cards?.[2] && (
-                    <div className="table-card bottom-left">
-                        {formatCard(gameDetails.step.table_cards[2])}
-                    </div>
-                )}
-                {gameDetails?.step.table_cards?.[3] && (
-                    <div className="table-card bottom-right">
-                        {formatCard(gameDetails.step.table_cards[3])}
-                    </div>
-                )}
+                {renderTableCards()}
 
                 {/* Cadeiras ao redor da mesa com posições dinâmicas */}
                 <div className={`chair bottom ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'team-us' : 'team-them'} ${chairPositions.bottom === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
