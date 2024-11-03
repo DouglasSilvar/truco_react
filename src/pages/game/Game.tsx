@@ -171,7 +171,7 @@ const Game: React.FC = () => {
         }
 
         if (callValue !== null) {
-            playMove(gameDetails.uuid, null, null, null, callValue)
+            playMove(gameDetails.uuid, null, null, null, null, callValue)
                 .then(response => {
                     console.log(`Trucada chamada com valor ${callValue}:`, response);
                 })
@@ -181,13 +181,24 @@ const Game: React.FC = () => {
         }
     };
 
+    const collectCards = async () => {
+        if (!gameDetails) return;
+    
+        try {
+            const response = await playMove(gameDetails.uuid, null, null, null, true, null);
+            console.log('Cartas recolhidas com sucesso:', response);
+        } catch (error) {
+            console.error('Erro ao recolher as cartas:', error);
+        }
+    };
+
     const renderTableCards = () => {
         // Pega a posição atual do jogador na mesa
         const currentPlayerPosition = name === chair_a ? 'bottom' :
-                                      name === chair_b ? 'right' :
-                                      name === chair_c ? 'top' :
-                                      name === chair_d ? 'left' : null;
-    
+            name === chair_b ? 'right' :
+                name === chair_c ? 'top' :
+                    name === chair_d ? 'left' : null;
+
         // Define a ordem das posições anti-horárias, iniciando do jogador atual
         const positionOrder = {
             bottom: ['bottom-right', 'top-right', 'top-left', 'bottom-left'],
@@ -195,9 +206,9 @@ const Game: React.FC = () => {
             top: ['top-right', 'top-left', 'bottom-left', 'bottom-right'],
             left: ['bottom-left', 'bottom-right', 'top-right', 'top-left']
         };
-    
+
         const cardPositions = positionOrder[currentPlayerPosition || 'bottom'];
-    
+
         // Renderiza as cartas com base na ordem do array `table_cards`
         return gameDetails?.step.table_cards.map((card, index) => (
             <div key={index} className={`table-card ${cardPositions[index]}`}>
@@ -223,14 +234,14 @@ const Game: React.FC = () => {
                 <div className="round-status">
                     <div className="round-field">
                         <span>Primeira:</span>
-                        <span className={`round-result ${gameDetails?.step.first === 'US' ? 'us' : 'them'}`}>
-                            {gameDetails?.step.first === 'US' ? 'NÓS' : gameDetails?.step.first === 'THEM' ? 'ELES' : ' '}
+                        <span className={`round-result ${gameDetails?.step.first === 'NOS' ? 'us' : gameDetails?.step.first === 'ELES' ? 'them' : ''}`}>
+                            {gameDetails?.step.first === 'NOS' ? 'NÓS' : gameDetails?.step.first === 'ELES' ? 'ELES' : gameDetails?.step.first === 'EMPACHADO' ? 'EMPACHADO' : ' '}
                         </span>
                     </div>
                     <div className="round-field">
                         <span>Segunda:</span>
-                        <span className={`round-result ${gameDetails?.step.second === 'US' ? 'us' : 'them'}`}>
-                            {gameDetails?.step.second === 'US' ? 'NÓS' : gameDetails?.step.second === 'THEM' ? 'ELES' : ' '}
+                        <span className={`round-result ${gameDetails?.step.second === 'NOS' ? 'us' : gameDetails?.step.second === 'ELES' ? 'them' : ''}`}>
+                            {gameDetails?.step.second === 'NOS' ? 'NÓS' : gameDetails?.step.second === 'ELES' ? 'ELES' : gameDetails?.step.second === 'EMPACHADO' ? 'EMPACHADO' : ' '}
                         </span>
                     </div>
                 </div>
@@ -299,6 +310,11 @@ const Game: React.FC = () => {
 
                 {/* Botões embaixo das cartas */}
                 <div className="action-buttons">
+                    {gameDetails?.step.table_cards.length === 4 && (
+                        <button className="action-button" onClick={collectCards}>
+                            Recolher Cartas
+                        </button>
+                    )}
                     <button className="action-button" onClick={toggleEncobrir} disabled={!gameDetails?.step.first || !gameDetails?.step.second}>
                         {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
                     </button>

@@ -33,6 +33,7 @@ export const playMove = async (
   card: string | null = null,
   coverup: boolean | null = null,
   accept: boolean | null = null,
+  collect: boolean | null = null,
   call: number | null = null
 ) => {
   const response = await fetch(`${BASE_URL}/games/${gameUuid}/play_move`, {
@@ -42,6 +43,7 @@ export const playMove = async (
       card: card,
       coverup: coverup,
       accept: accept,
+      collect: collect,
       call: call
     })
   });

@@ -54,6 +54,7 @@ const Bar: React.FC<BarProps> = ({ updatePlayerUuid }) => {
           setUserName(data.name);
           setShowPopup(false);
           updatePlayerUuid(data.uuid);
+          window.location.reload();
         } else if (response.status === 422) {
           const errorData = await response.json();
           if (errorData.error.includes("Name has already been taken")) {
