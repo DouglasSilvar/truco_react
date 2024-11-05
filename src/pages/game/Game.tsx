@@ -22,6 +22,10 @@ interface StepDetails {
     cards_chair_d: string[];
     first: string | null;
     second: string | null;
+    first_card_origin: string | null;
+    second_card_origin: string | null;
+    third_card_origin: string | null;
+    fourth_card_origin: string | null;
 }
 
 interface GameDetails {
@@ -39,6 +43,11 @@ interface GameDetails {
         chair_d: string;
     };
     step: StepDetails;
+    owner: OWner;
+}
+
+interface OWner {
+    name: string;
 }
 
 const Game: React.FC = () => {
@@ -310,7 +319,7 @@ const Game: React.FC = () => {
 
                 {/* Botões embaixo das cartas */}
                 <div className="action-buttons">
-                    {gameDetails?.step.table_cards.length === 4 && (
+                    {gameDetails?.step.table_cards.length === 4 && gameDetails?.owner?.name === name && (
                         <button className="action-button" onClick={collectCards}>
                             Recolher Cartas
                         </button>
