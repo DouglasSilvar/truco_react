@@ -40,6 +40,7 @@ const Room: React.FC = () => {
   const [isInRoom, setIsInRoom] = useState<boolean>(false); // Verifica se o jogador está na sala
   const [joining, setJoining] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
+  const playerName = localStorage.getItem('user_name');
   const isOwner = roomDetails && localStorage.getItem('user_name') === roomDetails.owner.name;
   const allPlayersReady = roomDetails && roomDetails.ready.length === 4;
   const navigate = useNavigate();
@@ -241,12 +242,12 @@ const Room: React.FC = () => {
             <h2>{roomDetails.name} {roomDetails.protected && <FontAwesomeIcon icon={faLock} className="lock-icon" />}</h2>
             <p><strong>Dono:</strong> {roomDetails.owner.name}</p>
             <p><strong>Jogadores na sala:</strong> {roomDetails.players_count}</p>
-
+  
             <div className="chairs-container-room">
               {Object.entries(roomDetails.chairs).map(([chairKey, playerName]) => {
                 const teamClass = chairKey === 'chair_a' || chairKey === 'chair_b' ? 'team-ab' : 'team-cd';
                 const isPlayerReady = roomDetails.ready.some((readyPlayer) => readyPlayer.player === playerName);
-
+  
                 return (
                   <div
                     key={chairKey}
@@ -256,7 +257,6 @@ const Room: React.FC = () => {
                     {playerName && (
                       <div className="chair-content-room">
                         <span>{playerName}</span>
-                        {/* Exibir o X vermelho ao lado do nome se o jogador estiver pronto */}
                         {isPlayerReady && (
                           <FontAwesomeIcon icon={faCheck} className="ready-check-icon" />
                         )}
@@ -274,35 +274,36 @@ const Room: React.FC = () => {
                 );
               })}
             </div>
-                      {/* Botão Iniciar Partida, aparece apenas se o dono da sala e todos os jogadores estiverem prontos */}
-          {isOwner && allPlayersReady && (
-            <button className="start-game-button" onClick={handleStartGame}>
-              Iniciar Partida
-            </button>
-          )}
-
-            {/* Botão Pronto/Esperar */}
-            {!isOwner && (
-              <button
-                className={`ready-button ${isReady ? 'waiting' : 'ready'}`} // Adiciona a classe correta com base no estado
-                onClick={handleSetReady}
-              >
-                {isReady ? 'Esperar' : 'Pronto'}
-              </button>
-            )}
-            {/* Botão Sair */}
-            {isInRoom || isPlayerInChairs() || isOwner ? (
-              <button className="leave-room-button" onClick={handleLeaveRoom}>
-                Sair
-              </button>
-            ) : (
-              <button className="enter-room-button" onClick={handleJoinRoom}>
-                Entrar
-              </button>
+  
+            {playerName && (
+              <>
+                {isOwner && allPlayersReady && (
+                  <button className="start-game-button" onClick={handleStartGame}>
+                    Iniciar Partida
+                  </button>
+                )}
+                {isPlayerInChairs() && !isOwner && (
+                  <button
+                    className={`ready-button ${isReady ? 'waiting' : 'ready'}`}
+                    onClick={handleSetReady}
+                  >
+                    {isReady ? 'Esperar' : 'Pronto'}
+                  </button>
+                )}
+                {(isInRoom || isPlayerInChairs() || isOwner) && (
+                  <button className="leave-room-button" onClick={handleLeaveRoom}>
+                    Sair
+                  </button>
+                )}
+                {!isPlayerInChairs() && (
+                  <button className="enter-room-button" onClick={handleJoinRoom}>
+                    Entrar
+                  </button>
+                )}
+              </>
             )}
           </div>
         )}
-        {/* Popup para inserir senha em salas protegidas */}
         {showPasswordPopup && (
           <div className="popup">
             <button className="close-button" onClick={handleClosePasswordPopup}>X</button>
