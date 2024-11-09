@@ -192,7 +192,7 @@ const Game: React.FC = () => {
 
     const collectCards = async () => {
         if (!gameDetails) return;
-    
+
         try {
             const response = await playMove(gameDetails.uuid, null, null, null, true, null);
             console.log('Cartas recolhidas com sucesso:', response);
@@ -236,7 +236,7 @@ const Game: React.FC = () => {
 
         const firstCardOrigin = gameDetails.step.first_card_origin;
         const originChair = firstCardOrigin ? firstCardOrigin.split('---')[1] : null;
-    
+
         // Define a ordem de posições baseada na cadeira de origem da primeira carta
         const getPositionOrder = () => {
             switch (originChair) {
@@ -252,15 +252,15 @@ const Game: React.FC = () => {
                     return positionOrderA; // Caso padrão, se a origem não for identificada
             }
         };
-    
+
         const positionOrder = getPositionOrder();
         const currentPlayerPosition = name === chair_a ? 'bottom' :
             name === chair_b ? 'right' :
                 name === chair_c ? 'top' :
                     name === chair_d ? 'left' : null;
-    
+
         const cardPositions = positionOrder[currentPlayerPosition || 'bottom'];
-    
+
         // Renderiza as cartas na mesa seguindo a ordem definida
         return gameDetails.step.table_cards.map((card, index) => (
             <div key={index} className={`table-card ${cardPositions[index]}`}>
@@ -351,9 +351,9 @@ const Game: React.FC = () => {
                     {playerCards.map((card, index) => (
                         <div
                             key={index}
-                            className="card"
-                            onClick={() => isPlayerTurn && playTheCard(card, isEncobrir)}
-                            style={{ cursor: isPlayerTurn ? 'pointer' : 'default' }}
+                            className={`card ${!isPlayerTurn || gameDetails?.step.table_cards.length === 4 ? 'disabled' : ''}`}
+                            onClick={() => isPlayerTurn && gameDetails?.step.table_cards.length < 4 && playTheCard(card, isEncobrir)}
+                            style={{ cursor: (isPlayerTurn && gameDetails?.step.table_cards.length < 4) ? 'pointer' : 'default' }}
                         >
                             {formatCard(card)}
                         </div>
