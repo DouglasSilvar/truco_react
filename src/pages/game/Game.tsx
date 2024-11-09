@@ -203,23 +203,66 @@ const Game: React.FC = () => {
 
     const renderTableCards = () => {
         // Pega a posição atual do jogador na mesa
-        const currentPlayerPosition = name === chair_a ? 'bottom' :
-            name === chair_b ? 'right' :
-                name === chair_c ? 'top' :
-                    name === chair_d ? 'left' : null;
+        if (!gameDetails) return null;
 
         // Define a ordem das posições anti-horárias, iniciando do jogador atual
-        const positionOrder = {
+        const positionOrderA = {
             bottom: ['bottom-right', 'top-right', 'top-left', 'bottom-left'],
             right: ['top-left', 'bottom-left', 'bottom-right', 'top-right'],
             top: ['top-right', 'top-left', 'bottom-left', 'bottom-right'],
             left: ['bottom-left', 'bottom-right', 'top-right', 'top-left']
         };
 
-        const cardPositions = positionOrder[currentPlayerPosition || 'bottom'];
+        const positionOrderD = {
+            left: ['bottom-right', 'top-right', 'top-left', 'bottom-left'],
+            bottom: ['top-right', 'top-left', 'bottom-left', 'bottom-right'],
+            right: ['bottom-left', 'bottom-right', 'top-right', 'top-left'],
+            top: ['top-left', 'bottom-left', 'bottom-right', 'top-right']
+        };
 
-        // Renderiza as cartas com base na ordem do array `table_cards`
-        return gameDetails?.step.table_cards.map((card, index) => (
+        const positionOrderB = {
+            top: ['bottom-left', 'bottom-right', 'top-right', 'top-left'],
+            left: ['top-right', 'top-left', 'bottom-left', 'bottom-right'],
+            bottom: ['top-left', 'bottom-left', 'bottom-right', 'top-right'],
+            right: ['bottom-right', 'top-right', 'top-left', 'bottom-left']
+        };
+
+        const positionOrderC = {
+            right: ['top-right', 'top-left', 'bottom-left', 'bottom-right'],
+            top: ['bottom-right', 'top-right', 'top-left', 'bottom-left'],
+            left: ['top-left', 'bottom-left', 'bottom-right', 'top-right'],
+            bottom: ['bottom-left', 'bottom-right', 'top-right', 'top-left']
+        };
+
+        const firstCardOrigin = gameDetails.step.first_card_origin;
+        const originChair = firstCardOrigin ? firstCardOrigin.split('---')[1] : null;
+    
+        // Define a ordem de posições baseada na cadeira de origem da primeira carta
+        const getPositionOrder = () => {
+            switch (originChair) {
+                case 'chair_a':
+                    return positionOrderA;
+                case 'chair_b':
+                    return positionOrderB;
+                case 'chair_c':
+                    return positionOrderC;
+                case 'chair_d':
+                    return positionOrderD;
+                default:
+                    return positionOrderA; // Caso padrão, se a origem não for identificada
+            }
+        };
+    
+        const positionOrder = getPositionOrder();
+        const currentPlayerPosition = name === chair_a ? 'bottom' :
+            name === chair_b ? 'right' :
+                name === chair_c ? 'top' :
+                    name === chair_d ? 'left' : null;
+    
+        const cardPositions = positionOrder[currentPlayerPosition || 'bottom'];
+    
+        // Renderiza as cartas na mesa seguindo a ordem definida
+        return gameDetails.step.table_cards.map((card, index) => (
             <div key={index} className={`table-card ${cardPositions[index]}`}>
                 {formatCard(card)}
             </div>
