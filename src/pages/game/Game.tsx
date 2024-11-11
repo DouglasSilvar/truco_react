@@ -287,13 +287,13 @@ const Game: React.FC = () => {
                     <div className="round-field">
                         <span>Primeira:</span>
                         <span className={`round-result ${gameDetails?.step.first === 'NOS' ? 'us' : gameDetails?.step.first === 'ELES' ? 'them' : ''}`}>
-                            {gameDetails?.step.first === 'NOS' ? 'NÓS' : gameDetails?.step.first === 'ELES' ? 'ELES' : gameDetails?.step.first === 'EMPACHADO' ? 'EMPACHADO' : ' '}
+                            {gameDetails?.step.first === 'NOS' ? 'NÓS' : gameDetails?.step.first === 'ELES' ? 'ELES' : gameDetails?.step.first === 'EMPACHE' ? 'EMPACHE' : ' '}
                         </span>
                     </div>
                     <div className="round-field">
                         <span>Segunda:</span>
                         <span className={`round-result ${gameDetails?.step.second === 'NOS' ? 'us' : gameDetails?.step.second === 'ELES' ? 'them' : ''}`}>
-                            {gameDetails?.step.second === 'NOS' ? 'NÓS' : gameDetails?.step.second === 'ELES' ? 'ELES' : gameDetails?.step.second === 'EMPACHADO' ? 'EMPACHADO' : ' '}
+                            {gameDetails?.step.second === 'NOS' ? 'NÓS' : gameDetails?.step.second === 'ELES' ? 'ELES' : gameDetails?.step.second === 'EMPACHE' ? 'EMPACHE' : ' '}
                         </span>
                     </div>
                 </div>
