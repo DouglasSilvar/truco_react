@@ -22,6 +22,7 @@ interface StepDetails {
     cards_chair_d: string[];
     first: string | null;
     second: string | null;
+    win: string | null;
     first_card_origin: string | null;
     second_card_origin: string | null;
     third_card_origin: string | null;
@@ -57,12 +58,36 @@ const Game: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
     const [isEncobrir, setIsEncobrir] = useState(false);
+    const [showWinnerPopup, setShowWinnerPopup] = useState<boolean>(false);
+    const [winnerMessage, setWinnerMessage] = useState<string>('');
+
 
     useEffect(() => {
         const loadGameDetails = async () => {
             try {
                 const data = await fetchRoomDetails(uuid!);
                 setGameDetails(data);
+                if (data.step.win) {
+                    switch (data.step.win) {
+                        case "NOS":
+                            setWinnerMessage("O time NÓS ganhou a partida");
+                            setShowWinnerPopup(true);
+                            break;
+                        case "ELES":
+                            setWinnerMessage("O time ELES ganhou a partida");
+                            setShowWinnerPopup(true);
+                            break;
+                        case "EMPT":
+                            setWinnerMessage("EMPATE DA PARTIDA");
+                            setShowWinnerPopup(true);
+                            break;
+                        default:
+                            // Não há ação, pois outros valores não são esperados
+                    }
+                } else {
+                    // Esconde o pop-up se não houver vencedor
+                    setShowWinnerPopup(false);
+                }
             } catch (error: any) {
                 if (error.message === 'RoomNotFound') {
                     navigate('/'); // Redireciona para a página principal se o jogo não for encontrado
@@ -388,6 +413,17 @@ const Game: React.FC = () => {
                     </button>
                 </div>
             </div>
+            {showWinnerPopup && (
+                <div className="popup-game">
+                    <p>
+                        {winnerMessage.includes("NÓS") ? "O time " : ""}
+                        {winnerMessage.includes("NÓS") && <span className="pop-team-name us">NÓS</span>}
+                        {winnerMessage.includes("ELES") ? "O time " : ""}
+                        {winnerMessage.includes("ELES") && <span className="pop-team-name them">ELES</span>}
+                        {winnerMessage.includes("EMPATE") ? "EMPATE DA PARTIDA" : " ganhou a partida"}
+                    </p>
+                </div>
+            )}
 
         </div>
     );

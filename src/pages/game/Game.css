@@ -304,5 +304,35 @@ body {
     right: 20px;
 }
 
+.popup-game {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #3c3f41;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: #a9b7c6;
+    z-index: 1000; /* Garantir que o pop-up fique acima dos outros elementos */
+    font-size: 28px; /* Aumenta a fonte do texto no popup */
+    max-width: 600px; /* Define uma largura máxima para o popup */
+    min-width: 300px; /* Define uma largura mínima para o popup */
+}
+
+.popup-game p {
+    margin-bottom: 20px; /* Aumenta espaço abaixo do texto para separar do botão */
+}
+
+.pop-team-name.us {
+    color: var(--accent); /* Cor para o time "NÓS" */
+    font-weight: bold; /* Deixa o texto em negrito */
+}
+
+.pop-team-name.them {
+    color: var(--accent-dark); /* Cor para o time "ELES" */
+    font-weight: bold; /* Deixa o texto em negrito */
+}
+
 
 
