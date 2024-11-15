@@ -37,6 +37,7 @@ interface GameDetails {
     created_at: string;
     updated_at: string;
     room_name: string;
+    end_game_win: number | null;
     chairs: {
         chair_a: string;
         chair_b: string;
@@ -66,7 +67,39 @@ const Game: React.FC = () => {
         const loadGameDetails = async () => {
             try {
                 const data = await fetchRoomDetails(uuid!);
+                console.log(data);
                 setGameDetails(data);
+
+                // Exibe o popup para end_game_win com prioridade
+                if (data.end_game_win) {
+                    switch (data.end_game_win) {
+                        case "NOS":
+                            setShowWinnerPopup(false);
+                            setWinnerMessage("O time NÓS ganhou o JOGO");
+                            setShowWinnerPopup(true);
+                            break;
+                        case "ELES":
+                            setShowWinnerPopup(false);
+                            setWinnerMessage("O time ELES ganhou o JOGO");
+                            setShowWinnerPopup(true);
+                            break;
+                        default:
+                        // Não há ação para outros valores
+                    }
+
+                    // Verifica se o usuário está na cadeira e redireciona após 5 segundos
+                    const name = localStorage.getItem('user_name');
+                    const { chair_a, chair_b, chair_c, chair_d } = data.chairs || {};
+                    if ([chair_a, chair_b, chair_c, chair_d].includes(name)) {
+                        setTimeout(() => {
+                            navigate(`/room/${data.room_id}`);
+                        }, 5000); // Redireciona após 5 segundos
+                    }
+
+                    return; // Impede que a lógica de step.win sobrescreva
+                }
+
+                // Exibe o popup para step.win se não houver end_game_win
                 if (data.step.win) {
                     switch (data.step.win) {
                         case "NOS":
@@ -82,11 +115,10 @@ const Game: React.FC = () => {
                             setShowWinnerPopup(true);
                             break;
                         default:
-                            // Não há ação, pois outros valores não são esperados
+                        // Não há ação para outros valores
                     }
                 } else {
-                    // Esconde o pop-up se não houver vencedor
-                    setShowWinnerPopup(false);
+                    setShowWinnerPopup(false); // Esconde o popup se não houver vencedor
                 }
             } catch (error: any) {
                 if (error.message === 'RoomNotFound') {
@@ -107,6 +139,8 @@ const Game: React.FC = () => {
         // Limpa o intervalo ao desmontar o componente
         return () => clearInterval(intervalId);
     }, [uuid, navigate]);
+
+
 
     if (loading) {
         return <div>Carregando...</div>;
@@ -420,15 +454,14 @@ const Game: React.FC = () => {
                         {winnerMessage.includes("NÓS") && <span className="pop-team-name us">NÓS</span>}
                         {winnerMessage.includes("ELES") ? "O time " : ""}
                         {winnerMessage.includes("ELES") && <span className="pop-team-name them">ELES</span>}
-                        {winnerMessage.includes("EMPATE") ? "EMPATE DA PARTIDA" : " ganhou a partida"}
+                        {winnerMessage.includes("EMPATE") ? "EMPATE DA " : ""}
+                        {winnerMessage.includes("JOGO") ? " ganhou o JOGO" : ""}
+                        {winnerMessage.includes("partida") ? " ganhou a partida" : ""}
                     </p>
                 </div>
             )}
-
         </div>
     );
-
-
 };
 
 export default Game;
