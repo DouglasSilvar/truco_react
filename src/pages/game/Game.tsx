@@ -207,8 +207,8 @@ const Game: React.FC = () => {
 
     const playTheCard = async (card: string, encoberta: boolean) => {
         if (!gameDetails) return;
-
-        await playMove(gameDetails.uuid, card, encoberta, null, null)
+        if(encoberta) card = 'EC';
+        await playMove(gameDetails.uuid, card, null, null, null)
             .then(response => {
                 console.log('Jogada realizada com sucesso:', response);
                 // Aqui você pode adicionar lógica adicional após a jogada
@@ -239,7 +239,7 @@ const Game: React.FC = () => {
         }
 
         if (callValue !== null) {
-            playMove(gameDetails.uuid, null, null, null, null, callValue)
+            playMove(gameDetails.uuid, null, null, null, callValue)
                 .then(response => {
                     console.log(`Trucada chamada com valor ${callValue}:`, response);
                 })
@@ -253,7 +253,7 @@ const Game: React.FC = () => {
         if (!gameDetails) return;
 
         try {
-            const response = await playMove(gameDetails.uuid, null, null, null, true, null);
+            const response = await playMove(gameDetails.uuid, null, null, true, null);
             console.log('Cartas recolhidas com sucesso:', response);
         } catch (error) {
             console.error('Erro ao recolher as cartas:', error);
@@ -426,7 +426,16 @@ const Game: React.FC = () => {
                             Recolher Cartas
                         </button>
                     )}
-                    <button className="action-button" onClick={toggleEncobrir} disabled={!gameDetails?.step.first || !gameDetails?.step.second}>
+                    <button
+                        className="action-button"
+                        onClick={toggleEncobrir}
+                        disabled={
+                            !gameDetails?.step.first || // Condição 1: `step.first` deve ter algum valor
+                            gameDetails?.step.table_cards.length < 1 || // Condição 2: `table_cards` deve ter pelo menos 1 item
+                            !isPlayerTurn || // Condição 3: Deve ser a vez do jogador
+                            (!!gameDetails?.step.first && !!gameDetails?.step.second && gameDetails?.step.table_cards.length === 0) // Nova condição com coerção para boolean
+                        }
+                    >
                         {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
                     </button>
                     <button
