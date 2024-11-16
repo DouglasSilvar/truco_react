@@ -31,6 +31,7 @@ export const fetchRoomDetails = async (gameUuid: string) => {
 export const playMove = async (
   gameUuid: string,
   card: string | null = null,
+  coverup: boolean | null = null,
   accept: boolean | null = null,
   collect: boolean | null = null,
   call: number | null = null
@@ -40,6 +41,7 @@ export const playMove = async (
     headers: getUserHeaders(),
     body: JSON.stringify({
       card: card,
+      coverup: coverup,
       accept: accept,
       collect: collect,
       call: call

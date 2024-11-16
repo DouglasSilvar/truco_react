@@ -105,6 +105,8 @@ body {
     font-weight: bold;
     margin: 0 5px;
     flex-direction: column;
+    position: relative; /* Adicione para garantir que a imagem preencha todo o espaço */
+    overflow: hidden; /* Para prevenir que a imagem saia do contorno da carta */
 }
 
 .card.disabled {
@@ -334,5 +336,14 @@ body {
     font-weight: bold; /* Deixa o texto em negrito */
 }
 
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3; /* Ajuste a transparência conforme necessário */
+    pointer-events: none; /* Evita que a imagem intercepte cliques */
+}
 
 

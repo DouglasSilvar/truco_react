@@ -140,18 +140,17 @@ const Game: React.FC = () => {
         return () => clearInterval(intervalId);
     }, [uuid, navigate]);
 
-
-
-    if (loading) {
-        return <div>Carregando...</div>;
-    }
-
-    if (error) {
-        return <div>{error}</div>;
-    }
-
     // Função para formatar as cartas com os símbolos corretos e cores específicas para naipes
     const formatCard = (card: string) => {
+
+        if (card === 'EC') {
+            // Renderiza a imagem para cartas encobertas
+            return (
+                <div className="card">
+                    <img src="/rails.png" alt="Encoberta" style={{ width: '100%', height: '100%' }} />
+                </div>
+            );
+        }
         const rank = card.slice(0, -1); // Extrai o valor da carta
         const suit = card.slice(-1); // Extrai o naipe da carta
 
@@ -206,12 +205,13 @@ const Game: React.FC = () => {
     const isPlayerTurn = gameDetails?.step.player_time === name;
 
     const playTheCard = async (card: string, encoberta: boolean) => {
+        console.log('Encobrir:', isEncobrir);
         if (!gameDetails) return;
-        if(encoberta) card = 'EC';
-        await playMove(gameDetails.uuid, card, null, null, null)
+        if (encoberta) toggleEncobrir();
+        console.log('Encobrir:', isEncobrir);
+        await playMove(gameDetails.uuid, card, encoberta, null, null, null)
             .then(response => {
                 console.log('Jogada realizada com sucesso:', response);
-                // Aqui você pode adicionar lógica adicional após a jogada
             })
             .catch(error => {
                 console.error('Erro ao realizar a jogada:', error);
@@ -239,7 +239,7 @@ const Game: React.FC = () => {
         }
 
         if (callValue !== null) {
-            playMove(gameDetails.uuid, null, null, null, callValue)
+            playMove(gameDetails.uuid, null, null, null, null, callValue)
                 .then(response => {
                     console.log(`Trucada chamada com valor ${callValue}:`, response);
                 })
@@ -253,7 +253,7 @@ const Game: React.FC = () => {
         if (!gameDetails) return;
 
         try {
-            const response = await playMove(gameDetails.uuid, null, null, true, null);
+            const response = await playMove(gameDetails.uuid, null, null, null, true, null);
             console.log('Cartas recolhidas com sucesso:', response);
         } catch (error) {
             console.error('Erro ao recolher as cartas:', error);
@@ -327,6 +327,14 @@ const Game: React.FC = () => {
             </div>
         ));
     };
+
+    if (loading) {
+        return <div>Carregando...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
 
     return (
         <div className="game-container">
@@ -409,13 +417,15 @@ const Game: React.FC = () => {
                 <div className="card-container">
                     {playerCards.map((card, index) => (
                         <div
-                            key={index}
-                            className={`card ${!isPlayerTurn || gameDetails?.step.table_cards.length === 4 ? 'disabled' : ''}`}
-                            onClick={() => isPlayerTurn && gameDetails?.step.table_cards.length < 4 && playTheCard(card, isEncobrir)}
-                            style={{ cursor: (isPlayerTurn && gameDetails?.step.table_cards.length < 4) ? 'pointer' : 'default' }}
-                        >
-                            {formatCard(card)}
-                        </div>
+                        key={index}
+                        className={`card ${!isPlayerTurn || gameDetails?.step.table_cards.length === 4 ? 'disabled' : ''}`}
+                        onClick={() => isPlayerTurn && gameDetails?.step.table_cards.length < 4 && playTheCard(card, isEncobrir)}
+                        style={{ cursor: (isPlayerTurn && gameDetails?.step.table_cards.length < 4) ? 'pointer' : 'default' }}
+                    >
+                        {formatCard(card)}
+                        {isEncobrir && <img src="/rails.png" alt="Encobrir" className="card-overlay" />}
+                    </div>
+                    
                     ))}
                 </div>
 
