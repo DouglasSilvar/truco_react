@@ -328,6 +328,103 @@ const Game: React.FC = () => {
         ));
     };
 
+    // Função para determinar o texto do botão "Trucar"
+    const getTrucarButtonText = (): string | null => {
+        const { player_call_3, player_call_6, player_call_9, player_call_12 } = gameDetails?.step || {};
+
+        if (!player_call_3 && !player_call_6 && !player_call_9 && !player_call_12) {
+            return "Truco !!!";
+        }
+        if (player_call_3 && !player_call_6 && !player_call_9 && !player_call_12) {
+            return "Seis !!!";
+        }
+        if (player_call_3 && player_call_6 && !player_call_9 && !player_call_12) {
+            return "Nove !!!";
+        }
+        if (player_call_3 && player_call_6 && player_call_9 && !player_call_12) {
+            return "Doze !!!";
+        }
+        // Se todos os valores estiverem preenchidos, o botão desaparece
+        if (player_call_3 && player_call_6 && player_call_9 && player_call_12) {
+            return null;
+        }
+
+        return "Truco !!!"; // Default para outros casos
+    };
+
+
+    // Verifica se o jogador atual pode trucar
+    const canTrucar = (): boolean => {
+        const currentPlayer = localStorage.getItem('user_name') || '';
+        return gameDetails?.step.player_time === currentPlayer &&
+            gameDetails?.step.table_cards.length < 4;
+    };
+
+    const isTrucoCalled = (playerName: string | undefined): boolean => {
+        // Função auxiliar para separar o jogador e o time
+        const extractPlayerName = (value: number | string | null | undefined): string | null => {
+            if (!value) return null;
+            const stringValue = String(value); // Converte para string, caso seja um número
+            const [player] = stringValue.split('---'); // Divide no separador '---' e pega o primeiro elemento
+            return player;
+        };
+
+        return (
+            extractPlayerName(gameDetails?.step.player_call_3) === playerName ||
+            extractPlayerName(gameDetails?.step.player_call_6) === playerName ||
+            extractPlayerName(gameDetails?.step.player_call_9) === playerName ||
+            extractPlayerName(gameDetails?.step.player_call_12) === playerName
+        );
+    };
+
+    const isOpponentTurnToRespond = (): boolean => {
+        if (gameDetails?.step.player_time !== null) return false; // Apenas se `player_time` for nulo
+
+        // Encontra o primeiro `player_call` que não é nulo
+        const playerCall = [
+            gameDetails?.step.player_call_3,
+            gameDetails?.step.player_call_6,
+            gameDetails?.step.player_call_9,
+            gameDetails?.step.player_call_12,
+        ].find((call) => call !== null);
+
+        if (!playerCall) return false; // Nenhum `player_call` ativo
+
+        const playerCallString = String(playerCall); // Converte para string caso seja um número
+        const [callingPlayer, callingTeam] = playerCallString.split('---'); // Extrai o jogador e o time
+
+        const isOpponentTeam = (team: string) => team !== callingTeam; // Verifica se é o time oposto
+
+        // Verifica se o jogador atual está no time oposto
+        const { chair_a, chair_b, chair_c, chair_d } = gameDetails.chairs;
+        const currentPlayer = localStorage.getItem('user_name') || '';
+
+        if ([chair_a, chair_b].includes(currentPlayer) && isOpponentTeam('NOS')) {
+            return true; // Jogador pertence ao time "ELES" e "NOS" está chamando
+        }
+        if ([chair_c, chair_d].includes(currentPlayer) && isOpponentTeam('ELES')) {
+            return true; // Jogador pertence ao time "NOS" e "ELES" está chamando
+        }
+
+        return false;
+    };
+
+    const canShowEncobrir = (): boolean => {
+        if (!gameDetails) return false;
+
+        if (gameDetails?.step.table_cards.length === 4) {
+            return false;
+        }
+    
+        // Condições para mostrar o botão Encobrir
+        return (
+            !!gameDetails?.step.first && // Segunda rodada
+            gameDetails?.step.table_cards.length >= 1 && // Pelo menos 1 carta na mesa
+            gameDetails?.step.player_time === name // É a vez do jogador
+        );
+    };
+
+
     if (loading) {
         return <div>Carregando...</div>;
     }
@@ -381,34 +478,49 @@ const Game: React.FC = () => {
                 {/* Cadeiras ao redor da mesa com posições dinâmicas */}
                 <div className={`chair bottom ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'team-us' : 'team-them'} ${chairPositions.bottom === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
                     <div className="chair-content">
+                        {isTrucoCalled(chairPositions.bottom) && <div className="truco-call">TRUCO!!!</div>}
                         <div className={`team-name ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'NÓS' : 'ELES'}
                         </div>
-                        <div>{chairPositions.bottom || 'A'}</div>
+                        <div>
+                            {chairPositions.bottom || 'A'}
+
+                        </div>
                     </div>
                 </div>
                 <div className={`chair left ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'team-us' : 'team-them'} ${chairPositions.left === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
                     <div className="chair-content">
+                        {isTrucoCalled(chairPositions.left) && <div className="truco-call">TRUCO!!!</div>}
                         <div className={`team-name ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.left === chair_a || chairPositions.left === chair_b ? 'NÓS' : 'ELES'}
                         </div>
-                        <div>{chairPositions.left || 'C'}</div>
+                        <div>
+                            {chairPositions.left || 'C'}
+
+                        </div>
                     </div>
                 </div>
                 <div className={`chair top ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'team-us' : 'team-them'} ${chairPositions.top === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
                     <div className="chair-content">
+                        {isTrucoCalled(chairPositions.top) && <div className="truco-call">TRUCO!!!</div>}
                         <div className={`team-name ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.top === chair_a || chairPositions.top === chair_b ? 'NÓS' : 'ELES'}
                         </div>
-                        <div>{chairPositions.top || 'B'}</div>
+                        <div>
+                            {chairPositions.top || 'B'}
+
+                        </div>
                     </div>
                 </div>
                 <div className={`chair right ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'team-us' : 'team-them'} ${chairPositions.right === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
                     <div className="chair-content">
+                        {isTrucoCalled(chairPositions.right) && <div className="truco-call">TRUCO!!!</div>}
                         <div className={`team-name ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.right === chair_a || chairPositions.right === chair_b ? 'NÓS' : 'ELES'}
                         </div>
-                        <div>{chairPositions.right || 'D'}</div>
+                        <div>
+                            {chairPositions.right || 'D'}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -417,54 +529,52 @@ const Game: React.FC = () => {
                 <div className="card-container">
                     {playerCards.map((card, index) => (
                         <div
-                        key={index}
-                        className={`card ${!isPlayerTurn || gameDetails?.step.table_cards.length === 4 ? 'disabled' : ''}`}
-                        onClick={() => isPlayerTurn && gameDetails?.step.table_cards.length < 4 && playTheCard(card, isEncobrir)}
-                        style={{ cursor: (isPlayerTurn && gameDetails?.step.table_cards.length < 4) ? 'pointer' : 'default' }}
-                    >
-                        {formatCard(card)}
-                        {isEncobrir && <img src="/rails.png" alt="Encobrir" className="card-overlay" />}
-                    </div>
-                    
+                            key={index}
+                            className={`card ${!isPlayerTurn || gameDetails?.step.table_cards.length === 4 ? 'disabled' : ''}`}
+                            onClick={() => isPlayerTurn && gameDetails?.step.table_cards.length < 4 && playTheCard(card, isEncobrir)}
+                            style={{ cursor: (isPlayerTurn && gameDetails?.step.table_cards.length < 4) ? 'pointer' : 'default' }}
+                        >
+                            {formatCard(card)}
+                            {isEncobrir && <img src="/rails.png" alt="Encobrir" className="card-overlay" />}
+                        </div>
                     ))}
                 </div>
 
                 {/* Botões embaixo das cartas */}
                 <div className="action-buttons">
-                    {gameDetails?.step.table_cards.length === 4 && gameDetails?.owner?.name === name && (
+                    {/* Botão para recolher cartas */}
+                    {gameDetails?.step.table_cards.length === 4 && gameDetails?.owner?.name === name ? (
                         <button className="action-button" onClick={collectCards}>
                             Recolher Cartas
                         </button>
+                    ) : (
+                        <>
+                            {/* Botão "Trucar" disponível apenas para o jogador da vez */}
+                            {(canTrucar() || isOpponentTurnToRespond()) && getTrucarButtonText() && (
+                                <button className="action-button" onClick={handleTrucar}>
+                                    {getTrucarButtonText()}
+                                </button>
+                            )}
+                            {canShowEncobrir() && (
+                                <button className="action-button" onClick={toggleEncobrir}>
+                                    {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
+                                </button>
+                            )}
+                            {/* Botões disponíveis para o time adversário responder ao truco */}
+                            {isOpponentTurnToRespond() && (
+                                <>
+                                    <button className="action-button" onClick={() => console.log("Correr clicado!")}>
+                                        Correr
+                                    </button>
+                                    <button className="action-button" onClick={() => console.log("Aceitar clicado!")}>
+                                        Aceitar
+                                    </button>
+                                </>
+                            )}
+                        </>
                     )}
-                    <button
-                        className="action-button"
-                        onClick={toggleEncobrir}
-                        disabled={
-                            !gameDetails?.step.first || // Condição 1: `step.first` deve ter algum valor
-                            gameDetails?.step.table_cards.length < 1 || // Condição 2: `table_cards` deve ter pelo menos 1 item
-                            !isPlayerTurn || // Condição 3: Deve ser a vez do jogador
-                            (!!gameDetails?.step.first && !!gameDetails?.step.second && gameDetails?.step.table_cards.length === 0) // Nova condição com coerção para boolean
-                        }
-                    >
-                        {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
-                    </button>
-                    <button
-                        className="action-button"
-                        onClick={handleTrucar}
-                        disabled={
-                            gameDetails?.step.player_call_3 !== null &&
-                            gameDetails?.step.player_call_6 !== null &&
-                            gameDetails?.step.player_call_9 !== null &&
-                            gameDetails?.step.player_call_12 !== null ||
-                            !isPlayerTurn
-                        }
-                    >
-                        Trucar
-                    </button>
-                    <button className="action-button" disabled={!isPlayerTurn}>
-                        Correr
-                    </button>
                 </div>
+
             </div>
             {showWinnerPopup && (
                 <div className="popup-game">

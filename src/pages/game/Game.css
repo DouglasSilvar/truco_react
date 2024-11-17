@@ -30,7 +30,7 @@ body {
 .chair {
     position: absolute;
     width: 120px;
-    height: 55px;
+    height: 70px;
     background-color: var(--background);
     border: 2px solid var(--accent);
     border-radius: 10px;
@@ -346,4 +346,10 @@ body {
     pointer-events: none; /* Evita que a imagem intercepte cliques */
 }
 
+.truco-call {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--red-suit); /* Cor vermelha para destacar */
+    margin-top: 5px;
+}
 
