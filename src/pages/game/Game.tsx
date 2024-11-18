@@ -27,6 +27,8 @@ interface StepDetails {
     second_card_origin: string | null;
     third_card_origin: string | null;
     fourth_card_origin: string | null;
+    is_accept_first: string | null;
+    is_accept_second: string | null;
 }
 
 interface GameDetails {
@@ -260,6 +262,16 @@ const Game: React.FC = () => {
         }
     };
 
+    const handleTrucoRespose = async (accept: boolean) => {
+        if (!gameDetails) return;
+        try {
+            await playMove(gameDetails.uuid, null, null, accept, null, null);
+            console.log(`${accept ? "Aceitar" : "Correr"} acionado com sucesso!`);
+        } catch (error) {
+            console.error(`Erro ao acionar o botão ${accept ? "Aceitar" : "Correr"}:`, error);
+        }
+    };
+
     const renderTableCards = () => {
         // Pega a posição atual do jogador na mesa
         if (!gameDetails) return null;
@@ -415,7 +427,7 @@ const Game: React.FC = () => {
         if (gameDetails?.step.table_cards.length === 4) {
             return false;
         }
-    
+
         // Condições para mostrar o botão Encobrir
         return (
             !!gameDetails?.step.first && // Segunda rodada
@@ -496,19 +508,18 @@ const Game: React.FC = () => {
                         </div>
                         <div>
                             {chairPositions.left || 'C'}
-
                         </div>
                     </div>
                 </div>
                 <div className={`chair top ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'team-us' : 'team-them'} ${chairPositions.top === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
                     <div className="chair-content">
+
                         {isTrucoCalled(chairPositions.top) && <div className="truco-call">TRUCO!!!</div>}
                         <div className={`team-name ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.top === chair_a || chairPositions.top === chair_b ? 'NÓS' : 'ELES'}
                         </div>
                         <div>
                             {chairPositions.top || 'B'}
-
                         </div>
                     </div>
                 </div>
@@ -563,12 +574,13 @@ const Game: React.FC = () => {
                             {/* Botões disponíveis para o time adversário responder ao truco */}
                             {isOpponentTurnToRespond() && (
                                 <>
-                                    <button className="action-button" onClick={() => console.log("Correr clicado!")}>
+                                    <button className="action-button" onClick={() => handleTrucoRespose(false)}>
                                         Correr
                                     </button>
-                                    <button className="action-button" onClick={() => console.log("Aceitar clicado!")}>
+                                    <button className="action-button" onClick={() => handleTrucoRespose(true)}>
                                         Aceitar
                                     </button>
+
                                 </>
                             )}
                         </>
