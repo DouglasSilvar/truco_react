@@ -389,6 +389,29 @@ const Game: React.FC = () => {
         );
     };
 
+    const isAcceptCalled = (playerName: string | undefined): { hasResponse: boolean, emoji: string } => {
+        const extractAcceptDetails = (value: string | null): { player: string, accept: string, team: string } | null => {
+            if (!value) return null;
+            const [player, accept, team] = value.split('---');
+            return { player, accept, team };
+        };
+
+        const acceptFirstDetails = extractAcceptDetails(gameDetails?.step.is_accept_first ?? null);
+        const acceptSecondDetails = extractAcceptDetails(gameDetails?.step.is_accept_second ?? null);
+
+        let result = { hasResponse: false, emoji: '' };
+        if (acceptFirstDetails && acceptFirstDetails.player === playerName) {
+            result.hasResponse = true;
+            result.emoji = acceptFirstDetails.accept === 'yes' ? '✅' : '❌';
+        } else if (acceptSecondDetails && acceptSecondDetails.player === playerName) {
+            result.hasResponse = true;
+            result.emoji = acceptSecondDetails.accept === 'yes' ? '✅' : '❌';
+        }
+
+        return result;
+    };
+
+
     const isOpponentTurnToRespond = (): boolean => {
         if (gameDetails?.step.player_time !== null) return false; // Apenas se `player_time` for nulo
 
@@ -490,6 +513,7 @@ const Game: React.FC = () => {
                 {/* Cadeiras ao redor da mesa com posições dinâmicas */}
                 <div className={`chair bottom ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'team-us' : 'team-them'} ${chairPositions.bottom === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
                     <div className="chair-content">
+                        {isAcceptCalled(chairPositions.bottom).hasResponse && <div className="accept-call">{isAcceptCalled(chairPositions.bottom).emoji}</div>}
                         {isTrucoCalled(chairPositions.bottom) && <div className="truco-call">TRUCO!!!</div>}
                         <div className={`team-name ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'NÓS' : 'ELES'}
@@ -502,6 +526,7 @@ const Game: React.FC = () => {
                 </div>
                 <div className={`chair left ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'team-us' : 'team-them'} ${chairPositions.left === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
                     <div className="chair-content">
+                        {isAcceptCalled(chairPositions.left).hasResponse && <div className="accept-call">{isAcceptCalled(chairPositions.left).emoji}</div>}
                         {isTrucoCalled(chairPositions.left) && <div className="truco-call">TRUCO!!!</div>}
                         <div className={`team-name ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.left === chair_a || chairPositions.left === chair_b ? 'NÓS' : 'ELES'}
@@ -513,7 +538,7 @@ const Game: React.FC = () => {
                 </div>
                 <div className={`chair top ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'team-us' : 'team-them'} ${chairPositions.top === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
                     <div className="chair-content">
-
+                        {isAcceptCalled(chairPositions.top).hasResponse && <div className="accept-call">{isAcceptCalled(chairPositions.top).emoji}</div>}
                         {isTrucoCalled(chairPositions.top) && <div className="truco-call">TRUCO!!!</div>}
                         <div className={`team-name ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.top === chair_a || chairPositions.top === chair_b ? 'NÓS' : 'ELES'}
@@ -525,6 +550,7 @@ const Game: React.FC = () => {
                 </div>
                 <div className={`chair right ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'team-us' : 'team-them'} ${chairPositions.right === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
                     <div className="chair-content">
+                        {isAcceptCalled(chairPositions.right).hasResponse && <div className="accept-call">{isAcceptCalled(chairPositions.right).emoji}</div>}
                         {isTrucoCalled(chairPositions.right) && <div className="truco-call">TRUCO!!!</div>}
                         <div className={`team-name ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.right === chair_a || chairPositions.right === chair_b ? 'NÓS' : 'ELES'}
