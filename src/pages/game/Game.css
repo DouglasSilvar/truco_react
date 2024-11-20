@@ -353,3 +353,12 @@ body {
     margin-top: 5px;
 }
 
+.accept-green {
+    font-weight: bold;
+    color: var(--green-border); /* Cor verde definida na paleta do IntelliJ */
+}
+
+.accept-red {
+    font-weight: bold;
+    color: var(--red-suit); /* Cor vermelha para naipes de Ouro e Copas */
+}
