@@ -368,26 +368,60 @@ const Game: React.FC = () => {
     // Verifica se o jogador atual pode trucar
     const canTrucar = (): boolean => {
         const currentPlayer = localStorage.getItem('user_name') || '';
+
+        if (!gameDetails) return false;
+
+        // Verifica o time do jogador atual
+        const { chair_a, chair_b, chair_c, chair_d } = gameDetails.chairs;
+        const playerTeam = [chair_a, chair_b].includes(currentPlayer) ? 'NOS' : 'ELES';
+
+        // Extrai detalhes de is_accept_second
+        const extractDetails = (value: string | null) => {
+            if (!value) return null;
+            const [player, accept, team] = value.split('---');
+            return { player, accept, team };
+        };
+
+        const isAcceptSecondDetails = extractDetails(gameDetails.step.is_accept_second);
+
+        // Verifica se is_accept_second existe e se o time do jogador atual é o mesmo do time que aceitou
+        const isSameTeamAsAcceptSecond =
+            isAcceptSecondDetails?.team === playerTeam;
+
+        // Regra adicional: jogador atual não pode chamar "Seis" se seu time foi o último a aceitar
+        const cannotCallSeis = isAcceptSecondDetails && isSameTeamAsAcceptSecond;
+        console.log(cannotCallSeis);
+
         return gameDetails?.step.player_time === currentPlayer &&
             gameDetails?.step.table_cards.length < 4;
     };
 
-    const isTrucoCalled = (playerName: string | undefined): boolean => {
-        // Função auxiliar para separar o jogador e o time
-        const extractPlayerName = (value: number | string | null | undefined): string | null => {
+    const isTrucoCalled = (playerName: string | undefined): string | null => {
+        if (!gameDetails) return null;
+    
+        // Função auxiliar para separar o jogador
+        const extractDetails = (value: number | string | null | undefined): string | null => {
             if (!value) return null;
             const stringValue = String(value); // Converte para string, caso seja um número
             const [player] = stringValue.split('---'); // Divide no separador '---' e pega o primeiro elemento
             return player;
         };
-
-        return (
-            extractPlayerName(gameDetails?.step.player_call_3) === playerName ||
-            extractPlayerName(gameDetails?.step.player_call_6) === playerName ||
-            extractPlayerName(gameDetails?.step.player_call_9) === playerName ||
-            extractPlayerName(gameDetails?.step.player_call_12) === playerName
-        );
+    
+        // Redefine valores de hierarquias inferiores para null
+        const playerCall12 = gameDetails.step.player_call_12 ? extractDetails(gameDetails.step.player_call_12) : null;
+        const playerCall9 = playerCall12 ? null : gameDetails.step.player_call_9 ? extractDetails(gameDetails.step.player_call_9) : null;
+        const playerCall6 = playerCall9 ? null : gameDetails.step.player_call_6 ? extractDetails(gameDetails.step.player_call_6) : null;
+        const playerCall3 = playerCall6 ? null : gameDetails.step.player_call_3 ? extractDetails(gameDetails.step.player_call_3) : null;
+    
+        // Verifica qual chamada corresponde ao jogador e retorna a mensagem apropriada
+        if (playerCall12 === playerName) return "Doze !!!";
+        if (playerCall9 === playerName) return "Nove !!!";
+        if (playerCall6 === playerName) return "Seis !!!";
+        if (playerCall3 === playerName) return "Truco !!!";
+    
+        return null; // Retorna null se nenhuma condição for atendida
     };
+    
 
     const isAcceptCalled = (playerName: string | undefined): { hasResponse: boolean, emoji: string, colorClass: string } => {
         const extractDetails = (value: string | null) => {
@@ -421,36 +455,44 @@ const Game: React.FC = () => {
 
 
     const isOpponentTurnToRespond = (): boolean => {
-        if (gameDetails?.step.player_time !== null) return false; // Apenas se `player_time` for nulo
-
-        // Encontra o primeiro `player_call` que não é nulo
-        const playerCall = [
-            gameDetails?.step.player_call_3,
-            gameDetails?.step.player_call_6,
-            gameDetails?.step.player_call_9,
-            gameDetails?.step.player_call_12,
-        ].find((call) => call !== null);
-
-        if (!playerCall) return false; // Nenhum `player_call` ativo
-
-        const playerCallString = String(playerCall); // Converte para string caso seja um número
-        const [callingPlayer, callingTeam] = playerCallString.split('---'); // Extrai o jogador e o time
-
+        if (!gameDetails || gameDetails.step.player_time !== null) return false; // Apenas se `player_time` for nulo
+    
+        // Função auxiliar para encontrar o último valor não nulo na hierarquia
+        const getLastNonNullCall = (): string | null => {
+            const calls = [
+                gameDetails.step.player_call_12,
+                gameDetails.step.player_call_9,
+                gameDetails.step.player_call_6,
+                gameDetails.step.player_call_3,
+            ];
+    
+            // Converte os valores para string e retorna o primeiro não nulo
+            const lastCall = calls.find((call) => call !== null);
+            return lastCall ? String(lastCall) : null;
+        };
+    
+        const lastCall = getLastNonNullCall();
+        if (!lastCall) return false; // Nenhum `player_call` ativo
+    
+        const [callingPlayer, callingTeam] = lastCall.split('---'); // Extrai o jogador e o time
+    
         const isOpponentTeam = (team: string) => team !== callingTeam; // Verifica se é o time oposto
-
+    
         // Verifica se o jogador atual está no time oposto
         const { chair_a, chair_b, chair_c, chair_d } = gameDetails.chairs;
         const currentPlayer = localStorage.getItem('user_name') || '';
-
+    
         if ([chair_a, chair_b].includes(currentPlayer) && isOpponentTeam('NOS')) {
             return true; // Jogador pertence ao time "ELES" e "NOS" está chamando
         }
         if ([chair_c, chair_d].includes(currentPlayer) && isOpponentTeam('ELES')) {
             return true; // Jogador pertence ao time "NOS" e "ELES" está chamando
         }
-
+    
         return false;
     };
+    
+    
 
     const canShowEncobrir = (): boolean => {
         if (!gameDetails) return false;
@@ -524,7 +566,9 @@ const Game: React.FC = () => {
                         <div className={`accept-call ${isAcceptCalled(chairPositions.bottom).colorClass}`}>
                             {isAcceptCalled(chairPositions.bottom).emoji}
                         </div>
-                        {isTrucoCalled(chairPositions.bottom) && <div className="truco-call">TRUCO!!!</div>}
+                        {isTrucoCalled(chairPositions.bottom) && (
+                            <div className="truco-call">{isTrucoCalled(chairPositions.bottom)}</div>
+                        )}
                         <div className={`team-name ${chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'NÓS' : 'ELES'}
                         </div>
@@ -539,7 +583,9 @@ const Game: React.FC = () => {
                         <div className={`accept-call ${isAcceptCalled(chairPositions.left).colorClass}`}>
                             {isAcceptCalled(chairPositions.left).emoji}
                         </div>
-                        {isTrucoCalled(chairPositions.left) && <div className="truco-call">TRUCO!!!</div>}
+                        {isTrucoCalled(chairPositions.left) && (
+                            <div className="truco-call">{isTrucoCalled(chairPositions.left)}</div>
+                        )}
                         <div className={`team-name ${chairPositions.left === chair_a || chairPositions.left === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.left === chair_a || chairPositions.left === chair_b ? 'NÓS' : 'ELES'}
                         </div>
@@ -553,7 +599,9 @@ const Game: React.FC = () => {
                         <div className={`accept-call ${isAcceptCalled(chairPositions.top).colorClass}`}>
                             {isAcceptCalled(chairPositions.top).emoji}
                         </div>
-                        {isTrucoCalled(chairPositions.top) && <div className="truco-call">TRUCO!!!</div>}
+                        {isTrucoCalled(chairPositions.top) && (
+                            <div className="truco-call">{isTrucoCalled(chairPositions.top)}</div>
+                        )}
                         <div className={`team-name ${chairPositions.top === chair_a || chairPositions.top === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.top === chair_a || chairPositions.top === chair_b ? 'NÓS' : 'ELES'}
                         </div>
@@ -567,7 +615,9 @@ const Game: React.FC = () => {
                         <div className={`accept-call ${isAcceptCalled(chairPositions.right).colorClass}`}>
                             {isAcceptCalled(chairPositions.right).emoji}
                         </div>
-                        {isTrucoCalled(chairPositions.right) && <div className="truco-call">TRUCO!!!</div>}
+                        {isTrucoCalled(chairPositions.right) && (
+                            <div className="truco-call">{isTrucoCalled(chairPositions.right)}</div>
+                        )}
                         <div className={`team-name ${chairPositions.right === chair_a || chairPositions.right === chair_b ? 'us' : 'them'}`}>
                             {chairPositions.right === chair_a || chairPositions.right === chair_b ? 'NÓS' : 'ELES'}
                         </div>
@@ -596,7 +646,7 @@ const Game: React.FC = () => {
                 {/* Botões embaixo das cartas */}
                 <div className="action-buttons">
                     {/* Botão para recolher cartas */}
-                    {gameDetails?.step.table_cards.length === 4 && gameDetails?.owner?.name === name ? (
+                    {(gameDetails?.step.table_cards.length === 4 || gameDetails?.step.win) && gameDetails?.owner?.name === name ? (
                         <button className="action-button" onClick={collectCards}>
                             Recolher Cartas
                         </button>
