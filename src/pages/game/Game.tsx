@@ -63,7 +63,8 @@ const Game: React.FC = () => {
     const [isEncobrir, setIsEncobrir] = useState(false);
     const [showWinnerPopup, setShowWinnerPopup] = useState<boolean>(false);
     const [winnerMessage, setWinnerMessage] = useState<string>('');
-
+    const [isPlayer, setIsPlayer] = useState<boolean>(false); // Estado para verificar se o usuário é jogador
+    const name = localStorage.getItem('user_name');
 
     useEffect(() => {
         const loadGameDetails = async () => {
@@ -71,7 +72,8 @@ const Game: React.FC = () => {
                 const data = await fetchRoomDetails(uuid!);
                 console.log(data);
                 setGameDetails(data);
-
+                const { chair_a, chair_b, chair_c, chair_d } = data.chairs || {};
+                setIsPlayer([chair_a, chair_b, chair_c, chair_d].includes(name));
                 // Exibe o popup para end_game_win com prioridade
                 if (data.end_game_win) {
                     switch (data.end_game_win) {
@@ -90,8 +92,6 @@ const Game: React.FC = () => {
                     }
 
                     // Verifica se o usuário está na cadeira e redireciona após 5 segundos
-                    const name = localStorage.getItem('user_name');
-                    const { chair_a, chair_b, chair_c, chair_d } = data.chairs || {};
                     if ([chair_a, chair_b, chair_c, chair_d].includes(name)) {
                         setTimeout(() => {
                             navigate(`/room/${data.room_id}`);
@@ -179,14 +179,16 @@ const Game: React.FC = () => {
     };
 
     // Determina quais cartas exibir no painel do jogador
-    const playerCards = gameDetails?.step.cards_chair_a.length ? gameDetails.step.cards_chair_a :
-        gameDetails?.step.cards_chair_b.length ? gameDetails.step.cards_chair_b :
-            gameDetails?.step.cards_chair_c.length ? gameDetails.step.cards_chair_c :
-                gameDetails?.step.cards_chair_d.length ? gameDetails.step.cards_chair_d : [];
-
-    const name = localStorage.getItem('user_name');
+    const playerCards = Array.isArray(gameDetails?.step.cards_chair_a) && gameDetails?.step.cards_chair_a.length
+    ? gameDetails.step.cards_chair_a
+    : Array.isArray(gameDetails?.step.cards_chair_b) && gameDetails?.step.cards_chair_b.length
+    ? gameDetails.step.cards_chair_b
+    : Array.isArray(gameDetails?.step.cards_chair_c) && gameDetails?.step.cards_chair_c.length
+    ? gameDetails.step.cards_chair_c
+    : Array.isArray(gameDetails?.step.cards_chair_d) && gameDetails?.step.cards_chair_d.length
+    ? gameDetails.step.cards_chair_d
+    : [];
     const { chair_a, chair_b, chair_c, chair_d } = gameDetails?.chairs || {};
-
     const getChairPositions = () => {
         if (name === chair_a) {
             return { bottom: chair_a, left: chair_c, top: chair_b, right: chair_d };
@@ -368,13 +370,13 @@ const Game: React.FC = () => {
     // Verifica se o jogador atual pode trucar
     const canTrucar = (): boolean => {
         if (!gameDetails) return false;
-    
+
         const currentPlayer = localStorage.getItem('user_name') || '';
         const { chair_a, chair_b, chair_c, chair_d } = gameDetails.chairs;
-    
+
         // Determina o time do jogador atual
         const currentPlayerTeam = [chair_a, chair_b].includes(currentPlayer) ? 'NOS' : 'ELES';
-    
+
         // Função auxiliar para encontrar a última chamada válida
         const getLastCall = (): { player: string; team: string; value: number } | null => {
             const calls = [
@@ -383,7 +385,7 @@ const Game: React.FC = () => {
                 { call: gameDetails.step.player_call_6, value: 6 },
                 { call: gameDetails.step.player_call_3, value: 3 },
             ];
-    
+
             for (const { call, value } of calls) {
                 if (call) {
                     const stringCall = String(call); // Converte o valor para string
@@ -393,36 +395,36 @@ const Game: React.FC = () => {
             }
             return null; // Nenhuma chamada foi feita
         };
-    
+
         const lastCall = getLastCall();
-    
+
         // Regra: O time que fez a última chamada não pode fazer a próxima
         if (lastCall && lastCall.team === currentPlayerTeam) {
             return false;
         }
-    
+
         // Regra: O jogador atual deve ser o próximo a jogar
         if (gameDetails.step.player_time !== currentPlayer) {
             return false;
         }
-    
+
         // Regra: O botão não deve aparecer quando a última chamada foi Doze
         if (lastCall?.value === 12) {
             return false;
         }
-    
+
         // Regra adicional: O botão não deve aparecer se já houver 4 cartas na mesa
         if (gameDetails.step.table_cards.length === 4) {
             return false;
         }
-    
+
         return true; // Caso contrário, o jogador pode trucar
     };
-    
-    
+
+
     const isTrucoCalled = (playerName: string | undefined): string | null => {
         if (!gameDetails) return null;
-    
+
         // Função auxiliar para extrair detalhes da chamada
         const extractDetails = (value: number | string | null | undefined): { player: string; team: string } | null => {
             if (!value) return null;
@@ -430,33 +432,33 @@ const Game: React.FC = () => {
             const [player, team] = stringValue.split('---'); // Extrai jogador e time
             return { player, team };
         };
-    
+
         // Extrai detalhes das chamadas
         const playerCall12 = gameDetails.step.player_call_12 ? extractDetails(gameDetails.step.player_call_12) : null;
         const playerCall9 = gameDetails.step.player_call_9 ? extractDetails(gameDetails.step.player_call_9) : null;
         const playerCall6 = gameDetails.step.player_call_6 ? extractDetails(gameDetails.step.player_call_6) : null;
         const playerCall3 = gameDetails.step.player_call_3 ? extractDetails(gameDetails.step.player_call_3) : null;
-    
+
         // Determina a maior chamada ativa
         const highestCall = playerCall12
             ? { value: 12, team: playerCall12.team }
             : playerCall9
-            ? { value: 9, team: playerCall9.team }
-            : playerCall6
-            ? { value: 6, team: playerCall6.team }
-            : playerCall3
-            ? { value: 3, team: playerCall3.team }
-            : null;
-    
+                ? { value: 9, team: playerCall9.team }
+                : playerCall6
+                    ? { value: 6, team: playerCall6.team }
+                    : playerCall3
+                        ? { value: 3, team: playerCall3.team }
+                        : null;
+
         if (!highestCall) return null; // Se nenhuma chamada foi feita
-    
+
         // Verifica se o jogador pertence ao time da maior chamada
         const { chair_a, chair_b, chair_c, chair_d } = gameDetails.chairs;
         const teamUs = [chair_a, chair_b]; // Time "NOS"
         const teamThem = [chair_c, chair_d]; // Time "ELES"
-    
+
         const playerTeam = teamUs.includes(playerName || '') ? 'NOS' : 'ELES';
-    
+
         // Exibe a maior chamada apenas para o time correspondente
         if (playerTeam === highestCall.team) {
             switch (highestCall.value) {
@@ -472,12 +474,12 @@ const Game: React.FC = () => {
                     return null;
             }
         }
-    
+
         return null; // Retorna null se o jogador não pertence ao time da maior chamada
     };
-    
-    
-    
+
+
+
 
     const isAcceptCalled = (playerName: string | undefined): { hasResponse: boolean, emoji: string, colorClass: string } => {
         const extractDetails = (value: string | null) => {
@@ -512,7 +514,7 @@ const Game: React.FC = () => {
 
     const isOpponentTurnToRespond = (): boolean => {
         if (!gameDetails || gameDetails.step.player_time !== null) return false; // Apenas se `player_time` for nulo
-    
+
         // Função auxiliar para encontrar o último valor não nulo na hierarquia
         const getLastNonNullCall = (): string | null => {
             const calls = [
@@ -521,34 +523,34 @@ const Game: React.FC = () => {
                 gameDetails.step.player_call_6,
                 gameDetails.step.player_call_3,
             ];
-    
+
             // Converte os valores para string e retorna o primeiro não nulo
             const lastCall = calls.find((call) => call !== null);
             return lastCall ? String(lastCall) : null;
         };
-    
+
         const lastCall = getLastNonNullCall();
         if (!lastCall) return false; // Nenhum `player_call` ativo
-    
+
         const [callingPlayer, callingTeam] = lastCall.split('---'); // Extrai o jogador e o time
-    
+
         const isOpponentTeam = (team: string) => team !== callingTeam; // Verifica se é o time oposto
-    
+
         // Verifica se o jogador atual está no time oposto
         const { chair_a, chair_b, chair_c, chair_d } = gameDetails.chairs;
         const currentPlayer = localStorage.getItem('user_name') || '';
-    
+
         if ([chair_a, chair_b].includes(currentPlayer) && isOpponentTeam('NOS')) {
             return true; // Jogador pertence ao time "ELES" e "NOS" está chamando
         }
         if ([chair_c, chair_d].includes(currentPlayer) && isOpponentTeam('ELES')) {
             return true; // Jogador pertence ao time "NOS" e "ELES" está chamando
         }
-    
+
         return false;
     };
-    
-    
+
+
 
     const canShowEncobrir = (): boolean => {
         if (!gameDetails) return false;
@@ -629,7 +631,7 @@ const Game: React.FC = () => {
                             {chairPositions.bottom === chair_a || chairPositions.bottom === chair_b ? 'NÓS' : 'ELES'}
                         </div>
                         <div>
-                            {chairPositions.bottom || 'A'}
+                            {chairPositions.bottom || chair_a}
 
                         </div>
                     </div>
@@ -646,7 +648,7 @@ const Game: React.FC = () => {
                             {chairPositions.left === chair_a || chairPositions.left === chair_b ? 'NÓS' : 'ELES'}
                         </div>
                         <div>
-                            {chairPositions.left || 'C'}
+                            {chairPositions.left || chair_c}
                         </div>
                     </div>
                 </div>
@@ -662,7 +664,7 @@ const Game: React.FC = () => {
                             {chairPositions.top === chair_a || chairPositions.top === chair_b ? 'NÓS' : 'ELES'}
                         </div>
                         <div>
-                            {chairPositions.top || 'B'}
+                            {chairPositions.top || chair_b}
                         </div>
                     </div>
                 </div>
@@ -678,64 +680,65 @@ const Game: React.FC = () => {
                             {chairPositions.right === chair_a || chairPositions.right === chair_b ? 'NÓS' : 'ELES'}
                         </div>
                         <div>
-                            {chairPositions.right || 'D'}
+                            {chairPositions.right || chair_d}
                         </div>
                     </div>
                 </div>
             </div>
             {/* Painel do jogador com cartas */}
-            <div className="player-panel">
-                <div className="card-container">
-                    {playerCards.map((card, index) => (
-                        <div
-                            key={index}
-                            className={`card ${!isPlayerTurn || gameDetails?.step.table_cards.length === 4 ? 'disabled' : ''}`}
-                            onClick={() => isPlayerTurn && gameDetails?.step.table_cards.length < 4 && playTheCard(card, isEncobrir)}
-                            style={{ cursor: (isPlayerTurn && gameDetails?.step.table_cards.length < 4) ? 'pointer' : 'default' }}
-                        >
-                            {formatCard(card)}
-                            {isEncobrir && <img src="/rails.png" alt="Encobrir" className="card-overlay" />}
-                        </div>
-                    ))}
-                </div>
+            {isPlayer && (
+                <div className="player-panel">
+                    <div className="card-container">
+                        {playerCards.map((card, index) => (
+                            <div
+                                key={index}
+                                className={`card ${!isPlayerTurn || gameDetails?.step.table_cards.length === 4 ? 'disabled' : ''}`}
+                                onClick={() => isPlayerTurn && gameDetails?.step.table_cards.length < 4 && playTheCard(card, isEncobrir)}
+                                style={{ cursor: (isPlayerTurn && gameDetails?.step.table_cards.length < 4) ? 'pointer' : 'default' }}
+                            >
+                                {formatCard(card)}
+                                {isEncobrir && <img src="/rails.png" alt="Encobrir" className="card-overlay" />}
+                            </div>
+                        ))}
+                    </div>
 
-                {/* Botões embaixo das cartas */}
-                <div className="action-buttons">
-                    {/* Botão para recolher cartas */}
-                    {(gameDetails?.step.table_cards.length === 4 || gameDetails?.step.win) && gameDetails?.owner?.name === name ? (
-                        <button className="action-button" onClick={collectCards}>
-                            Recolher Cartas
-                        </button>
-                    ) : (
-                        <>
-                            {/* Botão "Trucar" disponível apenas para o jogador da vez */}
-                            {(canTrucar() || isOpponentTurnToRespond()) && getTrucarButtonText() && (
-                                <button className="action-button" onClick={handleTrucar}>
-                                    {getTrucarButtonText()}
-                                </button>
-                            )}
-                            {canShowEncobrir() && (
-                                <button className="action-button" onClick={toggleEncobrir}>
-                                    {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
-                                </button>
-                            )}
-                            {/* Botões disponíveis para o time adversário responder ao truco */}
-                            {isOpponentTurnToRespond() && (
-                                <>
-                                    <button className="action-button" onClick={() => handleTrucoRespose(false)}>
-                                        Correr
+                    {/* Botões embaixo das cartas */}
+                    <div className="action-buttons">
+                        {/* Botão para recolher cartas */}
+                        {(gameDetails?.step.table_cards.length === 4 || gameDetails?.step.win) && gameDetails?.owner?.name === name ? (
+                            <button className="action-button" onClick={collectCards}>
+                                Recolher Cartas
+                            </button>
+                        ) : (
+                            <>
+                                {/* Botão "Trucar" disponível apenas para o jogador da vez */}
+                                {(canTrucar() || isOpponentTurnToRespond()) && getTrucarButtonText() && (
+                                    <button className="action-button" onClick={handleTrucar}>
+                                        {getTrucarButtonText()}
                                     </button>
-                                    <button className="action-button" onClick={() => handleTrucoRespose(true)}>
-                                        Aceitar
+                                )}
+                                {canShowEncobrir() && (
+                                    <button className="action-button" onClick={toggleEncobrir}>
+                                        {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
                                     </button>
+                                )}
+                                {/* Botões disponíveis para o time adversário responder ao truco */}
+                                {isOpponentTurnToRespond() && (
+                                    <>
+                                        <button className="action-button" onClick={() => handleTrucoRespose(false)}>
+                                            Correr
+                                        </button>
+                                        <button className="action-button" onClick={() => handleTrucoRespose(true)}>
+                                            Aceitar
+                                        </button>
 
-                                </>
-                            )}
-                        </>
-                    )}
-                </div>
+                                    </>
+                                )}
+                            </>
+                        )}
+                    </div>
 
-            </div>
+                </div>)}
             {showWinnerPopup && (
                 <div className="popup-game">
                     <p>

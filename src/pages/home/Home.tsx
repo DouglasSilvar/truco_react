@@ -14,6 +14,7 @@ interface Room {
     name: string;
   };
   protected: boolean;
+  game: string | null;
 }
 
 const Home: React.FC = () => {
@@ -30,6 +31,8 @@ const Home: React.FC = () => {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [incorrectPasswordPopup, setIncorrectPasswordPopup] = useState<boolean>(false);
   const [showRoomNameWarning, setShowRoomNameWarning] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const updatePlayerUuid = (uuid: string) => {
     setPlayerUuid(uuid);
@@ -38,8 +41,9 @@ const Home: React.FC = () => {
   useEffect(() => {
     const getRooms = async () => {
       try {
-        const data = await fetchRooms();
+        const data = await fetchRooms(currentPage);
         setRooms(data.rooms);
+        setTotalPages(data.meta.total_pages);
       } catch (error) {
         setError('Erro ao carregar as salas.');
       } finally {
@@ -48,10 +52,8 @@ const Home: React.FC = () => {
     };
 
     getRooms();
+  }, [currentPage]);
 
-    const storedPlayerUuid = localStorage.getItem('user_uuid');
-    setPlayerUuid(storedPlayerUuid);
-  }, []);
 
   useEffect(() => {
     const storedPlayerUuid = localStorage.getItem('user_uuid');
@@ -156,19 +158,61 @@ const Home: React.FC = () => {
           Criar Sala
         </button>
         <div className="rooms-container">
-          {rooms.map((room) => (
-            <div key={room.uuid} className="room-card">
-              <h3>{room.name} {room.protected && <FontAwesomeIcon icon={faLock} className="lock-icon" />}</h3>
-              <p><strong>Dono:</strong> {room.owner.name}</p>
-              <p><strong>Jogadores:</strong> {room.players_count}</p>
-              <button
-                className="enter-room-button"
-                onClick={() => handleJoinRoom(room)}
-              >
-                Entrar
-              </button>
-            </div>
-          ))}
+          {rooms.map((room) => {
+            const isGameActive = !!room.game;
+            const isRoomFull = room.players_count === 4 && !room.game;
+            return (
+              <div key={room.uuid} className="room-card">
+                <h3>
+                  {room.name} {room.protected && <FontAwesomeIcon icon={faLock} className="lock-icon" />}
+                </h3>
+                <p>
+                  <strong>Dono:</strong> {room.owner.name}
+                </p>
+                <p>
+                  <strong>Jogadores:</strong> {room.players_count}
+                </p>
+                {isGameActive ? (
+                  <button
+                    className="enter-room-button"
+                    onClick={() => navigate(`/game/${room.game}`)}
+                  >
+                    Ver partida
+                  </button>
+                ) : isRoomFull ? (
+                  <button className="enter-room-button" disabled>
+                    Sala cheia
+                  </button>
+                ) : (
+                  <button
+                    className="enter-room-button"
+                    onClick={() => handleJoinRoom(room)}
+                  >
+                    Entrar
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="pagination">
+          <button
+            className="pagination-button"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+          >
+            Anterior
+          </button>
+          <span className="pagination-info">
+            Página {currentPage} de {totalPages}
+          </span>
+          <button
+            className="pagination-button"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+          >
+            Próxima
+          </button>
         </div>
       </div>
 

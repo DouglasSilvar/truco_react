@@ -12,8 +12,8 @@ const getUserHeaders = () => {
   };
 };
 
-export const fetchRooms = async () => {
-  const response = await fetch(`${BASE_URL}/rooms`, {
+export const fetchRooms = async (page: number = 1) => {
+  const response = await fetch(`${BASE_URL}/rooms?page=${page}`, {
     method: 'GET',
     headers: getUserHeaders(),
   });
@@ -24,6 +24,7 @@ export const fetchRooms = async () => {
 
   return response.json();
 };
+
 
 export const fetchRoomDetails = async (roomUuid: string) => {
   const response = await fetch(`${BASE_URL}/rooms/${roomUuid}`, {

@@ -185,3 +185,39 @@
   font-size: 0.9rem;
   color: #ff5c5c; /* Ajuste a cor conforme o tema */
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  padding: 10px 15px;
+  background-color: #607d8b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.pagination-button:disabled {
+  background-color: #455a64;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: #a9b7c6;
+  font-size: 16px;
+}
+
+.enter-room-button:disabled {
+  background-color: #455a64;
+  color: #a9b7c6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
