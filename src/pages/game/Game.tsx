@@ -367,60 +367,116 @@ const Game: React.FC = () => {
 
     // Verifica se o jogador atual pode trucar
     const canTrucar = (): boolean => {
-        const currentPlayer = localStorage.getItem('user_name') || '';
-
         if (!gameDetails) return false;
-
-        // Verifica o time do jogador atual
+    
+        const currentPlayer = localStorage.getItem('user_name') || '';
         const { chair_a, chair_b, chair_c, chair_d } = gameDetails.chairs;
-        const playerTeam = [chair_a, chair_b].includes(currentPlayer) ? 'NOS' : 'ELES';
-
-        // Extrai detalhes de is_accept_second
-        const extractDetails = (value: string | null) => {
-            if (!value) return null;
-            const [player, accept, team] = value.split('---');
-            return { player, accept, team };
+    
+        // Determina o time do jogador atual
+        const currentPlayerTeam = [chair_a, chair_b].includes(currentPlayer) ? 'NOS' : 'ELES';
+    
+        // Função auxiliar para encontrar a última chamada válida
+        const getLastCall = (): { player: string; team: string; value: number } | null => {
+            const calls = [
+                { call: gameDetails.step.player_call_12, value: 12 },
+                { call: gameDetails.step.player_call_9, value: 9 },
+                { call: gameDetails.step.player_call_6, value: 6 },
+                { call: gameDetails.step.player_call_3, value: 3 },
+            ];
+    
+            for (const { call, value } of calls) {
+                if (call) {
+                    const stringCall = String(call); // Converte o valor para string
+                    const [player, team] = stringCall.split('---');
+                    return { player, team, value };
+                }
+            }
+            return null; // Nenhuma chamada foi feita
         };
-
-        const isAcceptSecondDetails = extractDetails(gameDetails.step.is_accept_second);
-
-        // Verifica se is_accept_second existe e se o time do jogador atual é o mesmo do time que aceitou
-        const isSameTeamAsAcceptSecond =
-            isAcceptSecondDetails?.team === playerTeam;
-
-        // Regra adicional: jogador atual não pode chamar "Seis" se seu time foi o último a aceitar
-        const cannotCallSeis = isAcceptSecondDetails && isSameTeamAsAcceptSecond;
-        console.log(cannotCallSeis);
-
-        return gameDetails?.step.player_time === currentPlayer &&
-            gameDetails?.step.table_cards.length < 4;
+    
+        const lastCall = getLastCall();
+    
+        // Regra: O time que fez a última chamada não pode fazer a próxima
+        if (lastCall && lastCall.team === currentPlayerTeam) {
+            return false;
+        }
+    
+        // Regra: O jogador atual deve ser o próximo a jogar
+        if (gameDetails.step.player_time !== currentPlayer) {
+            return false;
+        }
+    
+        // Regra: O botão não deve aparecer quando a última chamada foi Doze
+        if (lastCall?.value === 12) {
+            return false;
+        }
+    
+        // Regra adicional: O botão não deve aparecer se já houver 4 cartas na mesa
+        if (gameDetails.step.table_cards.length === 4) {
+            return false;
+        }
+    
+        return true; // Caso contrário, o jogador pode trucar
     };
-
+    
+    
     const isTrucoCalled = (playerName: string | undefined): string | null => {
         if (!gameDetails) return null;
     
-        // Função auxiliar para separar o jogador
-        const extractDetails = (value: number | string | null | undefined): string | null => {
+        // Função auxiliar para extrair detalhes da chamada
+        const extractDetails = (value: number | string | null | undefined): { player: string; team: string } | null => {
             if (!value) return null;
-            const stringValue = String(value); // Converte para string, caso seja um número
-            const [player] = stringValue.split('---'); // Divide no separador '---' e pega o primeiro elemento
-            return player;
+            const stringValue = String(value); // Converte para string
+            const [player, team] = stringValue.split('---'); // Extrai jogador e time
+            return { player, team };
         };
     
-        // Redefine valores de hierarquias inferiores para null
+        // Extrai detalhes das chamadas
         const playerCall12 = gameDetails.step.player_call_12 ? extractDetails(gameDetails.step.player_call_12) : null;
-        const playerCall9 = playerCall12 ? null : gameDetails.step.player_call_9 ? extractDetails(gameDetails.step.player_call_9) : null;
-        const playerCall6 = playerCall9 ? null : gameDetails.step.player_call_6 ? extractDetails(gameDetails.step.player_call_6) : null;
-        const playerCall3 = playerCall6 ? null : gameDetails.step.player_call_3 ? extractDetails(gameDetails.step.player_call_3) : null;
+        const playerCall9 = gameDetails.step.player_call_9 ? extractDetails(gameDetails.step.player_call_9) : null;
+        const playerCall6 = gameDetails.step.player_call_6 ? extractDetails(gameDetails.step.player_call_6) : null;
+        const playerCall3 = gameDetails.step.player_call_3 ? extractDetails(gameDetails.step.player_call_3) : null;
     
-        // Verifica qual chamada corresponde ao jogador e retorna a mensagem apropriada
-        if (playerCall12 === playerName) return "Doze !!!";
-        if (playerCall9 === playerName) return "Nove !!!";
-        if (playerCall6 === playerName) return "Seis !!!";
-        if (playerCall3 === playerName) return "Truco !!!";
+        // Determina a maior chamada ativa
+        const highestCall = playerCall12
+            ? { value: 12, team: playerCall12.team }
+            : playerCall9
+            ? { value: 9, team: playerCall9.team }
+            : playerCall6
+            ? { value: 6, team: playerCall6.team }
+            : playerCall3
+            ? { value: 3, team: playerCall3.team }
+            : null;
     
-        return null; // Retorna null se nenhuma condição for atendida
+        if (!highestCall) return null; // Se nenhuma chamada foi feita
+    
+        // Verifica se o jogador pertence ao time da maior chamada
+        const { chair_a, chair_b, chair_c, chair_d } = gameDetails.chairs;
+        const teamUs = [chair_a, chair_b]; // Time "NOS"
+        const teamThem = [chair_c, chair_d]; // Time "ELES"
+    
+        const playerTeam = teamUs.includes(playerName || '') ? 'NOS' : 'ELES';
+    
+        // Exibe a maior chamada apenas para o time correspondente
+        if (playerTeam === highestCall.team) {
+            switch (highestCall.value) {
+                case 12:
+                    return "Doze !!!";
+                case 9:
+                    return "Nove !!!";
+                case 6:
+                    return "Seis !!!";
+                case 3:
+                    return "Truco !!!";
+                default:
+                    return null;
+            }
+        }
+    
+        return null; // Retorna null se o jogador não pertence ao time da maior chamada
     };
+    
+    
     
 
     const isAcceptCalled = (playerName: string | undefined): { hasResponse: boolean, emoji: string, colorClass: string } => {
