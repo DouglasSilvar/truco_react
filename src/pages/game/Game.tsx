@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchRoomDetails, playMove } from '../../services/gameService';
+import { fetchRoomDetails, playMove, collectCards, trucarAccept } from '../../services/gameService';
 import './Game.css';
 
 interface StepDetails {
@@ -213,7 +213,7 @@ const Game: React.FC = () => {
         if (!gameDetails) return;
         if (encoberta) toggleEncobrir();
         console.log('Encobrir:', isEncobrir);
-        await playMove(gameDetails.uuid, card, encoberta, null, null, null)
+        await playMove(gameDetails.uuid, card, encoberta)
             .then(response => {
                 console.log('Jogada realizada com sucesso:', response);
             })
@@ -243,7 +243,7 @@ const Game: React.FC = () => {
         }
 
         if (callValue !== null) {
-            playMove(gameDetails.uuid, null, null, null, null, callValue)
+            trucarAccept(gameDetails.uuid, null, callValue)
                 .then(response => {
                     console.log(`Trucada chamada com valor ${callValue}:`, response);
                 })
@@ -253,11 +253,11 @@ const Game: React.FC = () => {
         }
     };
 
-    const collectCards = async () => {
+    const collectTableCards = async () => {
         if (!gameDetails) return;
 
         try {
-            const response = await playMove(gameDetails.uuid, null, null, null, true, null);
+            const response = await collectCards(gameDetails.uuid);
             console.log('Cartas recolhidas com sucesso:', response);
         } catch (error) {
             console.error('Erro ao recolher as cartas:', error);
@@ -267,7 +267,7 @@ const Game: React.FC = () => {
     const handleTrucoRespose = async (accept: boolean) => {
         if (!gameDetails) return;
         try {
-            await playMove(gameDetails.uuid, null, null, accept, null, null);
+            await trucarAccept(gameDetails.uuid,  accept,  null);
             console.log(`${accept ? "Aceitar" : "Correr"} acionado com sucesso!`);
         } catch (error) {
             console.error(`Erro ao acionar o botão ${accept ? "Aceitar" : "Correr"}:`, error);
@@ -706,7 +706,7 @@ const Game: React.FC = () => {
                     <div className="action-buttons">
                         {/* Botão para recolher cartas */}
                         {(gameDetails?.step.table_cards.length === 4 || gameDetails?.step.win) && gameDetails?.owner?.name === name ? (
-                            <button className="action-button" onClick={collectCards}>
+                            <button className="action-button" onClick={collectTableCards}>
                                 Recolher Cartas
                             </button>
                         ) : (

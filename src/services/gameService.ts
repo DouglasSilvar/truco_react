@@ -35,19 +35,51 @@ export const fetchRoomDetails = async (gameUuid: string) => {
 export const playMove = async (
   gameUuid: string,
   card: string | null = null,
-  coverup: boolean | null = null,
-  accept: boolean | null = null,
-  collect: boolean | null = null,
-  call: number | null = null
+  coverup: boolean | null = null
 ) => {
   const response = await fetch(`${BASE_URL}/games/${gameUuid}/play_move`, {
     method: 'POST',
     headers: getUserHeaders(),
     body: JSON.stringify({
       card: card,
-      coverup: coverup,
+      coverup: coverup
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao realizar o movimento');
+  }
+
+  return response.json();
+};
+
+export const collectCards = async (
+  gameUuid: string,
+) => {
+  const response = await fetch(`${BASE_URL}/games/${gameUuid}/collect`, {
+    method: 'POST',
+    headers: getUserHeaders(),
+    body: JSON.stringify({
+      collect: true
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao realizar o movimento');
+  }
+
+  return response.json();
+};
+export const trucarAccept = async (
+  gameUuid: string,
+  accept: boolean | null = null,
+  call: number | null = null
+) => {
+  const response = await fetch(`${BASE_URL}/games/${gameUuid}/call`, {
+    method: 'POST',
+    headers: getUserHeaders(),
+    body: JSON.stringify({
       accept: accept,
-      collect: collect,
       call: call
     })
   });
