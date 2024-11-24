@@ -29,8 +29,7 @@ body {
 
 .chair {
     position: absolute;
-    width: 120px;
-    height: 70px;
+    width: 110px;
     background-color: var(--background);
     border: 2px solid var(--accent);
     border-radius: 10px;
@@ -39,7 +38,10 @@ body {
     justify-content: center;
     color: var(--foreground);
     font-size: 1rem;
+    padding: 10px; /* Adiciona espaço interno */
+    box-sizing: border-box; /* Garante que padding não afete o tamanho total */
 }
+
 
 /* Posições dinâmicas */
 .chair.bottom {
@@ -52,7 +54,7 @@ body {
 .chair.left {
 
     top: 50%;
-    left: -50px;
+    left: -70px;
     transform: translateY(-50%);
     border-color: var(--accent-dark); /* Cor um pouco mais clara */
 }
@@ -66,7 +68,7 @@ body {
 
 .chair.right {
     top: 50%;
-    right: -50px;
+    right: -70px;
     transform: translateY(-50%);
     border-color: var(--accent-dark); /* Cor um pouco mais escura */
 }
@@ -92,8 +94,8 @@ body {
 
 
 .card {
-    width: 80px;
-    height: 120px;
+    width: 75px;
+    height: 110px;
     background-color: var(--background);
     border: 2px solid var(--accent);
     border-radius: 10px;
@@ -288,22 +290,22 @@ body {
 
 .table-card.top-left {
     top: -25px;
-    left: 20px;
+    left: 30px;
 }
 
 .table-card.top-right {
-    top: 25px;
-    right: 20px;
+    top: 20px;
+    right: 10px;
 }
 
 .table-card.bottom-left {
     bottom: 20px;
-    left: 20px;
+    left: 10px;
 }
 
 .table-card.bottom-right {
     bottom: -20px;
-    right: 20px;
+    right: 35px;
 }
 
 .popup-game {

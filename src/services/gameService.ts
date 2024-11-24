@@ -21,6 +21,10 @@ export const fetchRoomDetails = async (gameUuid: string) => {
     throw new Error('RoomNotFound');
   }
 
+  if (response.status === 401) {
+    window.location.href = '/';
+  }
+
   if (!response.ok) {
     throw new Error('Erro ao buscar os detalhes da sala');
   }

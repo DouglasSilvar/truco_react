@@ -202,7 +202,7 @@ const Game: React.FC = () => {
         if (name === chair_d) {
             return { bottom: chair_d, left: chair_a, top: chair_c, right: chair_b };
         }
-        return { bottom: '', left: '', top: '', right: '' }; // Caso o usuário não esteja em nenhuma das cadeiras
+        return { bottom: chair_a, left: chair_c, top: chair_b, right: chair_d }; 
     };
 
     const chairPositions = getChairPositions();
