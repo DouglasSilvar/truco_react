@@ -63,15 +63,16 @@
 }
 
 .chair-box {
-  background-color: #3c3f41;
+  background-color: #3c3f41; /* Cor padrão */
   border: 1px solid #a9b7c6;
   border-radius: 8px;
   padding: 10px;
   color: #a9b7c6;
-  height: 40px; /* Altura fixa para manter o tamanho */
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s ease;
 }
 
 /* Cadeiras do Time A/B */
@@ -154,3 +155,60 @@
   background-color: #388e3c; /* Cor verde mais escura ao passar o mouse */
 }
 
+/* Container do time */
+.team-container {
+  border: 1px solid #a9b7c6; /* Borda do retângulo */
+  border-radius: 8px;
+  padding: 10px;
+
+  text-align: center;
+  background-color: #3c3f41; /* Mesma cor do fundo do card */
+  color: #a9b7c6;
+}
+
+/* Cadeiras organizadas verticalmente */
+.team-chairs-vertical {
+  display: flex;
+  flex-direction: column; /* Layout vertical */
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Cadeiras do Time A/B */
+.chair-box.team-ab {
+  background-color: #45494c; /* Cor ligeiramente mais clara */
+  border-color: #a9b7c6;
+}
+
+/* Cadeiras do Time C/D */
+.chair-box.team-cd {
+  background-color: #3a3d40; /* Cor sutilmente mais escura */
+  border-color: #87939d;
+}
+
+/* Cadeiras clicáveis */
+.chair-box.clickable {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.chair-box.clickable:hover {
+  background-color: #607d8b; /* Cor de destaque ao passar o mouse */
+}
+
+.team-name.us {
+  color: var(--accent); /* Cor para o time "NOS" */
+}
+
+.team-name.them {
+  color: var(--accent-dark); /* Cor para o time "ELES" */
+}
+
+/* Efeito hover para cadeiras vazias */
+.chair-box.clickable.team-ab:hover {
+  background-color: var(--accent); /* Fundo azul claro ao passar o mouse no time NOS */
+}
+
+.chair-box.clickable.team-cd:hover {
+  background-color: var(--accent-dark); /* Fundo azul escuro ao passar o mouse no time ELES */
+}

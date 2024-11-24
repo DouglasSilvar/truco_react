@@ -244,37 +244,81 @@ const Room: React.FC = () => {
             <p><strong>Jogadores na sala:</strong> {roomDetails.players_count}</p>
   
             <div className="chairs-container-room">
-              {Object.entries(roomDetails.chairs).map(([chairKey, playerName]) => {
-                const teamClass = chairKey === 'chair_a' || chairKey === 'chair_b' ? 'team-ab' : 'team-cd';
-                const isPlayerReady = roomDetails.ready.some((readyPlayer) => readyPlayer.player === playerName);
-  
-                return (
-                  <div
-                    key={chairKey}
-                    className={`chair-box ${isChairAvailable(playerName) ? `clickable ${teamClass}` : teamClass}`}
-                    onClick={() => isChairAvailable(playerName) && handleChairClick(chairKey)}
+  {/* Time NOS */}
+  <div className="team-container">
+    <h3 className="team-name us">Time NOS</h3>
+    <div className="team-chairs-vertical">
+      {(['chair_a', 'chair_b'] as Array<keyof RoomDetails['chairs']>).map((chairKey) => {
+        const playerName = roomDetails.chairs[chairKey];
+        const isPlayerReady = roomDetails.ready.some((readyPlayer) => readyPlayer.player === playerName);
+        const teamClass = 'team-ab';
+
+        return (
+          <div
+            key={chairKey}
+            className={`chair-box ${isChairAvailable(playerName) ? `clickable ${teamClass}` : teamClass}`}
+            onClick={() => isChairAvailable(playerName) && handleChairClick(chairKey)}
+          >
+            {playerName && (
+              <div className="chair-content-room">
+                <span>{playerName}</span>
+                {isPlayerReady && (
+                  <FontAwesomeIcon icon={faCheck} className="ready-check-icon" />
+                )}
+                {isOwner && playerName !== roomDetails.owner.name && (
+                  <button
+                    className="kick-button"
+                    onClick={() => handleKickPlayer(playerName)}
                   >
-                    {playerName && (
-                      <div className="chair-content-room">
-                        <span>{playerName}</span>
-                        {isPlayerReady && (
-                          <FontAwesomeIcon icon={faCheck} className="ready-check-icon" />
-                        )}
-                        {isOwner && playerName !== roomDetails.owner.name && (
-                          <button
-                            className="kick-button"
-                            onClick={() => handleKickPlayer(playerName)}
-                          >
-                            X
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-  
+                    X
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  </div>
+
+  {/* Time ELES */}
+  <div className="team-container">
+    <h3 className="team-name them">Time ELES</h3>
+    <div className="team-chairs-vertical">
+      {(['chair_c', 'chair_d'] as Array<keyof RoomDetails['chairs']>).map((chairKey) => {
+        const playerName = roomDetails.chairs[chairKey];
+        const isPlayerReady = roomDetails.ready.some((readyPlayer) => readyPlayer.player === playerName);
+        const teamClass = 'team-cd';
+
+        return (
+          <div
+            key={chairKey}
+            className={`chair-box ${isChairAvailable(playerName) ? `clickable ${teamClass}` : teamClass}`}
+            onClick={() => isChairAvailable(playerName) && handleChairClick(chairKey)}
+          >
+            {playerName && (
+              <div className="chair-content-room">
+                <span>{playerName}</span>
+                {isPlayerReady && (
+                  <FontAwesomeIcon icon={faCheck} className="ready-check-icon" />
+                )}
+                {isOwner && playerName !== roomDetails.owner.name && (
+                  <button
+                    className="kick-button"
+                    onClick={() => handleKickPlayer(playerName)}
+                  >
+                    X
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</div>
+
             {playerName && (
               <>
                 {isOwner && allPlayersReady && (
