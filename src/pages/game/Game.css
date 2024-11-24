@@ -352,7 +352,6 @@ body {
     font-size: 1.2rem;
     font-weight: bold;
     color: var(--red-suit); /* Cor vermelha para destacar */
-    margin-top: 5px;
 }
 
 .accept-green {
