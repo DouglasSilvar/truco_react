@@ -1,40 +1,34 @@
-# Use the Node alpine official image
-# https://hub.docker.com/_/node
+# Etapa de build
 FROM node:lts-alpine AS build
 
-# Set config
+# Desativar notificações do NPM para otimizar o processo
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 ENV NPM_CONFIG_FUND=false
 
-# Create and change to the app directory.
+# Configurar o diretório de trabalho
 WORKDIR /app
 
-# Copy the files to the container image
+# Copiar arquivos do package.json e instalar dependências
 COPY package*.json ./
-
-# Install packages
 RUN npm ci
 
-# Copy local code to the container image.
+# Copiar o restante dos arquivos da aplicação
 COPY . ./
 
-# Build the app.
-RUN npm run build
+# Gerar o build da aplicação e listar o conteúdo para validação
+RUN npm run build && ls -la /app/build
 
-# Use the Caddy image
-FROM caddy
+# Etapa de produção
+FROM caddy:latest
 
-# Create and change to the app directory.
+# Configurar o diretório de trabalho no contêiner
 WORKDIR /app
 
-# Copy Caddyfile to the container image.
-COPY Caddyfile ./
+# Copiar o Caddyfile para o contêiner
+COPY Caddyfile ./Caddyfile
 
-# Copy local code to the container image.
-RUN caddy fmt Caddyfile --overwrite
+# Copiar os arquivos do build gerado na etapa anterior
+COPY --from=build /app/build ./dist
 
-# Copy files to the container image.
-COPY --from=build /app/dist ./dist
-
-# Use Caddy to run/serve the app
+# Comando para executar o Caddy
 CMD ["caddy", "run", "--config", "Caddyfile", "--adapter", "caddyfile"]
