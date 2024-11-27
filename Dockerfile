@@ -1,27 +1,40 @@
-# Use uma imagem oficial do Node.js como base
-FROM node:16-alpine
+# Use the Node alpine official image
+# https://hub.docker.com/_/node
+FROM node:lts-alpine AS build
 
-# Define o diretório de trabalho dentro do container
+# Set config
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
+ENV NPM_CONFIG_FUND=false
+
+# Create and change to the app directory.
 WORKDIR /app
 
-# Copia os arquivos necessários para o container
+# Copy the files to the container image
 COPY package*.json ./
 
-# Instala as dependências do projeto
-RUN npm install
+# Install packages
+RUN npm ci
 
-# Copia todos os arquivos do projeto para o container
-COPY . .
+# Copy local code to the container image.
+COPY . ./
 
-# Compila o projeto para produção
+# Build the app.
 RUN npm run build
 
-# Usa uma imagem Nginx para servir o build
-FROM nginx:alpine
-COPY --from=0 /app/build /usr/share/nginx/html
+# Use the Caddy image
+FROM caddy
 
-# Exponha a porta padrão do Nginx
-EXPOSE 80
+# Create and change to the app directory.
+WORKDIR /app
 
-# Comando para iniciar o servidor
-CMD ["nginx", "-g", "daemon off;"]
+# Copy Caddyfile to the container image.
+COPY Caddyfile ./
+
+# Copy local code to the container image.
+RUN caddy fmt Caddyfile --overwrite
+
+# Copy files to the container image.
+COPY --from=build /app/dist ./dist
+
+# Use Caddy to run/serve the app
+CMD ["caddy", "run", "--config", "Caddyfile", "--adapter", "caddyfile"]
