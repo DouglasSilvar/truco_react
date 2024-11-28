@@ -6,6 +6,10 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 80%; /* Reduz todas as fontes em 20% */
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -13,4 +17,5 @@ body {
   background-color: #3c3f41; /* Fundo principal do IntelliJ */
   color: #a9b7c6;
   height: 100vh;
+  font-size: 1rem; /* Tamanho base de fonte */
 }

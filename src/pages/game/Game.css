@@ -45,7 +45,7 @@ body {
 
 /* Posições dinâmicas */
 .chair.bottom {
-    bottom: -50px;
+    bottom: 5px;
     left: 50%;
     transform: translateX(-50%);
     border-color: var(--accent); /* Cor padrão da borda */
@@ -54,13 +54,13 @@ body {
 .chair.left {
 
     top: 50%;
-    left: -50px;
+    left: 5px;
     transform: translateY(-50%);
     border-color: var(--accent-dark); /* Cor um pouco mais clara */
 }
 
 .chair.top {
-    top: -50px;
+    top: 5px;
     left: 50%;
     transform: translateX(-50%);
     border-color: var(--accent); /* Cor padrão da borda */
@@ -68,7 +68,7 @@ body {
 
 .chair.right {
     top: 50%;
-    right: -50px;
+    right: 5px;
     transform: translateY(-50%);
     border-color: var(--accent-dark); /* Cor um pouco mais escura */
 }
@@ -94,8 +94,8 @@ body {
 
 
 .card {
-    width: 75px;
-    height: 110px;
+    width: 60px;
+    height: 80px;
     background-color: var(--background);
     border: 2px solid var(--accent);
     border-radius: 10px;
@@ -289,23 +289,23 @@ body {
 }
 
 .table-card.top-left {
-    top: -25px;
-    left: 30px;
+    top: 5px;
+    left: 45px;
 }
 
 .table-card.top-right {
-    top: 20px;
-    right: 10px;
+    top: 50px;
+    right: 5px;
 }
 
 .table-card.bottom-left {
-    bottom: 20px;
-    left: 10px;
+    bottom: 50px;
+    left: 5px;
 }
 
 .table-card.bottom-right {
-    bottom: -20px;
-    right: 35px;
+    bottom: 5px;
+    right: 45px;
 }
 
 .popup-game {
