@@ -29,13 +29,10 @@ body {
 
 .chair {
     position: absolute;
-    width: 90px;
     background-color: var(--background);
     border: 2px solid var(--accent);
     border-radius: 10px;
     display: flex;
-    align-items: center;
-    justify-content: center;
     color: var(--foreground);
     font-size: 1rem;
     padding: 10px; /* Adiciona espaço interno */
@@ -109,6 +106,14 @@ body {
     flex-direction: column;
     position: relative; /* Adicione para garantir que a imagem preencha todo o espaço */
     overflow: hidden; /* Para prevenir que a imagem saia do contorno da carta */
+}
+
+.card.nos {
+    border: 2px solid var(--accent); /* Mantém a borda padrão */
+}
+
+.card.eles {
+    border: 2px solid var(--accent-dark); /* Borda para o time ELES */
 }
 
 .card.disabled {
@@ -293,12 +298,12 @@ body {
 }
 
 .table-card.top-right {
-    top: 50px;
+    top: 40px;
     right: 5px;
 }
 
 .table-card.bottom-left {
-    bottom: 50px;
+    bottom: 40px;
     left: 5px;
 }
 
@@ -361,4 +366,23 @@ body {
 .accept-red {
     font-weight: bold;
     color: var(--red-suit); /* Cor vermelha para naipes de Ouro e Copas */
+}
+
+.current-player {
+    font-size: 1rem;
+    margin-top: 10px;
+    color: var(--foreground);
+}
+
+.current-player .player-name {
+    font-weight: bold;
+    color: var(--foreground); /* Padrão, ajuste conforme necessário */
+}
+
+.current-player .team-name.us {
+    color: var(--accent); /* Cor do time NÓS */
+}
+
+.current-player .team-name.them {
+    color: var(--accent-dark); /* Cor do time ELES */
 }

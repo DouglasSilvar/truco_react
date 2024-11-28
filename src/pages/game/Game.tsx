@@ -180,14 +180,14 @@ const Game: React.FC = () => {
 
     // Determina quais cartas exibir no painel do jogador
     const playerCards = Array.isArray(gameDetails?.step.cards_chair_a) && gameDetails?.step.cards_chair_a.length
-    ? gameDetails.step.cards_chair_a
-    : Array.isArray(gameDetails?.step.cards_chair_b) && gameDetails?.step.cards_chair_b.length
-    ? gameDetails.step.cards_chair_b
-    : Array.isArray(gameDetails?.step.cards_chair_c) && gameDetails?.step.cards_chair_c.length
-    ? gameDetails.step.cards_chair_c
-    : Array.isArray(gameDetails?.step.cards_chair_d) && gameDetails?.step.cards_chair_d.length
-    ? gameDetails.step.cards_chair_d
-    : [];
+        ? gameDetails.step.cards_chair_a
+        : Array.isArray(gameDetails?.step.cards_chair_b) && gameDetails?.step.cards_chair_b.length
+            ? gameDetails.step.cards_chair_b
+            : Array.isArray(gameDetails?.step.cards_chair_c) && gameDetails?.step.cards_chair_c.length
+                ? gameDetails.step.cards_chair_c
+                : Array.isArray(gameDetails?.step.cards_chair_d) && gameDetails?.step.cards_chair_d.length
+                    ? gameDetails.step.cards_chair_d
+                    : [];
     const { chair_a, chair_b, chair_c, chair_d } = gameDetails?.chairs || {};
     const getChairPositions = () => {
         if (name === chair_a) {
@@ -202,7 +202,7 @@ const Game: React.FC = () => {
         if (name === chair_d) {
             return { bottom: chair_d, left: chair_a, top: chair_c, right: chair_b };
         }
-        return { bottom: chair_a, left: chair_c, top: chair_b, right: chair_d }; 
+        return { bottom: chair_a, left: chair_c, top: chair_b, right: chair_d };
     };
 
     const chairPositions = getChairPositions();
@@ -267,7 +267,7 @@ const Game: React.FC = () => {
     const handleTrucoRespose = async (accept: boolean) => {
         if (!gameDetails) return;
         try {
-            await trucarAccept(gameDetails.uuid,  accept,  null);
+            await trucarAccept(gameDetails.uuid, accept, null);
             console.log(`${accept ? "Aceitar" : "Correr"} acionado com sucesso!`);
         } catch (error) {
             console.error(`Erro ao acionar o botão ${accept ? "Aceitar" : "Correr"}:`, error);
@@ -334,12 +334,32 @@ const Game: React.FC = () => {
 
         const cardPositions = positionOrder[currentPlayerPosition || 'bottom'];
 
+        const getCardTeam = (cardIndex: number): string => {
+            const origins = [
+                gameDetails.step.first_card_origin,
+                gameDetails.step.second_card_origin,
+                gameDetails.step.third_card_origin,
+                gameDetails.step.fourth_card_origin
+            ];
+
+            const origin = origins[cardIndex];
+            if (!origin) return ''; // Se o índice não existir, retorna vazio
+
+            const team = origin.split('---')[2]; // Extrai o time (NOS ou ELES)
+            return team;
+        };
+
         // Renderiza as cartas na mesa seguindo a ordem definida
-        return gameDetails.step.table_cards.map((card, index) => (
-            <div key={index} className={`table-card ${cardPositions[index]}`}>
-                {formatCard(card)}
-            </div>
-        ));
+        return gameDetails.step.table_cards.map((card, index) => {
+            const team = getCardTeam(index); // Identifica o time da carta
+            const cardClass = team === 'ELES' ? 'card eles' : 'card nos'; // Adiciona uma classe para o time
+
+            return (
+                <div key={index} className={`table-card ${cardPositions[index]} ${cardClass}`}>
+                    {formatCard(card)}
+                </div>
+            );
+        });
     };
 
     // Função para determinar o texto do botão "Trucar"
@@ -347,16 +367,16 @@ const Game: React.FC = () => {
         const { player_call_3, player_call_6, player_call_9, player_call_12 } = gameDetails?.step || {};
 
         if (!player_call_3 && !player_call_6 && !player_call_9 && !player_call_12) {
-            return "TRUCO";
+            return "TRUCO !!!";
         }
         if (player_call_3 && !player_call_6 && !player_call_9 && !player_call_12) {
-            return "SEIS";
+            return "SEIS !!!";
         }
         if (player_call_3 && player_call_6 && !player_call_9 && !player_call_12) {
-            return "NOVE";
+            return "NOVE !!!";
         }
         if (player_call_3 && player_call_6 && player_call_9 && !player_call_12) {
-            return "DOZE";
+            return "DOZE !!!";
         }
         // Se todos os valores estiverem preenchidos, o botão desaparece
         if (player_call_3 && player_call_6 && player_call_9 && player_call_12) {
@@ -463,13 +483,13 @@ const Game: React.FC = () => {
         if (playerTeam === highestCall.team) {
             switch (highestCall.value) {
                 case 12:
-                    return "DOZE";
+                    return "DOZE !!!";
                 case 9:
-                    return "NOVE";
+                    return "NOVE !!!";
                 case 6:
-                    return "SEIS";
+                    return "SEIS !!!";
                 case 3:
-                    return "TRUCO";
+                    return "TRUCO !!!";
                 default:
                     return null;
             }
@@ -495,13 +515,13 @@ const Game: React.FC = () => {
         if (playerName && acceptFirstDetails && acceptFirstDetails.player === playerName) {
             return {
                 hasResponse: true,
-                emoji: acceptFirstDetails.accept === 'yes' ? 'VEM' : 'NÃO',
+                emoji: acceptFirstDetails.accept === 'yes' ? 'VEM !!!' : 'NÃO ..',
                 colorClass: acceptFirstDetails.accept === 'yes' ? 'accept-green' : 'accept-red'
             };
         } else if (playerName && acceptSecondDetails && acceptSecondDetails.player === playerName) {
             return {
                 hasResponse: true,
-                emoji: acceptSecondDetails.accept === 'yes' ? 'VEM' : 'NÃO',
+                emoji: acceptSecondDetails.accept === 'yes' ? 'VEM !!!' : 'NÃO ..',
                 colorClass: acceptSecondDetails.accept === 'yes' ? 'accept-green' : 'accept-red'
             };
         }
@@ -549,6 +569,17 @@ const Game: React.FC = () => {
 
         return false;
     };
+
+    const getChairByPlayer = (player: string | null): string | null => {
+        if (!player) return null; // Retorna null se o player for null
+        const { chair_a, chair_b, chair_c, chair_d } = gameDetails?.chairs || {};
+        if (player === chair_a) return 'chair_a';
+        if (player === chair_b) return 'chair_b';
+        if (player === chair_c) return 'chair_c';
+        if (player === chair_d) return 'chair_d';
+        return null;
+    };
+
 
 
 
@@ -604,6 +635,50 @@ const Game: React.FC = () => {
                         </span>
                     </div>
                 </div>
+                {/* Renderiza a frase com base na condição */}
+                {gameDetails?.step.table_cards.length === 4 || gameDetails?.step.win ? (
+                    <div className="owner-action">
+                        Dono da sala{' '}
+                        <span className="player-name">
+                            <strong>{gameDetails.owner.name}</strong>
+                        </span>{' '}
+                        do time{' '}
+                        <span
+                            className={`team-name ${['chair_a', 'chair_b'].includes(
+                                getChairByPlayer(gameDetails.owner.name) || ''
+                            )
+                                ? 'us'
+                                : 'them'
+                                }`}
+                        >
+                            {['chair_a', 'chair_b'].includes(getChairByPlayer(gameDetails.owner.name) || '')
+                                ? 'NÓS'
+                                : 'ELES'}
+                        </span>{' '}
+                        recolhe as cartas.
+                    </div>
+                ) : gameDetails?.step.player_time && (
+                    <div className="current-player">
+                        Vez do jogador{' '}
+                        <span className="player-name">
+                            <strong>{gameDetails.step.player_time}</strong>
+                        </span>{' '}
+                        do time{' '}
+                        <span
+                            className={`team-name ${['chair_a', 'chair_b'].includes(
+                                getChairByPlayer(gameDetails.step.player_time) || ''
+                            )
+                                ? 'us'
+                                : 'them'
+                                }`}
+                        >
+                            {['chair_a', 'chair_b'].includes(getChairByPlayer(gameDetails.step.player_time) || '')
+                                ? 'NÓS'
+                                : 'ELES'}
+                        </span>
+                        .
+                    </div>
+                )}
             </div>
             <div className="game-table">
                 <div className="vira-card">
