@@ -29,7 +29,7 @@ body {
 
 .chair {
     position: absolute;
-    width: 110px;
+    width: 90px;
     background-color: var(--background);
     border: 2px solid var(--accent);
     border-radius: 10px;
@@ -54,7 +54,7 @@ body {
 .chair.left {
 
     top: 50%;
-    left: -70px;
+    left: -50px;
     transform: translateY(-50%);
     border-color: var(--accent-dark); /* Cor um pouco mais clara */
 }
@@ -68,7 +68,7 @@ body {
 
 .chair.right {
     top: 50%;
-    right: -70px;
+    right: -50px;
     transform: translateY(-50%);
     border-color: var(--accent-dark); /* Cor um pouco mais escura */
 }

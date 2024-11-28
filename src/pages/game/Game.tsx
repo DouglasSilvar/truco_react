@@ -347,16 +347,16 @@ const Game: React.FC = () => {
         const { player_call_3, player_call_6, player_call_9, player_call_12 } = gameDetails?.step || {};
 
         if (!player_call_3 && !player_call_6 && !player_call_9 && !player_call_12) {
-            return "Truco !!!";
+            return "TRUCO";
         }
         if (player_call_3 && !player_call_6 && !player_call_9 && !player_call_12) {
-            return "Seis !!!";
+            return "SEIS";
         }
         if (player_call_3 && player_call_6 && !player_call_9 && !player_call_12) {
-            return "Nove !!!";
+            return "NOVE";
         }
         if (player_call_3 && player_call_6 && player_call_9 && !player_call_12) {
-            return "Doze !!!";
+            return "DOZE";
         }
         // Se todos os valores estiverem preenchidos, o botão desaparece
         if (player_call_3 && player_call_6 && player_call_9 && player_call_12) {
@@ -463,13 +463,13 @@ const Game: React.FC = () => {
         if (playerTeam === highestCall.team) {
             switch (highestCall.value) {
                 case 12:
-                    return "Doze !!!";
+                    return "DOZE";
                 case 9:
-                    return "Nove !!!";
+                    return "NOVE";
                 case 6:
-                    return "Seis !!!";
+                    return "SEIS";
                 case 3:
-                    return "Truco !!!";
+                    return "TRUCO";
                 default:
                     return null;
             }
@@ -495,13 +495,13 @@ const Game: React.FC = () => {
         if (playerName && acceptFirstDetails && acceptFirstDetails.player === playerName) {
             return {
                 hasResponse: true,
-                emoji: acceptFirstDetails.accept === 'yes' ? 'VEM !!!' : 'NÃO ..',
+                emoji: acceptFirstDetails.accept === 'yes' ? 'VEM' : 'NÃO',
                 colorClass: acceptFirstDetails.accept === 'yes' ? 'accept-green' : 'accept-red'
             };
         } else if (playerName && acceptSecondDetails && acceptSecondDetails.player === playerName) {
             return {
                 hasResponse: true,
-                emoji: acceptSecondDetails.accept === 'yes' ? 'VEM !!!' : 'NÃO ..',
+                emoji: acceptSecondDetails.accept === 'yes' ? 'VEM' : 'NÃO',
                 colorClass: acceptSecondDetails.accept === 'yes' ? 'accept-green' : 'accept-red'
             };
         }
