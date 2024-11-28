@@ -79,7 +79,7 @@ body {
     width: 80%;
     text-align: center;
     border-radius: 10px;
-    margin-top: 20px;
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -134,7 +134,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 40px;
 }
 
 .vira-card {
@@ -186,7 +185,7 @@ body {
     color: var(--foreground);
     width: 80%; /* Largura igual à da mesa e do painel do jogador */
     text-align: center;
-    margin-bottom: 60px; /* Espaço entre o bloco de informações e a mesa */
+    margin-bottom: 10px; /* Espaço entre o bloco de informações e a mesa */
     display: flex;
     flex-direction: column;
     gap: 10px;
