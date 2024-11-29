@@ -1,46 +1,139 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Truco React App
 
-## Available Scripts
+Este projeto é uma aplicação React que consome uma API Ruby on Rails para gerenciar salas, jogadores e partidas de truco.
 
-In the project directory, you can run:
+## Índice
 
-### `npm start`
+- [Descrição](#descrição)
+- [Pré-requisitos](#pré-requisitos)
+- [Instalação e Execução](#instalação-e-execução)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Endpoints Consumidos](#endpoints-consumidos)
+  - [Jogadores](#jogadores)
+  - [Salas](#salas)
+  - [Jogos](#jogos)
+- [Funcionalidades Principais](#funcionalidades-principais)
+- [Capturas de Tela](#capturas-de-tela)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Descrição
 
-### `npm test`
+O Truco React App é uma interface amigável para interagir com a API de Truco, permitindo a criação de salas, a entrada e saída de jogadores, a organização de partidas e a jogabilidade em tempo real. 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Pré-requisitos
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Node.js 14+ e npm 6+
+- Um servidor backend Ruby on Rails em execução ([Truco API](#)).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Instalação e Execução
 
-### `npm run eject`
+1. Clone o repositório do projeto:
+   ```sh
+   git clone https://github.com/seu-usuario/truco-react-app.git
+   ```
+2. Entre no diretório do projeto:
+   ```sh
+   cd truco-react-app
+   ```
+3. Instale as dependências:
+   ```sh
+   npm install
+   ```
+4. Inicie o servidor de desenvolvimento:
+   ```sh
+   npm start
+   ```
+5. Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+---
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Estrutura do Projeto
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+A estrutura do projeto é baseada na arquitetura padrão do Create React App, com os seguintes diretórios principais:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- `src/components`: Componentes React reutilizáveis.
+- `src/pages`: Páginas principais do aplicativo (e.g., Home, Sala, Jogo).
+- `src/services`: Serviços para chamadas à API.
+- `src/styles`: Arquivos CSS e temas personalizados.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Endpoints Consumidos
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Jogadores
+
+- **Listar Jogadores:** `GET /players`
+- **Criar Jogador:** `POST /players`
+- **Validar Jogador:** `GET /players/valid`
+
+### Salas
+
+- **Listar Salas:** `GET /rooms`
+- **Criar Sala:** `POST /rooms`
+- **Entrar em uma Sala:** `POST /rooms/:uuid/join`
+- **Sair de uma Sala:** `POST /rooms/:uuid/leave`
+- **Alterar Cadeira:** `POST /rooms/:uuid/changechair`
+- **Expulsar Jogador:** `POST /rooms/:uuid/kick`
+- **Alterar Status de Pronto:** `POST /rooms/:uuid/ready/:boolean`
+- **Iniciar Partida:** `POST /rooms/:uuid/start`
+
+### Jogos
+
+- **Exibir Jogo:** `GET /games/:uuid`
+- **Fazer Jogada:** `POST /games/:uuid/play_move`
+- **Realizar Chamada:** `POST /games/:uuid/call`
+- **Coletar Cartas:** `POST /games/:uuid/collect`
+
+---
+
+## Funcionalidades Principais
+
+1. **Home Page:**
+   - Listagem de salas disponíveis com paginação.
+   - Criação de uma nova sala.
+
+2. **Sala:**
+   - Exibe os jogadores e suas cadeiras.
+   - Permite que jogadores entrem, saiam, mudem de cadeira ou alterem o status de pronto.
+   - Exibe informações do dono da sala e os times.
+
+3. **Jogo:**
+   - Exibe o estado atual da partida, incluindo as cartas jogadas e os placares.
+   - Permite aos jogadores realizar jogadas ou chamadas.
+
+---
+
+## Capturas de Tela
+
+### Página Inicial
+(Adicione aqui a imagem da página inicial)
+
+### Tela de Sala
+(Adicione aqui a imagem da tela de sala)
+
+### Tela de Jogo
+(Adicione aqui a imagem da tela de jogo)
+
+---
+
+## Scripts Disponíveis
+
+O projeto inclui os seguintes scripts padrão do Create React App:
+
+- `npm start`: Executa o servidor de desenvolvimento.
+- `npm test`: Executa os testes em modo interativo.
+- `npm run build`: Cria o build otimizado para produção.
+- `npm run eject`: Remove as dependências internas para maior customização.
+
+---
+
+## Contribuição
+
+Se você quiser contribuir com o projeto, sinta-se à vontade para abrir issues ou enviar pull requests.
+
