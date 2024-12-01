@@ -161,3 +161,19 @@ export const startGame = async (roomUuid: string) => {
 
   return response.json();
 };
+
+export const sendMessage = async (roomUuid: string, content: string) => {
+  const response = await fetch(`${BASE_URL}/rooms/${roomUuid}/message`, {
+    method: 'POST',
+    headers: getUserHeaders(),
+    body: JSON.stringify({
+      content: content,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao sair da sala');
+  }
+
+  return response.json();
+};

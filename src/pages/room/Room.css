@@ -6,11 +6,14 @@
 
 .content-room {
   display: flex;
-  justify-content: center;
-  align-items: flex-start; /* Alinhar o conteúdo no topo */
+  flex-direction: column; /* Alinha os elementos na vertical */
+  justify-content: flex-start; /* Mantém o alinhamento ao topo */
+  align-items: center; /* Centraliza horizontalmente */
   height: calc(100vh - 100px); /* Ajusta a altura */
   padding: 20px;
+  gap: 20px; /* Espaçamento entre os elementos */
 }
+
 
 .room-card-room {
   background-color: #3c3f41;
