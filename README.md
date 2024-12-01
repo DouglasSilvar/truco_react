@@ -27,7 +27,7 @@ O Truco React App é uma interface amigável para interagir com a API de Truco, 
 ## Pré-requisitos
 
 - Node.js 14+ e npm 6+
-- Um servidor backend Ruby on Rails em execução ([Truco API](#)).
+- Um servidor backend Ruby on Rails em execução ([Truco API](https://github.com/DouglasSilvar/truco_ruby)).
 
 ---
 
@@ -111,14 +111,12 @@ A estrutura do projeto é baseada na arquitetura padrão do Create React App, co
 
 ## Capturas de Tela
 
-### Página Inicial
-(Adicione aqui a imagem da página inicial)
+![print_01](https://github.com/user-attachments/assets/a2f2b59b-755f-46f9-8d7e-9f3caa513ad2)
 
-### Tela de Sala
-(Adicione aqui a imagem da tela de sala)
+![print_02](https://github.com/user-attachments/assets/2917bb34-696c-4d9b-a63c-3434cbaea033)
 
-### Tela de Jogo
-(Adicione aqui a imagem da tela de jogo)
+![print_03](https://github.com/user-attachments/assets/caff1cb8-a4df-429a-91a4-d5845bcbc951)
+
 
 ---
 
