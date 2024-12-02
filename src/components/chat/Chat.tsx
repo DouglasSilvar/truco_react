@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './Chat.css';
 import { sendMessage } from '../../services/roomService'; // Importa o método
 
@@ -17,6 +17,7 @@ const Chat: React.FC<ChatProps> = ({ messages, roomUuid }) => {
   const [messageContent, setMessageContent] = useState('');
   const [error, setError] = useState<string | null>(null); // Gerencia erros de envio
   const name = localStorage.getItem('user_name');
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessageContent(e.target.value);
@@ -40,11 +41,22 @@ const Chat: React.FC<ChatProps> = ({ messages, roomUuid }) => {
     }
   };
 
+  const sortedMessages = [...messages].sort(
+    (a, b) => new Date(a.date_created).getTime() - new Date(b.date_created).getTime()
+  );
+
+  // Rolagem automática para o final ao adicionar mensagem
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [sortedMessages]);
+
   return (
     <div className="chat-container">
       {/* Quadro de mensagens */}
       <div className="chat-messages-container">
-        {messages.map((message, index) => {
+        {sortedMessages.map((message, index) => {
           const isOwnMessage = message.player_name === name;
 
           return (
@@ -65,6 +77,7 @@ const Chat: React.FC<ChatProps> = ({ messages, roomUuid }) => {
             </div>
           );
         })}
+        <div ref={chatEndRef}></div> {/* Referência para o scroll */}
       </div>
 
       {/* Exibe erro, se existir */}
@@ -77,6 +90,7 @@ const Chat: React.FC<ChatProps> = ({ messages, roomUuid }) => {
           className="chat-message-input"
           placeholder="Digite sua mensagem..."
           value={messageContent}
+          maxLength={256}
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
         />
@@ -84,6 +98,9 @@ const Chat: React.FC<ChatProps> = ({ messages, roomUuid }) => {
           Enviar
         </button>
       </div>
+      <div className="chat-character-counter">
+          {messageContent.length}/256
+        </div>
     </div>
   );
 };

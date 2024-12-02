@@ -97,7 +97,8 @@ const Home: React.FC = () => {
           const result = await joinRoom(room.uuid, playerUuid);
           if (result.status === 403) {
             setIncorrectPasswordPopup(true);
-          } else {
+          } 
+          else {
             navigate(`/room/${room.uuid}`);
           }
         } catch (error) {

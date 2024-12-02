@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchRoomDetails, playMove, collectCards, trucarAccept } from '../../services/gameService';
 import './Game.css';
+import Chat from '../../components/chat/Chat';
 
 interface StepDetails {
     id: number;
@@ -48,6 +49,11 @@ interface GameDetails {
     };
     step: StepDetails;
     owner: OWner;
+    messages: {
+        player_name: string;
+        date_created: string;
+        content: string;
+    }[];
 }
 
 interface OWner {
@@ -812,7 +818,6 @@ const Game: React.FC = () => {
                             </>
                         )}
                     </div>
-
                 </div>)}
             {showWinnerPopup && (
                 <div className="popup-game">
@@ -827,7 +832,16 @@ const Game: React.FC = () => {
                     </p>
                 </div>
             )}
+            <>
+                <br></br>
+                <br></br>
+            </>
+            <div className="room-card-room">
+                <Chat
+                    messages={gameDetails?.messages || []} roomUuid={gameDetails?.room_id || ''} />
+            </div>
         </div>
+
     );
 };
 

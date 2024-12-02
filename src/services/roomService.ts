@@ -79,10 +79,6 @@ export const joinRoom = async (roomUuid: string, playerUuid: string, password?: 
     return { status: 403 };  // Retorna o status 403 explicitamente
   }
 
-  if (!response.ok) {
-    throw new Error('Erro ao entrar na sala');
-  }
-
   return response.json();
 };
 
