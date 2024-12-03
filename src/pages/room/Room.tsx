@@ -372,7 +372,15 @@ const Room: React.FC = () => {
         )}
         <div className="room-card-room">
           <Chat
-            messages={roomDetails?.messages || []} roomUuid={roomDetails?.uuid || ''}          />
+            messages={roomDetails?.messages || []}
+            roomUuid={roomDetails?.uuid || ''}
+            game_chairs={{
+              chair_a: roomDetails?.chairs?.chair_a ?? null,
+              chair_b: roomDetails?.chairs?.chair_b ?? null,
+              chair_c: roomDetails?.chairs?.chair_c ?? null,
+              chair_d: roomDetails?.chairs?.chair_d ?? null,
+            }}
+          />
         </div>
       </div>
     </div>

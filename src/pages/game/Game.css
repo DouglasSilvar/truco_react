@@ -71,7 +71,7 @@ body {
 }
 
 .player-panel {
-    background-color: var(--highlight);
+    border: 1px solid #a9b7c6;
     padding: 15px;
     width: 80%;
     text-align: center;
@@ -81,6 +81,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    width: 300px;
 }
 
 .card-container {
@@ -134,7 +135,7 @@ body {
     position: relative;
     width: 300px;
     height: 300px;
-    background-color: var(--highlight);
+    border: 1px solid #a9b7c6;
     border-radius: 10px;
     display: flex;
     justify-content: center;
@@ -184,7 +185,7 @@ body {
 }
 
 .game-info {
-    background-color: var(--highlight);
+    border: 1px solid #a9b7c6;
     padding: 15px 20px;
     border-radius: 10px;
     color: var(--foreground);
@@ -194,6 +195,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 300px;
 }
 
 .room-name {

@@ -38,12 +38,13 @@
   /* Balão ao redor da mensagem */
   .chat-message-content {
     display: inline-block;
-    padding: 6px;
+    padding: 10px;
     border-radius: 8px;
     max-width: 70%;
     word-wrap: break-word;
-    background-color: #e0f7fa; /* Cor do balão */
-    color: #006064; /* Cor do texto */
+    border: 2px solid transparent; /* Borda definida dinamicamente */
+    background-color: var(--background-light); /* Fundo claro */
+    color: var(--foreground-dark); /* Texto escuro */
   }
   
   .own-bubble {
@@ -54,9 +55,20 @@
   /* Nome do jogador */
   .chat-player-name {
     font-weight: bold;
-    color: var(--accent);
-    margin-right: 5px;
+    margin-bottom: 5px;
+    display: block; /* Nome do jogador aparece acima da mensagem */
   }
+
+  /* Balões com cores de times */
+.team-nos {
+  border-color: #6897bb; /* Azul do time NOS */
+
+}
+
+.team-eles {
+  border-color: #2e86ab; /* Azul do time ELES */
+
+}
   
   /* Contêiner de entrada de mensagem */
   .chat-message-input-container {
