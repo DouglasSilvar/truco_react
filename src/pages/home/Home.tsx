@@ -95,7 +95,7 @@ const Home: React.FC = () => {
       } else {
         try {
           const result = await joinRoom(room.uuid, playerUuid);
-          if (result.status === 403) {
+          if (result.status === 422) {
             setIncorrectPasswordPopup(true);
           } 
           else {
@@ -112,7 +112,7 @@ const Home: React.FC = () => {
     if (selectedRoom && playerUuid) {
       try {
         const result = await joinRoom(selectedRoom.uuid, playerUuid, password);
-        if (result.status === 403) {
+        if (result.status === 422) {
           setIncorrectPasswordPopup(true);
         } else {
           setShowPasswordPopup(false);

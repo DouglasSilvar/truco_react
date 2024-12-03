@@ -75,8 +75,8 @@ export const joinRoom = async (roomUuid: string, playerUuid: string, password?: 
     }),
   });
 
-  if (response.status === 403) {
-    return { status: 403 };  // Retorna o status 403 explicitamente
+  if (response.status === 422) {
+    return response; // Retorna o status 403 explicitamente
   }
 
   return response.json();

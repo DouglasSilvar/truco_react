@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import './Room.css';
 import { leaveRoom, fetchRoomDetails, changeChair, kickPlayer, joinRoom, setPlayerReady, startGame } from '../../services/roomService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faLock, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faLock } from '@fortawesome/free-solid-svg-icons';
 import Chat from '../../components/chat/Chat'; // Ajuste o caminho conforme necessário
 
 
@@ -50,6 +50,7 @@ const Room: React.FC = () => {
   const playerName = localStorage.getItem('user_name');
   const isOwner = roomDetails && localStorage.getItem('user_name') === roomDetails.owner.name;
   const allPlayersReady = roomDetails && roomDetails.ready.length === 4;
+  const [incorrectPassword, setIncorrectPassword] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const updatePlayerUuid = (uuid: string) => {
@@ -162,7 +163,8 @@ const Room: React.FC = () => {
       } else {
         try {
           const result = await joinRoom(uuid!, playerUuid);
-          if (result.status === 403) {
+          if (result.status === 422) {
+            console.log('Acesso negado.');
             setError('Acesso negado.');
           } else {
             setIsInRoom(true); // Marca o jogador como presente na sala
@@ -183,14 +185,19 @@ const Room: React.FC = () => {
     if (playerUuid && roomDetails) {
       try {
         const result = await joinRoom(roomDetails.uuid, playerUuid, password);
-        if (result.status === 403) {
-          setError('Senha incorreta.');
+        if (result.status === 422) {
+          console.error('Senha incorreta.');
+          setJoining(false);
+          setShowPasswordPopup(false);
+          setPassword('');
+          setIncorrectPassword(true); // Ativa o popup de senha incorreta
         } else {
           setShowPasswordPopup(false);
           setIsInRoom(true); // Marca o jogador como presente na sala
           await loadRoomDetails(); // Atualiza os detalhes da sala
         }
       } catch (error) {
+        setJoining(false);
         console.error('Erro ao entrar na sala protegida:', error);
       }
     }
@@ -199,6 +206,7 @@ const Room: React.FC = () => {
   const handleClosePasswordPopup = () => {
     setShowPasswordPopup(false);
     setPassword('');
+    setJoining(false);
   };
 
   const handleStartGame = async () => {
@@ -370,18 +378,26 @@ const Room: React.FC = () => {
             <button onClick={handleSubmitPassword}>Entrar</button>
           </div>
         )}
-        <div className="room-card-room">
-          <Chat
-            messages={roomDetails?.messages || []}
-            roomUuid={roomDetails?.uuid || ''}
-            game_chairs={{
-              chair_a: roomDetails?.chairs?.chair_a ?? null,
-              chair_b: roomDetails?.chairs?.chair_b ?? null,
-              chair_c: roomDetails?.chairs?.chair_c ?? null,
-              chair_d: roomDetails?.chairs?.chair_d ?? null,
-            }}
-          />
-        </div>
+        {incorrectPassword && (
+          <div className="popup">
+            <button className="close-button" onClick={() => setIncorrectPassword(false)}>X</button>
+            <p>Senha incorreta. Tente novamente.</p>
+          </div>
+        )}
+        {(roomDetails?.protected === false || isPlayerInChairs()) && (
+          <div className="room-card-room">
+            <Chat
+              messages={roomDetails?.messages || []}
+              roomUuid={roomDetails?.uuid || ''}
+              game_chairs={{
+                chair_a: roomDetails?.chairs?.chair_a ?? null,
+                chair_b: roomDetails?.chairs?.chair_b ?? null,
+                chair_c: roomDetails?.chairs?.chair_c ?? null,
+                chair_d: roomDetails?.chairs?.chair_d ?? null,
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

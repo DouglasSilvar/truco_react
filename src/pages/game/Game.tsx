@@ -40,6 +40,7 @@ interface GameDetails {
     created_at: string;
     updated_at: string;
     room_name: string;
+    protected: boolean;
     end_game_win: number | null;
     chairs: {
         chair_a: string;
@@ -836,15 +837,17 @@ const Game: React.FC = () => {
                 <br></br>
                 <br></br>
             </>
-            <div className="room-card-room">
-                <Chat
-                    messages={gameDetails?.messages || []} roomUuid={gameDetails?.room_id || ''} game_chairs={{
-                        chair_a: gameDetails?.chairs?.chair_a ?? null,
-                        chair_b: gameDetails?.chairs?.chair_b ?? null,
-                        chair_c: gameDetails?.chairs?.chair_c ?? null,
-                        chair_d: gameDetails?.chairs?.chair_d ?? null,
-                      }} />
-            </div>
+            {(gameDetails?.protected === false || isPlayer) && (
+                <div className="room-card-room">
+                    <Chat
+                        messages={gameDetails?.messages || []} roomUuid={gameDetails?.room_id || ''} game_chairs={{
+                            chair_a: gameDetails?.chairs?.chair_a ?? null,
+                            chair_b: gameDetails?.chairs?.chair_b ?? null,
+                            chair_c: gameDetails?.chairs?.chair_c ?? null,
+                            chair_d: gameDetails?.chairs?.chair_d ?? null,
+                        }} />
+                </div>
+            )}
         </div>
 
     );
