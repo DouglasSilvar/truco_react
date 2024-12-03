@@ -24,6 +24,7 @@ const Chat: React.FC<ChatProps> = ({ messages, roomUuid, game_chairs }) => {
   const [error, setError] = useState<string | null>(null);
   const name = localStorage.getItem('user_name');
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const [lastMessageId, setLastMessageId] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessageContent(e.target.value);
@@ -68,10 +69,16 @@ const Chat: React.FC<ChatProps> = ({ messages, roomUuid, game_chairs }) => {
   };
 
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    const currentLastMessageId = sortedMessages[sortedMessages.length - 1]?.date_created || null;
+
+    if (currentLastMessageId && currentLastMessageId !== lastMessageId) {
+      // Só faz scroll se a última mensagem mudou
+      if (chatEndRef.current) {
+        chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+      setLastMessageId(currentLastMessageId); // Atualiza o ID da última mensagem
     }
-  }, [sortedMessages]);
+  }, [sortedMessages, lastMessageId]);
 
   return (
     <div className="chat-container">
@@ -84,7 +91,7 @@ const Chat: React.FC<ChatProps> = ({ messages, roomUuid, game_chairs }) => {
             message.player_name === game_chairs.chair_a || message.player_name === game_chairs.chair_b
               ? 'team-nos'
               : 'team-eles';
-  
+
           return (
             <div
               key={index}
@@ -96,24 +103,27 @@ const Chat: React.FC<ChatProps> = ({ messages, roomUuid, game_chairs }) => {
                   border: `2px solid ${playerColor}`, // Borda do time
                 }}
               >
-                <span className="chat-player-name" style={{ color: playerColor }}>
-                  {message.player_name}
-                </span>
+                {!isOwnMessage && (
+                  <span className="chat-player-name" style={{ color: playerColor }}>
+                    {message.player_name}
+                  </span>
+                )}
                 <div>{message.content}</div>
               </div>
             </div>
           );
         })}
+        <div ref={chatEndRef} /> {/* Referência ao final das mensagens */}
       </div>
-  
+
       {/* Exibe erro, se existir */}
       {error && <div className="chat-error">{error}</div>}
-  
+
       {/* Campo de input e botão de envio */}
       {name === game_chairs.chair_a ||
-      name === game_chairs.chair_b ||
-      name === game_chairs.chair_c ||
-      name === game_chairs.chair_d ? (
+        name === game_chairs.chair_b ||
+        name === game_chairs.chair_c ||
+        name === game_chairs.chair_d ? (
         <>
           <div className="chat-message-input-container">
             <input

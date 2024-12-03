@@ -23,11 +23,10 @@
   
   /* Mensagem individual */
   .chat-message-item {
-    padding: 5px;
-    font-size: 14px;
+    font-size: 11px;
     word-wrap: break-word;
     text-align: left;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
   
   /* Mensagem do próprio jogador */
