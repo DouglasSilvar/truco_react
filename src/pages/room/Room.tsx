@@ -257,7 +257,14 @@ const Room: React.FC = () => {
             <h2>{roomDetails.name} {roomDetails.protected && <FontAwesomeIcon icon={faLock} className="lock-icon" />}</h2>
             <p><strong>Dono:</strong> {roomDetails.owner.name}</p>
             <p><strong>Jogadores na sala:</strong> {roomDetails.players_count}</p>
-
+            <div className="toggle-container">
+              <span className="toggle-label">2 jogadores</span>
+              <label className="switch">
+                <input type="checkbox" />
+                <span className="slider round"></span>
+              </label>
+              <span className="toggle-label">4 jogadores</span>
+            </div>
             <div className="chairs-container-room">
               {/* Time NOS */}
               <div className="team-container">
