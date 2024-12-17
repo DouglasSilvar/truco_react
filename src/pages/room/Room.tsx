@@ -5,8 +5,7 @@ import './Room.css';
 import { leaveRoom, fetchRoomDetails, changeChair, kickPlayer, joinRoom, setPlayerReady, startGame } from '../../services/roomService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faLock } from '@fortawesome/free-solid-svg-icons';
-import Chat from '../../components/chat/Chat'; // Ajuste o caminho conforme necessário
-
+import Chat from '../../components/chat/Chat'; 
 
 interface ReadyPlayer {
   player: string;
@@ -28,7 +27,7 @@ interface RoomDetails {
     chair_c: string | null;
     chair_d: string | null;
   };
-  ready: ReadyPlayer[]; // Corrigido para um array de objetos com o campo 'player'
+  ready: ReadyPlayer[]; 
   messages: {
     player_name: string;
     date_created: string;
@@ -43,15 +42,22 @@ const Room: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [playerUuid, setPlayerUuid] = useState<string | null>(null);
   const [showPasswordPopup, setShowPasswordPopup] = useState<boolean>(false);
-  const [password, setPassword] = useState<string>(''); // Senha do popup
-  const [isInRoom, setIsInRoom] = useState<boolean>(false); // Verifica se o jogador está na sala
+  const [password, setPassword] = useState<string>('');
+  const [isInRoom, setIsInRoom] = useState<boolean>(false);
   const [joining, setJoining] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
-  const playerName = localStorage.getItem('user_name');
-  const isOwner = roomDetails && localStorage.getItem('user_name') === roomDetails.owner.name;
-  const allPlayersReady = roomDetails && roomDetails.ready.length === 4;
   const [incorrectPassword, setIncorrectPassword] = useState<boolean>(false);
+  const [twoPlayersMode, setTwoPlayersMode] = useState<boolean>(false); // estado do toggle
+
+  const playerName = localStorage.getItem('user_name');
   const navigate = useNavigate();
+
+  // Após carregar roomDetails, pode-se verificar se o usuário é o dono
+  const isOwner = roomDetails && localStorage.getItem('user_name') === roomDetails.owner.name;
+
+  // Verifica se todas as cadeiras que estão ocupadas estão prontas (4 no caso de 4 jogadores).
+  // Dependendo da lógica de "allPlayersReady", pode ser adaptado, aqui deixarei como estava.
+  const allPlayersReady = roomDetails && roomDetails.ready.length === 4;
 
   const updatePlayerUuid = (uuid: string) => {
     setPlayerUuid(uuid);
@@ -59,26 +65,22 @@ const Room: React.FC = () => {
 
   const loadRoomDetails = async () => {
     try {
-      const data = await fetchRoomDetails(uuid!); // Pega os detalhes da sala via API
-      setRoomDetails(data); // Atualiza o estado com os detalhes da sala
-
-      // Verifica se o jogador atual está pronto
+      const data = await fetchRoomDetails(uuid!);
+      setRoomDetails(data);
       const playerName = localStorage.getItem('user_name');
       if (playerName) {
         data.ready?.some((readyPlayer: ReadyPlayer) => readyPlayer.player === playerName);
       }
     } catch (error: any) {
       if (error.message === 'RoomNotFound') {
-        navigate('/'); // Redireciona para a página principal se a sala não for encontrada
+        navigate('/');
       } else {
         setError('Erro ao carregar a sala');
       }
     } finally {
-      setLoading(false); // Desativa o estado de loading
+      setLoading(false);
     }
   };
-
-
 
   useEffect(() => {
     loadRoomDetails();
@@ -89,17 +91,13 @@ const Room: React.FC = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       loadRoomDetails();
-    }, 1000); // Executa a cada 1 segundo
-
-    // Limpa o intervalo quando o componente for desmontado
+    }, 1000); 
     return () => clearInterval(intervalId);
   }, [uuid, roomDetails, navigate]);
 
-
-  // Novo useEffect para redirecionar o jogador se ele for expulso
   useEffect(() => {
     if (roomDetails?.player_kick_status) {
-      navigate('/'); // Redireciona para a página principal se o jogador for expulso
+      navigate('/');
     }
   }, [roomDetails?.player_kick_status, navigate]);
 
@@ -113,7 +111,7 @@ const Room: React.FC = () => {
     if (playerUuid) {
       try {
         await leaveRoom(uuid!, playerUuid);
-        navigate('/'); // Volta para a home após sair da sala
+        navigate('/');
       } catch (error) {
         console.error('Erro ao sair da sala:', error);
       }
@@ -124,28 +122,23 @@ const Room: React.FC = () => {
     if (roomDetails) {
       try {
         const playerName = localStorage.getItem('user_name');
-
         if (!playerName) {
           throw new Error('Nome do jogador não encontrado no localStorage');
         }
-
         await changeChair(uuid!, {
-          player_name: playerName, // Nome do jogador a ser mudado de cadeira
-          chair_destination: chairDestination, // Cadeira de destino
+          player_name: playerName,
+          chair_destination: chairDestination,
         });
-
-        await loadRoomDetails(); // Recarregar os detalhes da sala após a mudança
+        await loadRoomDetails();
       } catch (error) {
         console.error('Erro ao trocar de cadeira:', error);
       }
     }
   };
 
-
   const handleKickPlayer = async (playerName: string) => {
     try {
       await kickPlayer(uuid!, playerName);
-      // Atualizar a sala após remover o jogador
       const updatedDetails = await fetchRoomDetails(uuid!);
       setRoomDetails(updatedDetails);
     } catch (error) {
@@ -155,20 +148,18 @@ const Room: React.FC = () => {
 
   const handleJoinRoom = async () => {
     if (playerUuid && roomDetails) {
-      if (joining) return; // Evita múltiplas tentativas de entrar
+      if (joining) return;
       setJoining(true);
 
       if (roomDetails.protected) {
-        setShowPasswordPopup(true); // Exibir popup para senha
+        setShowPasswordPopup(true);
       } else {
         try {
           const result = await joinRoom(uuid!, playerUuid);
           if (result.status === 422) {
-            console.log('Acesso negado.');
             setError('Acesso negado.');
           } else {
-            setIsInRoom(true); // Marca o jogador como presente na sala
-            // Chama a função para atualizar a lista de jogadores após o sucesso
+            setIsInRoom(true);
             await loadRoomDetails();
           }
         } catch (error) {
@@ -180,7 +171,6 @@ const Room: React.FC = () => {
     }
   };
 
-
   const handleSubmitPassword = async () => {
     if (playerUuid && roomDetails) {
       try {
@@ -190,11 +180,11 @@ const Room: React.FC = () => {
           setJoining(false);
           setShowPasswordPopup(false);
           setPassword('');
-          setIncorrectPassword(true); // Ativa o popup de senha incorreta
+          setIncorrectPassword(true);
         } else {
           setShowPasswordPopup(false);
-          setIsInRoom(true); // Marca o jogador como presente na sala
-          await loadRoomDetails(); // Atualiza os detalhes da sala
+          setIsInRoom(true);
+          await loadRoomDetails();
         }
       } catch (error) {
         setJoining(false);
@@ -219,7 +209,7 @@ const Room: React.FC = () => {
   };
 
   const isChairAvailable = (chair: string | null) => {
-    return chair === '' || chair === null; // Cadeira está vazia se for uma string vazia ou null
+    return chair === '' || chair === null;
   };
 
   const isPlayerInChairs = () => {
@@ -232,13 +222,23 @@ const Room: React.FC = () => {
 
   const handleSetReady = async () => {
     try {
-      await setPlayerReady(uuid!, !isReady); // Envia o valor oposto do estado atual
-      setIsReady(!isReady); // Alterna o estado após a requisição
-      await loadRoomDetails(); // Recarregar os detalhes da sala
+      await setPlayerReady(uuid!, !isReady);
+      setIsReady(!isReady);
+      await loadRoomDetails();
     } catch (error) {
       console.error('Erro ao alternar o estado de pronto:', error);
     }
   };
+
+  // Condições para "cortar" as cadeiras
+  const canCutChairs = twoPlayersMode && (
+    (roomDetails?.chairs.chair_a !== null) ||
+    (roomDetails?.chairs.chair_c !== null)
+  );
+
+  // Definindo as cadeiras que serão renderizadas baseado no estado do toggle e das condições
+  const nosChairs = canCutChairs ? ['chair_a'] : ['chair_a', 'chair_b'];
+  const elesChairs = canCutChairs ? ['chair_c'] : ['chair_c', 'chair_d'];
 
   if (loading) {
     return <div className="room">Carregando...</div>;
@@ -257,21 +257,30 @@ const Room: React.FC = () => {
             <h2>{roomDetails.name} {roomDetails.protected && <FontAwesomeIcon icon={faLock} className="lock-icon" />}</h2>
             <p><strong>Dono:</strong> {roomDetails.owner.name}</p>
             <p><strong>Jogadores na sala:</strong> {roomDetails.players_count}</p>
-            <div className="toggle-container">
-              <span className="toggle-label">2 jogadores</span>
-              <label className="switch">
-                <input type="checkbox" />
-                <span className="slider round"></span>
-              </label>
-              <span className="toggle-label">4 jogadores</span>
-            </div>
+
+            {/* Renderiza o toggle somente se o player for o dono da sala */}
+            {isOwner && (
+              <div className="toggle-container">
+                <span className="toggle-label">4 jogadores</span>
+                <label className="switch">
+                  <input 
+                    type="checkbox" 
+                    checked={twoPlayersMode} 
+                    onChange={() => setTwoPlayersMode(!twoPlayersMode)} 
+                  />
+                  <span className="slider round"></span>
+                </label>
+                <span className="toggle-label">2 jogadores</span>
+              </div>
+            )}
+
             <div className="chairs-container-room">
               {/* Time NOS */}
               <div className="team-container">
                 <h3 className="team-name us">Time NOS</h3>
                 <div className="team-chairs-vertical">
-                  {(['chair_a', 'chair_b'] as Array<keyof RoomDetails['chairs']>).map((chairKey) => {
-                    const playerName = roomDetails.chairs[chairKey];
+                  {nosChairs.map((chairKey) => {
+                    const playerName = roomDetails.chairs[chairKey as keyof RoomDetails['chairs']];
                     const isPlayerReady = roomDetails.ready.some((readyPlayer) => readyPlayer.player === playerName);
                     const teamClass = 'team-ab';
 
@@ -307,8 +316,8 @@ const Room: React.FC = () => {
               <div className="team-container">
                 <h3 className="team-name them">Time ELES</h3>
                 <div className="team-chairs-vertical">
-                  {(['chair_c', 'chair_d'] as Array<keyof RoomDetails['chairs']>).map((chairKey) => {
-                    const playerName = roomDetails.chairs[chairKey];
+                  {elesChairs.map((chairKey) => {
+                    const playerName = roomDetails.chairs[chairKey as keyof RoomDetails['chairs']];
                     const isPlayerReady = roomDetails.ready.some((readyPlayer) => readyPlayer.player === playerName);
                     const teamClass = 'team-cd';
 
