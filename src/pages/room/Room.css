@@ -277,3 +277,8 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(26px);
 }
+
+.toggle-container.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

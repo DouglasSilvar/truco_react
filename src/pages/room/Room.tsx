@@ -2,10 +2,19 @@ import React, { useEffect, useState } from 'react';
 import Bar from '../../components/bar/Bar';
 import { useParams, useNavigate } from 'react-router-dom';
 import './Room.css';
-import { leaveRoom, fetchRoomDetails, changeChair, kickPlayer, joinRoom, setPlayerReady, startGame, setTwoPlayer } from '../../services/roomService';
+import {
+  leaveRoom,
+  fetchRoomDetails,
+  changeChair,
+  kickPlayer,
+  joinRoom,
+  setPlayerReady,
+  startGame,
+  setTwoPlayer
+} from '../../services/roomService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faLock } from '@fortawesome/free-solid-svg-icons';
-import Chat from '../../components/chat/Chat'; 
+import Chat from '../../components/chat/Chat';
 
 interface ReadyPlayer {
   player: string;
@@ -17,6 +26,7 @@ interface RoomDetails {
   game: string;
   players_count: number;
   player_kick_status: boolean;
+  is_two_players: boolean;
   protected: boolean;
   owner: {
     name: string;
@@ -27,7 +37,7 @@ interface RoomDetails {
     chair_c: string | null;
     chair_d: string | null;
   };
-  ready: ReadyPlayer[]; 
+  ready: ReadyPlayer[];
   messages: {
     player_name: string;
     date_created: string;
@@ -47,16 +57,11 @@ const Room: React.FC = () => {
   const [joining, setJoining] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
   const [incorrectPassword, setIncorrectPassword] = useState<boolean>(false);
-  const [twoPlayersMode, setTwoPlayersMode] = useState<boolean>(false); // estado do toggle
 
   const playerName = localStorage.getItem('user_name');
   const navigate = useNavigate();
 
-  // Após carregar roomDetails, pode-se verificar se o usuário é o dono
-  const isOwner = roomDetails && localStorage.getItem('user_name') === roomDetails.owner.name;
-
-  // Verifica se todas as cadeiras que estão ocupadas estão prontas (4 no caso de 4 jogadores).
-  // Dependendo da lógica de "allPlayersReady", pode ser adaptado, aqui deixarei como estava.
+  const isOwner = roomDetails && playerName === roomDetails.owner.name;
   const allPlayersReady = roomDetails && roomDetails.ready.length === 4;
 
   const updatePlayerUuid = (uuid: string) => {
@@ -67,7 +72,6 @@ const Room: React.FC = () => {
     try {
       const data = await fetchRoomDetails(uuid!);
       setRoomDetails(data);
-      const playerName = localStorage.getItem('user_name');
       if (playerName) {
         data.ready?.some((readyPlayer: ReadyPlayer) => readyPlayer.player === playerName);
       }
@@ -91,7 +95,7 @@ const Room: React.FC = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       loadRoomDetails();
-    }, 1000); 
+    }, 1000);
     return () => clearInterval(intervalId);
   }, [uuid, roomDetails, navigate]);
 
@@ -230,15 +234,14 @@ const Room: React.FC = () => {
     }
   };
 
-  // Condições para "cortar" as cadeiras
-  const canCutChairs = twoPlayersMode && (
-    (roomDetails?.chairs.chair_a !== null) ||
-    (roomDetails?.chairs.chair_c !== null)
-  );
+  const filledChairsCount = [
+    roomDetails?.chairs.chair_a,
+    roomDetails?.chairs.chair_b,
+    roomDetails?.chairs.chair_c,
+    roomDetails?.chairs.chair_d
+  ].filter((chair) => chair !== null && chair !== '').length;
 
-  // Definindo as cadeiras que serão renderizadas baseado no estado do toggle e das condições
-  const nosChairs = canCutChairs ? ['chair_a'] : ['chair_a', 'chair_b'];
-  const elesChairs = canCutChairs ? ['chair_c'] : ['chair_c', 'chair_d'];
+  const isDisabled = filledChairsCount > 2;
 
   if (loading) {
     return <div className="room">Carregando...</div>;
@@ -246,6 +249,20 @@ const Room: React.FC = () => {
 
   if (error) {
     return <div className="room">{error}</div>;
+  }
+
+  // Determina quais cadeiras serão renderizadas com base em is_two_players
+  let nosChairs: string[];
+  let elesChairs: string[];
+
+  if (roomDetails?.is_two_players) {
+    // Se is_two_players é true, renderiza apenas cadeiras A e C
+    nosChairs = ['chair_a'];
+    elesChairs = ['chair_c'];
+  } else {
+    // Caso contrário, renderiza A, B, C, D
+    nosChairs = ['chair_a', 'chair_b'];
+    elesChairs = ['chair_c', 'chair_d'];
   }
 
   return (
@@ -256,27 +273,27 @@ const Room: React.FC = () => {
           <div className="room-card-room">
             <h2>{roomDetails.name} {roomDetails.protected && <FontAwesomeIcon icon={faLock} className="lock-icon" />}</h2>
             <p><strong>Dono:</strong> {roomDetails.owner.name}</p>
-            <p><strong>Jogadores na sala:</strong> {roomDetails.players_count}</p>
+            <p><strong>Jogadores na sala:</strong> {filledChairsCount}</p>
 
-            {/* Renderiza o toggle somente se o player for o dono da sala */}
+            {/* Mostra o toggle apenas para o dono, mas o efeito é visível para todos */}
             {isOwner && (
-              <div className="toggle-container">
-              <span className="toggle-label">4 jogadores</span>
-              <label className="switch">
-                <input 
-                  type="checkbox" 
-                  checked={twoPlayersMode} 
-                  onChange={async () => {
-                    const newStatus = !twoPlayersMode; 
-                    setTwoPlayersMode(newStatus);
-                    await setTwoPlayer(uuid!, newStatus);
-                    await loadRoomDetails();
-                  }} 
-                />
-                <span className="slider round"></span>
-              </label>
-              <span className="toggle-label">2 jogadores</span>
-            </div>
+              <div className={`toggle-container ${isDisabled ? 'disabled' : ''}`}>
+                <span className="toggle-label">4 jogadores</span>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    disabled={isDisabled}
+                    checked={roomDetails.is_two_players}
+                    onChange={async () => {
+                      const newStatus = !roomDetails.is_two_players;
+                      await setTwoPlayer(uuid!, newStatus);
+                      await loadRoomDetails();
+                    }}
+                  />
+                  <span className="slider round"></span>
+                </label>
+                <span className="toggle-label">2 jogadores</span>
+              </div>
             )}
 
             <div className="chairs-container-room">
@@ -384,7 +401,6 @@ const Room: React.FC = () => {
             )}
 
           </div>
-
         )}
         {showPasswordPopup && (
           <div className="popup">
