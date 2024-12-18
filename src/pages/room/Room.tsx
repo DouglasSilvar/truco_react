@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Bar from '../../components/bar/Bar';
 import { useParams, useNavigate } from 'react-router-dom';
 import './Room.css';
-import { leaveRoom, fetchRoomDetails, changeChair, kickPlayer, joinRoom, setPlayerReady, startGame } from '../../services/roomService';
+import { leaveRoom, fetchRoomDetails, changeChair, kickPlayer, joinRoom, setPlayerReady, startGame, setTwoPlayer } from '../../services/roomService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faLock } from '@fortawesome/free-solid-svg-icons';
 import Chat from '../../components/chat/Chat'; 
@@ -261,17 +261,22 @@ const Room: React.FC = () => {
             {/* Renderiza o toggle somente se o player for o dono da sala */}
             {isOwner && (
               <div className="toggle-container">
-                <span className="toggle-label">4 jogadores</span>
-                <label className="switch">
-                  <input 
-                    type="checkbox" 
-                    checked={twoPlayersMode} 
-                    onChange={() => setTwoPlayersMode(!twoPlayersMode)} 
-                  />
-                  <span className="slider round"></span>
-                </label>
-                <span className="toggle-label">2 jogadores</span>
-              </div>
+              <span className="toggle-label">4 jogadores</span>
+              <label className="switch">
+                <input 
+                  type="checkbox" 
+                  checked={twoPlayersMode} 
+                  onChange={async () => {
+                    const newStatus = !twoPlayersMode; 
+                    setTwoPlayersMode(newStatus);
+                    await setTwoPlayer(uuid!, newStatus);
+                    await loadRoomDetails();
+                  }} 
+                />
+                <span className="slider round"></span>
+              </label>
+              <span className="toggle-label">2 jogadores</span>
+            </div>
             )}
 
             <div className="chairs-container-room">
