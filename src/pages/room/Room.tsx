@@ -62,7 +62,9 @@ const Room: React.FC = () => {
   const navigate = useNavigate();
 
   const isOwner = roomDetails && playerName === roomDetails.owner.name;
-  const allPlayersReady = roomDetails && roomDetails.ready.length === 4;
+  const allPlayersReady = roomDetails?.is_two_players
+  ? (roomDetails.ready.length === 2)  // Se é sala de 2 jogadores, todos (2) precisam estar prontos
+  : (roomDetails?.ready.length === 4);
 
   const updatePlayerUuid = (uuid: string) => {
     setPlayerUuid(uuid);
@@ -206,7 +208,12 @@ const Room: React.FC = () => {
   const handleStartGame = async () => {
     try {
       const response = await startGame(uuid!);
-      navigate(`/game/${response.game_id}`);
+
+      if (roomDetails?.is_two_players) {
+        navigate(`/gameX2/${response.game_id}`);
+      } else {
+        navigate(`/game/${response.game_id}`);
+      }
     } catch (error) {
       console.error('Erro ao iniciar o jogo:', error);
     }
