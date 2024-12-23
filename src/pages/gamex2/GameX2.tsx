@@ -285,31 +285,13 @@ const GameX2: React.FC = () => {
 
         // Define a ordem das posições anti-horárias, iniciando do jogador atual
         const positionOrderA = {
-            bottom: ['bottom-right', 'top-right', 'top-left', 'bottom-left'],
-            right: ['top-left', 'bottom-left', 'bottom-right', 'top-right'],
-            top: ['top-right', 'top-left', 'bottom-left', 'bottom-right'],
-            left: ['bottom-left', 'bottom-right', 'top-right', 'top-left']
-        };
-
-        const positionOrderD = {
-            left: ['bottom-right', 'top-right', 'top-left', 'bottom-left'],
-            bottom: ['top-right', 'top-left', 'bottom-left', 'bottom-right'],
-            right: ['bottom-left', 'bottom-right', 'top-right', 'top-left'],
-            top: ['top-left', 'bottom-left', 'bottom-right', 'top-right']
-        };
-
-        const positionOrderB = {
-            top: ['bottom-left', 'bottom-right', 'top-right', 'top-left'],
-            left: ['top-right', 'top-left', 'bottom-left', 'bottom-right'],
-            bottom: ['top-left', 'bottom-left', 'bottom-right', 'top-right'],
-            right: ['bottom-right', 'top-right', 'top-left', 'bottom-left']
+            bottom: ['bottom-right', 'top-left'],
+            top: ['top-left', 'bottom-right'],
         };
 
         const positionOrderC = {
-            right: ['top-right', 'top-left', 'bottom-left', 'bottom-right'],
-            top: ['bottom-right', 'top-right', 'top-left', 'bottom-left'],
-            left: ['top-left', 'bottom-left', 'bottom-right', 'top-right'],
-            bottom: ['bottom-left', 'bottom-right', 'top-right', 'top-left']
+            top: ['bottom-right', 'top-left',],
+            bottom: ['bottom-right', 'top-left']
         };
 
         const firstCardOrigin = gameDetails.step.first_card_origin;
@@ -320,12 +302,8 @@ const GameX2: React.FC = () => {
             switch (originChair) {
                 case 'chair_a':
                     return positionOrderA;
-                case 'chair_b':
-                    return positionOrderB;
                 case 'chair_c':
                     return positionOrderC;
-                case 'chair_d':
-                    return positionOrderD;
                 default:
                     return positionOrderA; // Caso padrão, se a origem não for identificada
             }
@@ -333,9 +311,7 @@ const GameX2: React.FC = () => {
 
         const positionOrder = getPositionOrder();
         const currentPlayerPosition = name === chair_a ? 'bottom' :
-            name === chair_b ? 'right' :
-                name === chair_c ? 'top' :
-                    name === chair_d ? 'left' : null;
+                name === chair_c ? 'top' : null;
 
         const cardPositions = positionOrder[currentPlayerPosition || 'bottom'];
 
