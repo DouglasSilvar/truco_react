@@ -41,6 +41,7 @@ interface GameDetails {
     updated_at: string;
     room_name: string;
     protected: boolean;
+    is_two_players: boolean;
     end_game_win: number | null;
     chairs: {
         chair_a: string;
