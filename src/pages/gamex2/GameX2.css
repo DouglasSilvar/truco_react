@@ -27,7 +27,7 @@ body {
     min-height: 100vh;
 }
 
-.chair {
+.x2-chair {
     position: absolute;
     background-color: var(--background);
     border: 2px solid var(--accent);
@@ -41,33 +41,19 @@ body {
 
 
 /* Posições dinâmicas */
-.chair.bottom {
+.x2-chair.bottom {
     bottom: 5px;
     left: 50%;
     transform: translateX(-50%);
     border-color: var(--accent); /* Cor padrão da borda */
 }
 
-.chair.left {
 
-    top: 50%;
-    left: 5px;
-    transform: translateY(-50%);
-    border-color: var(--accent-dark); /* Cor um pouco mais clara */
-}
-
-.chair.top {
+.x2-chair.top {
     top: 5px;
     left: 50%;
     transform: translateX(-50%);
     border-color: var(--accent); /* Cor padrão da borda */
-}
-
-.chair.right {
-    top: 50%;
-    right: 5px;
-    transform: translateY(-50%);
-    border-color: var(--accent-dark); /* Cor um pouco mais escura */
 }
 
 .player-panel {

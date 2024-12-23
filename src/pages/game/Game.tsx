@@ -41,6 +41,7 @@ interface GameDetails {
     updated_at: string;
     room_name: string;
     protected: boolean;
+    is_two_players: boolean;
     end_game_win: number | null;
     chairs: {
         chair_a: string;
@@ -79,6 +80,9 @@ const Game: React.FC = () => {
                 const data = await fetchRoomDetails(uuid!);
                 console.log(data);
                 setGameDetails(data);
+                if (data?.is_two_players === true){
+                    navigate(`/gameX2/${data.uuid}`);
+                }
                 const { chair_a, chair_b, chair_c, chair_d } = data.chairs || {};
                 setIsPlayer([chair_a, chair_b, chair_c, chair_d].includes(name));
                 // Exibe o popup para end_game_win com prioridade

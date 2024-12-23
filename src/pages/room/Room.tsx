@@ -109,7 +109,11 @@ const Room: React.FC = () => {
 
   useEffect(() => {
     if (roomDetails?.game) {
-      navigate(`/game/${roomDetails.game}`);
+      if (roomDetails?.is_two_players) {
+        navigate(`/gameX2/${roomDetails?.game}`);
+      } else {
+        navigate(`/game/${roomDetails?.game}`);
+      }
     }
   }, [roomDetails, navigate]);
 
