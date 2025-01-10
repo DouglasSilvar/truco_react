@@ -285,15 +285,23 @@ const GameX2: React.FC = () => {
 
         // Define a ordem das posições anti-horárias, iniciando do jogador atual
         const positionOrderA = {
-            bottom: ['bottom-right', 'top-left'],
+            bottom: ['bottom-right','top-left'],
             top: ['top-left', 'bottom-right'],
         };
 
         const positionOrderC = {
-            top: ['bottom-right', 'top-left',],
+            top: ['top-left', 'bottom-right',],
             bottom: ['bottom-right', 'top-left']
         };
 
+       // const positionOrderA = {
+           // bottom: ['bottom-right','top-left'],
+           // top: ['top-left', 'bottom-right'],};
+
+        // const positionOrderC = {
+           // top: ['top-left', 'bottom-right',],
+           // bottom: ['bottom-right', 'top-left']};
+           
         const firstCardOrigin = gameDetails.step.first_card_origin;
         const originChair = firstCardOrigin ? firstCardOrigin.split('---')[1] : null;
 
@@ -414,8 +422,8 @@ const GameX2: React.FC = () => {
             return false;
         }
 
-        // Regra adicional: O botão não deve aparecer se já houver 4 cartas na mesa
-        if (gameDetails.step.table_cards.length === 4) {
+        // Regra adicional: O botão não deve aparecer se já houver 2 cartas na mesa
+        if (gameDetails.step.table_cards.length === 2) {
             return false;
         }
 
@@ -567,7 +575,7 @@ const GameX2: React.FC = () => {
     const canShowEncobrir = (): boolean => {
         if (!gameDetails) return false;
 
-        if (gameDetails?.step.table_cards.length === 4) {
+        if (gameDetails?.step.table_cards.length === 2) {
             return false;
         }
 
@@ -617,7 +625,7 @@ const GameX2: React.FC = () => {
                     </div>
                 </div>
                 {/* Renderiza a frase com base na condição */}
-                {gameDetails?.step.table_cards.length === 4 || gameDetails?.step.win ? (
+                {gameDetails?.step.table_cards.length === 2 || gameDetails?.step.win ? (
                     <div className="owner-action">
                         Dono da sala{' '}
                         <span className="player-name">
@@ -715,9 +723,9 @@ const GameX2: React.FC = () => {
                         {playerCards.map((card, index) => (
                             <div
                                 key={index}
-                                className={`card ${!isPlayerTurn || gameDetails?.step.table_cards.length === 4 ? 'disabled' : ''}`}
-                                onClick={() => isPlayerTurn && gameDetails?.step.table_cards.length < 4 && playTheCard(card, isEncobrir)}
-                                style={{ cursor: (isPlayerTurn && gameDetails?.step.table_cards.length < 4) ? 'pointer' : 'default' }}
+                                className={`card ${!isPlayerTurn || gameDetails?.step.table_cards.length === 2 ? 'disabled' : ''}`}
+                                onClick={() => isPlayerTurn && gameDetails?.step.table_cards.length < 2 && playTheCard(card, isEncobrir)}
+                                style={{ cursor: (isPlayerTurn && gameDetails?.step.table_cards.length < 2) ? 'pointer' : 'default' }}
                             >
                                 {formatCard(card)}
                                 {isEncobrir && <img src="/rails.png" alt="Encobrir" className="card-overlay" />}
@@ -728,7 +736,7 @@ const GameX2: React.FC = () => {
                     {/* Botões embaixo das cartas */}
                     <div className="action-buttons">
                         {/* Botão para recolher cartas */}
-                        {(gameDetails?.step.table_cards.length === 4 || gameDetails?.step.win) && gameDetails?.owner?.name === name ? (
+                        {(gameDetails?.step.table_cards.length === 2 || gameDetails?.step.win) && gameDetails?.owner?.name === name ? (
                             <button className="action-button" onClick={collectTableCards}>
                                 Recolher Cartas
                             </button>
