@@ -14,6 +14,7 @@ interface Room {
     name: string;
   };
   protected: boolean;
+  is_two_players: boolean;
   game: string | null;
 }
 
@@ -96,7 +97,7 @@ const Home: React.FC = () => {
         try {
           const result = await joinRoom(room.uuid, playerUuid);
           if (result.status === 422) {
-            setIncorrectPasswordPopup(true);
+            navigate(`/room/${room.uuid}`);
           } 
           else {
             navigate(`/room/${room.uuid}`);
@@ -161,7 +162,10 @@ const Home: React.FC = () => {
         <div className="rooms-container">
           {rooms.map((room) => {
             const isGameActive = !!room.game;
-            const isRoomFull = room.players_count === 4 && !room.game;
+            const isRoomFull = (
+              (room.is_two_players && room.players_count === 2) ||
+              (!room.is_two_players && room.players_count === 4)
+            ) && !room.game;
             return (
               <div key={room.uuid} className="room-card">
                 <h3>

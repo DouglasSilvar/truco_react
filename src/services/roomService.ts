@@ -145,6 +145,19 @@ export const setPlayerReady = async (roomUuid: string, readyStatus: boolean) => 
   return response.json();
 };
 
+export const setTwoPlayer = async (roomUuid: string, twoPlayerStatus: boolean) => {
+  const response = await fetch(`${BASE_URL}/rooms/${roomUuid}/two_player/${twoPlayerStatus}`, {
+    method: 'POST',
+    headers: getUserHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao marcar como pronto');
+  }
+
+  return response.json();
+};
+
 export const startGame = async (roomUuid: string) => {
   const response = await fetch(`${BASE_URL}/rooms/${roomUuid}/start`, {
     method: 'POST',

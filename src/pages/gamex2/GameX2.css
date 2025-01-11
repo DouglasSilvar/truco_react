@@ -1,0 +1,376 @@
+/* Paleta de cores do IntelliJ */
+:root {
+    --background: #2b2b2b;
+    --foreground: #a9b7c6;
+    --highlight: #4e525a;
+    --accent: #6897bb;
+    --card-background: #3c3f41;
+    --card-border: #a9b7c6;
+    --red-suit: #d16d6d; /* Cor vermelha para naipes de Ouro e Copas */
+    --green-border: #6a8759; /* Cor verde para a borda da carta vira */
+    --accent-light: #5cacee; /* Exemplo: um tom mais claro */
+    --accent-dark: #2e86ab;  /* Exemplo: um tom mais escuro */
+}
+
+body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: Arial, sans-serif;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.x2-chair {
+    position: absolute;
+    background-color: var(--background);
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    display: flex;
+    color: var(--foreground);
+    font-size: 1rem;
+    padding: 10px; /* Adiciona espaço interno */
+    box-sizing: border-box; /* Garante que padding não afete o tamanho total */
+}
+
+
+/* Posições dinâmicas */
+.x2-chair.bottom {
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: var(--accent); /* Cor padrão da borda */
+}
+
+
+.x2-chair.top {
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: var(--accent); /* Cor padrão da borda */
+}
+
+.player-panel {
+    border: 1px solid #a9b7c6;
+    padding: 15px;
+    width: 80%;
+    text-align: center;
+    border-radius: 10px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 300px;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Espaçamento entre as cartas */
+}
+
+
+.card {
+    width: 60px;
+    height: 80px;
+    background-color: var(--background);
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.9rem;
+    color: var(--foreground);
+    font-weight: bold;
+    margin: 0 5px;
+    flex-direction: column;
+    position: relative; /* Adicione para garantir que a imagem preencha todo o espaço */
+    overflow: hidden; /* Para prevenir que a imagem saia do contorno da carta */
+}
+
+.card.nos {
+    border: 2px solid var(--accent); /* Mantém a borda padrão */
+}
+
+.card.eles {
+    border: 2px solid var(--accent-dark); /* Borda para o time ELES */
+}
+
+.card.disabled {
+    opacity: 0.6;  /* Ajuste a opacidade conforme necessário */
+    pointer-events: none; /* Opcional: desativa a interação com o mouse se desejar */
+}
+
+.card-suit {
+    font-size: 2.4rem;
+    margin-left: 2px;
+}
+
+.red-suit {
+    color: var(--red-suit); /* Aplica a cor vermelha nos naipes de Ouro e Copas */
+}
+
+.game-table {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border: 1px solid #a9b7c6;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.vira-card {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    border-radius: 10px;
+    background-color: var(--background);
+    border: 2px solid var(--green-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--foreground);
+}
+
+.vira-card .card-value {
+    font-size: 1.8rem; /* Tamanho reduzido para o valor */
+    color: var(--foreground);
+}
+
+.vira-card .card-suit {
+    font-size: 1.8rem; /* Tamanho reduzido para o naipe */
+    color: var(--foreground);
+}
+
+.vira-card .card-suit {
+    font-size: 1.8rem;
+    color: inherit; /* Mantém a cor de acordo com a classe */
+}
+
+.vira-card .red-suit {
+    color: var(--red-suit); /* Aplica a cor vermelha para Ouro e Copas */
+}
+
+.chair-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-info {
+    border: 1px solid #a9b7c6;
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: var(--foreground);
+    width: 80%; /* Largura igual à da mesa e do painel do jogador */
+    text-align: center;
+    margin-bottom: 10px; /* Espaço entre o bloco de informações e a mesa */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 300px;
+}
+
+.room-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.score-board, .round-status {
+    display: flex;
+    justify-content: space-around; /* Distribui os elementos de forma mais compacta */
+    font-size: 1rem;
+    font-weight: bold;
+
+}
+
+.round-field {
+    display: flex;
+    gap: 5px;
+}
+
+.team-name {
+    font-weight: bold;
+    font-size: 1.0rem;
+}
+
+.team-name.us {
+    color: var(--accent); /* Cor para o time "NÓS" */
+}
+
+.team-name.them {
+    color: var(--accent-dark); /* Cor para o time "ELES" */
+}
+
+.team-name.us, .round-result.us {
+    color: var(--accent); /* Cor para o time "NÓS" */
+    font-weight: bold;
+}
+
+.team-name.them, .round-result.them {
+    color: var(--accent-dark); /* Cor para o time "ELES" */
+    font-weight: bold;
+}
+
+.current-turn {
+    border-width: 6px;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.action-button {
+    width: 160px;
+    padding: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--foreground);
+    background-color: var(--highlight);
+    border: 2px solid var(--accent);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.action-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-button:not(:disabled):hover {
+    background-color: var(--accent-light);
+}
+
+.table-card {
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--foreground);
+}
+
+.table-card .card-value {
+    font-size: 1.2rem;
+    color: var(--foreground);
+}
+
+.table-card .card-suit {
+    font-size: 1.6rem;
+    color: inherit; /* Mantém a cor de acordo com a classe */
+}
+
+.table-card .red-suit {
+    color: var(--red-suit); /* Aplica a cor vermelha aos naipes de Ouro e Copas */
+}
+
+.table-card.top-left {
+    top: 5px;
+    left: 45px;
+}
+
+.table-card.top-right {
+    top: 40px;
+    right: 5px;
+}
+
+.table-card.bottom-left {
+    bottom: 40px;
+    left: 5px;
+}
+
+.table-card.bottom-right {
+    bottom: 5px;
+    right: 45px;
+}
+
+.popup-game {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #3c3f41;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: #a9b7c6;
+    z-index: 1000; /* Garantir que o pop-up fique acima dos outros elementos */
+    font-size: 28px; /* Aumenta a fonte do texto no popup */
+    max-width: 600px; /* Define uma largura máxima para o popup */
+    min-width: 300px; /* Define uma largura mínima para o popup */
+}
+
+.popup-game p {
+    margin-bottom: 20px; /* Aumenta espaço abaixo do texto para separar do botão */
+}
+
+.pop-team-name.us {
+    color: var(--accent); /* Cor para o time "NÓS" */
+    font-weight: bold; /* Deixa o texto em negrito */
+}
+
+.pop-team-name.them {
+    color: var(--accent-dark); /* Cor para o time "ELES" */
+    font-weight: bold; /* Deixa o texto em negrito */
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3; /* Ajuste a transparência conforme necessário */
+    pointer-events: none; /* Evita que a imagem intercepte cliques */
+}
+
+.truco-call {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--red-suit); /* Cor vermelha para destacar */
+}
+
+.accept-green {
+    font-weight: bold;
+    color: var(--green-border); /* Cor verde definida na paleta do IntelliJ */
+}
+
+.accept-red {
+    font-weight: bold;
+    color: var(--red-suit); /* Cor vermelha para naipes de Ouro e Copas */
+}
+
+.current-player {
+    font-size: 1rem;
+    margin-top: 10px;
+    color: var(--foreground);
+}
+
+.current-player .player-name {
+    font-weight: bold;
+    color: var(--foreground); /* Padrão, ajuste conforme necessário */
+}
+
+.current-player .team-name.us {
+    color: var(--accent); /* Cor do time NÓS */
+}
+
+.current-player .team-name.them {
+    color: var(--accent-dark); /* Cor do time ELES */
+}
