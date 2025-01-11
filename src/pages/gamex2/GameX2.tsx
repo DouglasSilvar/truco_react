@@ -290,8 +290,8 @@ const GameX2: React.FC = () => {
         };
 
         const positionOrderC = {
-            top: ['top-left', 'bottom-right',],
-            bottom: ['bottom-right', 'top-left']
+            bottom: ['top-left', 'bottom-right',],
+            top: ['bottom-right', 'top-left']
         };
 
        // const positionOrderA = {
