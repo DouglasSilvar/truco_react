@@ -294,14 +294,6 @@ const GameX2: React.FC = () => {
             top: ['bottom-right', 'top-left']
         };
 
-       // const positionOrderA = {
-           // bottom: ['bottom-right','top-left'],
-           // top: ['top-left', 'bottom-right'],};
-
-        // const positionOrderC = {
-           // top: ['top-left', 'bottom-right',],
-           // bottom: ['bottom-right', 'top-left']};
-           
         const firstCardOrigin = gameDetails.step.first_card_origin;
         const originChair = firstCardOrigin ? firstCardOrigin.split('---')[1] : null;
 
