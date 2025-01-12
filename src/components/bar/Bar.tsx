@@ -89,7 +89,7 @@ const Bar: React.FC<BarProps> = ({ updatePlayerUuid }) => {
   };
 
   return (
-    <div className="bar">
+    <div className="bar" translate="no">
       <h1 className="title">Truco</h1>
       {userName ? (
         <div className="user-info">

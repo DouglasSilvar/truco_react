@@ -277,7 +277,7 @@ const Room: React.FC = () => {
   }
 
   return (
-    <div className="room">
+    <div className="room" translate="no">
       <Bar updatePlayerUuid={updatePlayerUuid} />
       <div className="content-room">
         {roomDetails && (
