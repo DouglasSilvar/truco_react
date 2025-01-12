@@ -81,7 +81,7 @@ const Chat: React.FC<ChatProps> = ({ messages, roomUuid, game_chairs }) => {
   }, [sortedMessages, lastMessageId]);
 
   return (
-    <div className="chat-container">
+    <div className="chat-container" translate="no">
       {/* Quadro de mensagens */}
       <div className="chat-messages-container">
         {sortedMessages.map((message, index) => {

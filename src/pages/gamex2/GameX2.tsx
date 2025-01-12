@@ -589,7 +589,7 @@ const GameX2: React.FC = () => {
     }
 
     return (
-        <div className="game-container">
+        <div className="game-container" translate="no">
             <div className="game-info">
                 <div className="room-name">
                     Sala: {gameDetails?.room_name}

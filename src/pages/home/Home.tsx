@@ -153,7 +153,7 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="home">
+    <div className="home" translate="no">
       <Bar updatePlayerUuid={updatePlayerUuid} />
       <div className="content">
         <button className="create-room-button" onClick={handleCreateRoomClick}>
