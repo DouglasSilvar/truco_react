@@ -78,9 +78,8 @@ const Game: React.FC = () => {
         const loadGameDetails = async () => {
             try {
                 const data = await fetchRoomDetails(uuid!);
-                console.log(data);
                 setGameDetails(data);
-                if (data?.is_two_players === true){
+                if (data?.is_two_players === true) {
                     navigate(`/gameX2/${data.uuid}`);
                 }
                 const { chair_a, chair_b, chair_c, chair_d } = data.chairs || {};
@@ -446,6 +445,12 @@ const Game: React.FC = () => {
 
         // Regra adicional: O botão não deve aparecer se já houver 4 cartas na mesa
         if (gameDetails.step.table_cards.length === 4) {
+            return false;
+        }
+        
+        // Regra adicional: Ninguém truca na mão de 11
+        if (gameDetails.score_them === 11 || gameDetails.score_us === 11) {
+            console.log('Ninguém truca na mão de 11');
             return false;
         }
 
