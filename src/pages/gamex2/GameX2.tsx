@@ -78,9 +78,8 @@ const GameX2: React.FC = () => {
         const loadGameDetails = async () => {
             try {
                 const data = await fetchRoomDetails(uuid!);
-                console.log(data);
                 setGameDetails(data);
-                if (data.is_two_players === false){
+                if (data.is_two_players === false) {
                     navigate(`/game/${data.uuid}`);
                 }
                 const { chair_a, chair_b, chair_c, chair_d } = data.chairs || {};
@@ -285,7 +284,7 @@ const GameX2: React.FC = () => {
 
         // Define a ordem das posições anti-horárias, iniciando do jogador atual
         const positionOrderA = {
-            bottom: ['bottom-right','top-left'],
+            bottom: ['bottom-right', 'top-left'],
             top: ['top-left', 'bottom-right'],
         };
 
@@ -311,7 +310,7 @@ const GameX2: React.FC = () => {
 
         const positionOrder = getPositionOrder();
         const currentPlayerPosition = name === chair_a ? 'bottom' :
-                name === chair_c ? 'top' : null;
+            name === chair_c ? 'top' : null;
 
         const cardPositions = positionOrder[currentPlayerPosition || 'bottom'];
 
@@ -418,6 +417,13 @@ const GameX2: React.FC = () => {
         if (gameDetails.step.table_cards.length === 2) {
             return false;
         }
+
+        // Regra adicional: Ninguém truca na mão de 11
+        if (gameDetails.score_them === 11 || gameDetails.score_us === 11) {
+            console.log('Ninguém truca na mão de 11');
+            return false;
+        }
+
 
         return true; // Caso contrário, o jogador pode trucar
     };
@@ -662,52 +668,52 @@ const GameX2: React.FC = () => {
                 )}
             </div>
             <div className="game-table">
-            <div className="vira-card">
-                <span className={`card-value ${gameDetails?.step.vira?.slice(-1) === 'O' || gameDetails?.step.vira?.slice(-1) === 'C' ? 'red-suit' : ''}`}>
-                    {gameDetails?.step.vira?.slice(0, -1) || ''}
-                </span>
-                <span className={`card-suit ${gameDetails?.step.vira?.slice(-1) === 'O' || gameDetails?.step.vira?.slice(-1) === 'C' ? 'red-suit' : ''}`}>
-                    {formatSuitSymbol(gameDetails?.step.vira?.slice(-1) || '')}
-                </span>
-            </div>
+                <div className="vira-card">
+                    <span className={`card-value ${gameDetails?.step.vira?.slice(-1) === 'O' || gameDetails?.step.vira?.slice(-1) === 'C' ? 'red-suit' : ''}`}>
+                        {gameDetails?.step.vira?.slice(0, -1) || ''}
+                    </span>
+                    <span className={`card-suit ${gameDetails?.step.vira?.slice(-1) === 'O' || gameDetails?.step.vira?.slice(-1) === 'C' ? 'red-suit' : ''}`}>
+                        {formatSuitSymbol(gameDetails?.step.vira?.slice(-1) || '')}
+                    </span>
+                </div>
 
-            {renderTableCards()}
+                {renderTableCards()}
 
-            {/* Cadeiras ao redor da mesa com posições dinâmicas */}
-            <div className={`x2-chair bottom ${chairPositions.bottom === chair_a ? 'team-us' : 'team-them'} ${chairPositions.bottom === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
-                <div className="chair-content">
-                    <div className={`accept-call ${isAcceptCalled(chairPositions.bottom).colorClass}`}>
-                        {isAcceptCalled(chairPositions.bottom).emoji}
+                {/* Cadeiras ao redor da mesa com posições dinâmicas */}
+                <div className={`x2-chair bottom ${chairPositions.bottom === chair_a ? 'team-us' : 'team-them'} ${chairPositions.bottom === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
+                    <div className="chair-content">
+                        <div className={`accept-call ${isAcceptCalled(chairPositions.bottom).colorClass}`}>
+                            {isAcceptCalled(chairPositions.bottom).emoji}
+                        </div>
+                        {isTrucoCalled(chairPositions.bottom) && (
+                            <div className="truco-call">{isTrucoCalled(chairPositions.bottom)}</div>
+                        )}
+                        <div className={`team-name ${chairPositions.bottom === chair_a ? 'us' : 'them'}`}>
+                            {chairPositions.bottom === chair_a ? 'NÓS' : 'ELES'}
+                        </div>
+                        <div>
+                            {chairPositions.bottom}
+                        </div>
                     </div>
-                    {isTrucoCalled(chairPositions.bottom) && (
-                        <div className="truco-call">{isTrucoCalled(chairPositions.bottom)}</div>
-                    )}
-                    <div className={`team-name ${chairPositions.bottom === chair_a ? 'us' : 'them'}`}>
-                        {chairPositions.bottom === chair_a ? 'NÓS' : 'ELES'}
-                    </div>
-                    <div>
-                        {chairPositions.bottom}
+                </div>
+
+                <div className={`x2-chair top ${chairPositions.top === chair_a ? 'team-us' : 'team-them'} ${chairPositions.top === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
+                    <div className="chair-content">
+                        <div className={`accept-call ${isAcceptCalled(chairPositions.top).colorClass}`}>
+                            {isAcceptCalled(chairPositions.top).emoji}
+                        </div>
+                        {isTrucoCalled(chairPositions.top) && (
+                            <div className="truco-call">{isTrucoCalled(chairPositions.top)}</div>
+                        )}
+                        <div className={`team-name ${chairPositions.top === chair_a ? 'us' : 'them'}`}>
+                            {chairPositions.top === chair_a ? 'NÓS' : 'ELES'}
+                        </div>
+                        <div>
+                            {chairPositions.top}
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div className={`x2-chair top ${chairPositions.top === chair_a ? 'team-us' : 'team-them'} ${chairPositions.top === gameDetails?.step.player_time ? 'current-turn' : ''}`}>
-                <div className="chair-content">
-                    <div className={`accept-call ${isAcceptCalled(chairPositions.top).colorClass}`}>
-                        {isAcceptCalled(chairPositions.top).emoji}
-                    </div>
-                    {isTrucoCalled(chairPositions.top) && (
-                        <div className="truco-call">{isTrucoCalled(chairPositions.top)}</div>
-                    )}
-                    <div className={`team-name ${chairPositions.top === chair_a ? 'us' : 'them'}`}>
-                        {chairPositions.top === chair_a ? 'NÓS' : 'ELES'}
-                    </div>
-                    <div>
-                        {chairPositions.top}
-                    </div>
-                </div>
-            </div>
-        </div>
             {/* Painel do jogador com cartas */}
             {isPlayer && (
                 <div className="player-panel">
