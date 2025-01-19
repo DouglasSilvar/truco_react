@@ -172,9 +172,13 @@ const Game: React.FC = () => {
                     suit === 'Z' ? '♣' : '';
 
         const isRedSuit = suit === 'O' || suit === 'C'; // Define se o naipe é Ouro ou Copas
-
+        const vira = gameDetails?.step.vira?.slice(0, -1); // Extrai o valor da vira
+        const hierarchy = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'];
+        const maniaIndex = vira ? hierarchy.indexOf(vira) + 1 : -1; // Determina o índice da Mania
+        const isMania = rank === hierarchy[maniaIndex]; // Verifica se a carta é Mania
+    
         return (
-            <span className={isRedSuit ? 'card red-suit' : 'card'}>
+            <span className={`card ${isRedSuit ? 'red-suit' : ''} ${isMania ? 'mania-card' : ''}`}>
                 {rank}
                 <span className="card-suit">{suitSymbol}</span>
             </span>

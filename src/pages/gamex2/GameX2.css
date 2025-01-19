@@ -374,3 +374,19 @@ body {
 .current-player .team-name.them {
     color: var(--accent-dark); /* Cor do time ELES */
 }
+
+.mania-card {
+    animation: mania-bounce 2s infinite;
+    transform-origin: center;
+    border: 4px solid var(--green-border); /* Diferencia a borda */
+    box-shadow: 0 0 20px var(--green-border);
+}
+
+@keyframes mania-bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
