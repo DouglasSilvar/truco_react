@@ -154,7 +154,6 @@ const Game: React.FC = () => {
 
     // Função para formatar as cartas com os símbolos corretos e cores específicas para naipes
     const formatCard = (card: string) => {
-
         if (card === 'EC') {
             // Renderiza a imagem para cartas encobertas
             return (
@@ -163,18 +162,24 @@ const Game: React.FC = () => {
                 </div>
             );
         }
+    
         const rank = card.slice(0, -1); // Extrai o valor da carta
         const suit = card.slice(-1); // Extrai o naipe da carta
-
+    
         const suitSymbol = suit === 'O' ? '♦' :
             suit === 'E' ? '♠' :
                 suit === 'C' ? '♥' :
                     suit === 'Z' ? '♣' : '';
-
+    
         const isRedSuit = suit === 'O' || suit === 'C'; // Define se o naipe é Ouro ou Copas
+    
         const vira = gameDetails?.step.vira?.slice(0, -1); // Extrai o valor da vira
         const hierarchy = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'];
-        const maniaIndex = vira ? hierarchy.indexOf(vira) + 1 : -1; // Determina o índice da Mania
+    
+        // Ajusta o índice da Mania para comportamento circular
+        const viraIndex = vira ? hierarchy.indexOf(vira) : -1;
+        const maniaIndex = viraIndex !== -1 ? (viraIndex + 1) % hierarchy.length : -1;
+    
         const isMania = rank === hierarchy[maniaIndex]; // Verifica se a carta é Mania
     
         return (
