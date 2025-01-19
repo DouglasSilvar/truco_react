@@ -90,3 +90,19 @@ export const trucarAccept = async (
 
   return response.json();
 };
+
+export const escapeGame = async (
+  gameUuid: string
+) => {
+  const response = await fetch(`${BASE_URL}/gamesx2/${gameUuid}/escape`, {
+    method: 'POST',
+    headers: getUserHeaders(),
+    body: JSON.stringify({})
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao realizar o movimento');
+  }
+
+  return response.json();
+};
