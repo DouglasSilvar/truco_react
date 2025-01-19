@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchRoomDetails, playMove, collectCards, trucarAccept } from '../../services/gameService';
+import { fetchRoomDetails, playMove, collectCards, trucarAccept, escapeGame } from '../../services/gameService';
 import './Game.css';
 import Chat from '../../components/chat/Chat';
 
@@ -154,7 +154,6 @@ const Game: React.FC = () => {
 
     // Função para formatar as cartas com os símbolos corretos e cores específicas para naipes
     const formatCard = (card: string) => {
-
         if (card === 'EC') {
             // Renderiza a imagem para cartas encobertas
             return (
@@ -163,6 +162,7 @@ const Game: React.FC = () => {
                 </div>
             );
         }
+
         const rank = card.slice(0, -1); // Extrai o valor da carta
         const suit = card.slice(-1); // Extrai o naipe da carta
 
@@ -172,11 +172,16 @@ const Game: React.FC = () => {
                     suit === 'Z' ? '♣' : '';
 
         const isRedSuit = suit === 'O' || suit === 'C'; // Define se o naipe é Ouro ou Copas
+
         const vira = gameDetails?.step.vira?.slice(0, -1); // Extrai o valor da vira
         const hierarchy = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'];
-        const maniaIndex = vira ? hierarchy.indexOf(vira) + 1 : -1; // Determina o índice da Mania
+
+        // Ajusta o índice da Mania para comportamento circular
+        const viraIndex = vira ? hierarchy.indexOf(vira) : -1;
+        const maniaIndex = viraIndex !== -1 ? (viraIndex + 1) % hierarchy.length : -1;
+
         const isMania = rank === hierarchy[maniaIndex]; // Verifica se a carta é Mania
-    
+
         return (
             <span className={`card ${isRedSuit ? 'red-suit' : ''} ${isMania ? 'mania-card' : ''}`}>
                 {rank}
@@ -451,7 +456,7 @@ const Game: React.FC = () => {
         if (gameDetails.step.table_cards.length === 4) {
             return false;
         }
-        
+
         // Regra adicional: Ninguém truca na mão de 11
         if (gameDetails.score_them === 11 || gameDetails.score_us === 11) {
             console.log('Ninguém truca na mão de 11');
@@ -616,6 +621,18 @@ const Game: React.FC = () => {
             gameDetails?.step.table_cards.length >= 1 && // Pelo menos 1 carta na mesa
             gameDetails?.step.player_time === name // É a vez do jogador
         );
+    };
+
+    const handleEscape = async () => {
+        if (!gameDetails) return; // Verifica se o jogo está carregado
+
+        try {
+            const response = await escapeGame(gameDetails.uuid); // Chama o método da service
+            console.log('Escape realizado com sucesso:', response);
+            // Você pode adicionar lógica adicional aqui, como redirecionar ou exibir um alerta
+        } catch (error) {
+            console.error('Erro ao realizar escape:', error);
+        }
     };
 
 
@@ -797,41 +814,52 @@ const Game: React.FC = () => {
                         ))}
                     </div>
 
-                    {/* Botões embaixo das cartas */}
-                    <div className="action-buttons">
-                        {/* Botão para recolher cartas */}
-                        {(gameDetails?.step.table_cards.length === 4 || gameDetails?.step.win) && gameDetails?.owner?.name === name ? (
-                            <button className="action-button" onClick={collectTableCards}>
-                                Recolher Cartas
-                            </button>
-                        ) : (
-                            <>
-                                {/* Botão "Trucar" disponível apenas para o jogador da vez */}
-                                {(canTrucar() || isOpponentTurnToRespond()) && getTrucarButtonText() && (
-                                    <button className="action-button" onClick={handleTrucar}>
-                                        {getTrucarButtonText()}
-                                    </button>
-                                )}
-                                {canShowEncobrir() && (
-                                    <button className="action-button" onClick={toggleEncobrir}>
-                                        {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
-                                    </button>
-                                )}
-                                {/* Botões disponíveis para o time adversário responder ao truco */}
-                                {isOpponentTurnToRespond() && (
-                                    <>
-                                        <button className="action-button" onClick={() => handleTrucoRespose(false)}>
-                                            Correr
+                    {!gameDetails?.end_game_win && (
+                        <div className="action-buttons">
+                            {/* Botão para recolher cartas */}
+                            {(gameDetails?.step.table_cards.length === 4 || gameDetails?.step.win) && gameDetails?.owner?.name === name ? (
+                                <button className="action-button" onClick={collectTableCards}>
+                                    Recolher Cartas
+                                </button>
+                            ) : (
+                                <>
+                                    {/* Botão "Trucar" disponível apenas para o jogador da vez */}
+                                    {(canTrucar() || isOpponentTurnToRespond()) && getTrucarButtonText() && (
+                                        <button className="action-button" onClick={handleTrucar}>
+                                            {getTrucarButtonText()}
                                         </button>
-                                        <button className="action-button" onClick={() => handleTrucoRespose(true)}>
-                                            Aceitar
+                                    )}
+                                    {canShowEncobrir() && (
+                                        <button className="action-button" onClick={toggleEncobrir}>
+                                            {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
                                         </button>
+                                    )}
+                                    {/* Botões disponíveis para o time adversário responder ao truco */}
+                                    {isOpponentTurnToRespond() && (
+                                        <>
+                                            <button className="action-button" onClick={() => handleTrucoRespose(false)}>
+                                                Correr
+                                            </button>
+                                            <button className="action-button" onClick={() => handleTrucoRespose(true)}>
+                                                Aceitar
+                                            </button>
 
-                                    </>
+                                        </>
+                                    )}
+                                </>
+                            )}
+                            {/* Botão "Fugir" disponível somente quando o botão "Recolher Cartas" não está sendo exibido */}
+                            {!(gameDetails?.step.table_cards.length === 2 || gameDetails?.step.win) &&
+                                !gameDetails?.step.player_call_3 &&
+                                !gameDetails?.step.player_call_6 &&
+                                !gameDetails?.step.player_call_9 &&
+                                !gameDetails?.step.player_call_12 && (
+                                    <button className="action-button-escape" onClick={handleEscape}>
+                                        FUGIR ..
+                                    </button>
                                 )}
-                            </>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>)}
             {showWinnerPopup && (
                 <div className="popup-game">

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './GameX2.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchRoomDetails, playMove, collectCards, trucarAccept } from '../../services/gameX2Service';
+import { fetchRoomDetails, playMove, collectCards, trucarAccept, escapeGame } from '../../services/gameX2Service';
 import Chat from '../../components/chat/Chat';
 
 interface StepDetails {
@@ -154,7 +154,6 @@ const GameX2: React.FC = () => {
 
     // Função para formatar as cartas com os símbolos corretos e cores específicas para naipes
     const formatCard = (card: string) => {
-
         if (card === 'EC') {
             // Renderiza a imagem para cartas encobertas
             return (
@@ -163,6 +162,7 @@ const GameX2: React.FC = () => {
                 </div>
             );
         }
+
         const rank = card.slice(0, -1); // Extrai o valor da carta
         const suit = card.slice(-1); // Extrai o naipe da carta
 
@@ -175,9 +175,13 @@ const GameX2: React.FC = () => {
 
         const vira = gameDetails?.step.vira?.slice(0, -1); // Extrai o valor da vira
         const hierarchy = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'];
-        const maniaIndex = vira ? hierarchy.indexOf(vira) + 1 : -1; // Determina o índice da Mania
+
+        // Ajusta o índice da Mania para comportamento circular
+        const viraIndex = vira ? hierarchy.indexOf(vira) : -1;
+        const maniaIndex = viraIndex !== -1 ? (viraIndex + 1) % hierarchy.length : -1;
+
         const isMania = rank === hierarchy[maniaIndex]; // Verifica se a carta é Mania
-    
+
         return (
             <span className={`card ${isRedSuit ? 'red-suit' : ''} ${isMania ? 'mania-card' : ''}`}>
                 {rank}
@@ -185,6 +189,7 @@ const GameX2: React.FC = () => {
             </span>
         );
     };
+
 
     const formatSuitSymbol = (suit: string) => {
         return suit === 'O' ? '♦' :
@@ -590,6 +595,18 @@ const GameX2: React.FC = () => {
         );
     };
 
+    const handleEscape = async () => {
+        if (!gameDetails) return; // Verifica se o jogo está carregado
+
+        try {
+            const response = await escapeGame(gameDetails.uuid); // Chama o método da service
+            console.log('Escape realizado com sucesso:', response);
+            // Você pode adicionar lógica adicional aqui, como redirecionar ou exibir um alerta
+        } catch (error) {
+            console.error('Erro ao realizar escape:', error);
+        }
+    };
+
 
     if (loading) {
         return <div>Carregando...</div>;
@@ -736,41 +753,53 @@ const GameX2: React.FC = () => {
                         ))}
                     </div>
 
-                    {/* Botões embaixo das cartas */}
-                    <div className="action-buttons">
-                        {/* Botão para recolher cartas */}
-                        {(gameDetails?.step.table_cards.length === 2 || gameDetails?.step.win) && gameDetails?.owner?.name === name ? (
-                            <button className="action-button" onClick={collectTableCards}>
-                                Recolher Cartas
-                            </button>
-                        ) : (
-                            <>
-                                {/* Botão "Trucar" disponível apenas para o jogador da vez */}
-                                {(canTrucar() || isOpponentTurnToRespond()) && getTrucarButtonText() && (
-                                    <button className="action-button" onClick={handleTrucar}>
-                                        {getTrucarButtonText()}
-                                    </button>
-                                )}
-                                {canShowEncobrir() && (
-                                    <button className="action-button" onClick={toggleEncobrir}>
-                                        {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
-                                    </button>
-                                )}
-                                {/* Botões disponíveis para o time adversário responder ao truco */}
-                                {isOpponentTurnToRespond() && (
-                                    <>
-                                        <button className="action-button" onClick={() => handleTrucoRespose(false)}>
-                                            Correr
+                    {!gameDetails?.end_game_win && (
+                        <div className="action-buttons">
+                            {/* Botão para recolher cartas */}
+                            {(gameDetails?.step.table_cards.length === 2 || gameDetails?.step.win) && gameDetails?.owner?.name === name ? (
+                                <button className="action-button" onClick={collectTableCards}>
+                                    Recolher Cartas
+                                </button>
+                            ) : (
+                                <>
+                                    {/* Botão "Trucar" disponível apenas para o jogador da vez */}
+                                    {(canTrucar() || isOpponentTurnToRespond()) && getTrucarButtonText() && (
+                                        <button className="action-button" onClick={handleTrucar}>
+                                            {getTrucarButtonText()}
                                         </button>
-                                        <button className="action-button" onClick={() => handleTrucoRespose(true)}>
-                                            Aceitar
+                                    )}
+                                    {canShowEncobrir() && (
+                                        <button className="action-button" onClick={toggleEncobrir}>
+                                            {isEncobrir ? "Encobrir (Ativo)" : "Encobrir"}
                                         </button>
+                                    )}
+                                    {/* Botões disponíveis para o time adversário responder ao truco */}
+                                    {isOpponentTurnToRespond() && (
+                                        <>
+                                            <button className="action-button" onClick={() => handleTrucoRespose(false)}>
+                                                Correr
+                                            </button>
+                                            <button className="action-button" onClick={() => handleTrucoRespose(true)}>
+                                                Aceitar
+                                            </button>
+                                        </>
+                                    )}
+                                </>
+                            )}
 
-                                    </>
+                            {/* Botão "Fugir" disponível somente quando o botão "Recolher Cartas" não está sendo exibido */}
+                            {!(gameDetails?.step.table_cards.length === 2 || gameDetails?.step.win) &&
+                                !gameDetails?.step.player_call_3 &&
+                                !gameDetails?.step.player_call_6 &&
+                                !gameDetails?.step.player_call_9 &&
+                                !gameDetails?.step.player_call_12 && (
+                                    <button className="action-button-escape" onClick={handleEscape}>
+                                        FUGIR ..
+                                    </button>
                                 )}
-                            </>
-                        )}
-                    </div>
+                        </div>
+                    )}
+
                 </div>)}
             {showWinnerPopup && (
                 <div className="popup-game">
