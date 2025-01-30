@@ -417,3 +417,45 @@ body {
     cursor: pointer;
     transition: background-color 0.3s;
 }
+
+.handler-11-cards {
+    margin: 10px 0;
+    text-align: center;
+    border: 1px solid #a9b7c6; /* Borda cinza fina */
+    border-radius: 10px; /* Bordas arredondadas */
+    padding: 15px; /* Espaçamento interno */
+    background-color: var(--card-background); /* Cor de fundo */
+    width: 80%; /* Largura proporcional */
+    max-width: 300px; /* Largura máxima */
+}
+
+.handler-11-title {
+    font-size: 1.2rem; /* Tamanho da fonte */
+    font-weight: bold; /* Negrito */
+    color: var(--foreground); /* Cor do texto */
+    margin-bottom: 15px; /* Espaçamento abaixo do título */
+}
+
+.handler-11-buttons {
+    display: flex;
+    justify-content: center; /* Centraliza os botões horizontalmente */
+    gap: 10px; /* Espaçamento entre os botões */
+    margin-top: 15px; /* Espaçamento acima dos botões */
+}
+
+.handler-11-buttons .action-button {
+    width: 100px; /* Largura fixa para os botões */
+    padding: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--foreground);
+    background-color: var(--highlight);
+    border: 2px solid var(--accent);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.handler-11-buttons .action-button:hover {
+    background-color: var(--accent-light); /* Efeito hover */
+}
