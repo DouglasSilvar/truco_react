@@ -94,7 +94,7 @@ export const trucarAccept = async (
 export const escapeGame = async (
   gameUuid: string
 ) => {
-  const response = await fetch(`${BASE_URL}/gamesx2/${gameUuid}/escape`, {
+  const response = await fetch(`${BASE_URL}/games/${gameUuid}/escape`, {
     method: 'POST',
     headers: getUserHeaders(),
     body: JSON.stringify({})

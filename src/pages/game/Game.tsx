@@ -21,6 +21,7 @@ interface StepDetails {
     cards_chair_b: string[];
     cards_chair_c: string[];
     cards_chair_d: string[];
+    partner_cards: string[];
     first: string | null;
     second: string | null;
     win: string | null;
@@ -635,6 +636,21 @@ const Game: React.FC = () => {
         }
     };
 
+    const handlePartnerAction = async (accept: boolean) => {
+        if (!gameDetails) return;
+        try {
+            await trucarAccept(gameDetails.uuid, accept, null);
+            console.log(`${accept ? "Aceitar" : "Correr"} acionado com sucesso!`);
+        } catch (error) {
+            console.error(`Erro ao acionar o botão ${accept ? "Aceitar" : "Correr"}:`, error);
+        }
+    };
+
+    const partnerAcceptedByCurrentPlayer = (
+        (gameDetails?.step.is_accept_first && gameDetails.step.is_accept_first.split('---')[0] === name) ||
+        (gameDetails?.step.is_accept_second && gameDetails.step.is_accept_second.split('---')[0] === name)
+    );
+
 
     if (loading) {
         return <div>Carregando...</div>;
@@ -717,6 +733,35 @@ const Game: React.FC = () => {
                     </div>
                 )}
             </div>
+            {gameDetails?.step.partner_cards && gameDetails.step.partner_cards.length > 0 && (
+                <div className="partner-cards-container">
+                    <div className="partner-cards-title">Cartas do parceiro</div>
+                    <div className="card-container">
+                        {gameDetails.step.partner_cards.map((card, index) => (
+                            <div key={index} className="card">
+                                {formatCard(card)}
+                            </div>
+                        ))}
+                    </div>
+                    {/* Renderiza os botões somente se o jogador ainda não respondeu */}
+                    {!partnerAcceptedByCurrentPlayer && (
+                        <div className="partner-actions">
+                            <button
+                                className="action-button-escape"
+                                onClick={() => handlePartnerAction(false)}
+                            >
+                                Fugir
+                            </button>
+                            <button
+                                className="action-button"
+                                onClick={() => handlePartnerAction(true)}
+                            >
+                                Jogar
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
             <div className="game-table">
                 <div className="vira-card">
                     <span className={`card-value ${gameDetails?.step.vira?.slice(-1) === 'O' || gameDetails?.step.vira?.slice(-1) === 'C' ? 'red-suit' : ''}`}>
