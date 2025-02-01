@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchRoomDetails, playMove, collectCards, trucarAccept, escapeGame, acceptGo } from '../../services/gameService';
+import { fetchRoomDetails, playMove, collectCards, trucarAccept, escapeGame } from '../../services/gameService';
 import './Game.css';
 import Chat from '../../components/chat/Chat';
 
@@ -30,7 +30,6 @@ interface StepDetails {
     fourth_card_origin: string | null;
     is_accept_first: string | null;
     is_accept_second: string | null;
-    handler_11: string[];
 }
 
 interface GameDetails {
@@ -636,19 +635,6 @@ const Game: React.FC = () => {
         }
     };
 
-    const handleAcceptGo = async (accept: boolean) => {
-        if (!gameDetails) return; // Verifica se o jogo está carregado
-    
-        try {
-            const response = await acceptGo(gameDetails.uuid, accept); // Chama a service
-            console.log("Resposta do servidor:", response);
-            // Aqui você pode adicionar lógica adicional, como atualizar o estado do jogo
-        } catch (error) {
-            console.error("Erro ao realizar a ação:", error);
-            // Aqui você pode exibir uma mensagem de erro para o usuário, se necessário
-        }
-    };
-
 
     if (loading) {
         return <div>Carregando...</div>;
@@ -731,37 +717,6 @@ const Game: React.FC = () => {
                     </div>
                 )}
             </div>
-            {/* Renderiza as cartas do handler_11 quando o placar for 11 ou houver cartas no handler_11 */}
-            {(gameDetails?.step.handler_11 && gameDetails.step.handler_11.length > 0) && (
-                <div className="handler-11-cards">
-                    {/* Título "Cartas do parceiro" */}
-                    <div className="handler-11-title">
-                        Cartas do parceiro
-                    </div>
-
-                    {/* Container das cartas */}
-                    <div className="card-container">
-                        {gameDetails?.step.handler_11.map((card, index) => (
-                            <div
-                                key={index}
-                                className="card" // Mantém o mesmo estilo das cartas do jogador
-                            >
-                                {formatCard(card)}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Botões "FUGIR" e "JOGAR" */}
-                    <div className="handler-11-buttons">
-                        <button className="action-button" onClick={() => handleAcceptGo(false)}>
-                            FUGIR
-                        </button>
-                        <button className="action-button" onClick={() => handleAcceptGo(true)}>
-                            JOGAR
-                        </button>
-                    </div>
-                </div>
-            )}
             <div className="game-table">
                 <div className="vira-card">
                     <span className={`card-value ${gameDetails?.step.vira?.slice(-1) === 'O' || gameDetails?.step.vira?.slice(-1) === 'C' ? 'red-suit' : ''}`}>

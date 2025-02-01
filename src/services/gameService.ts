@@ -106,20 +106,3 @@ export const escapeGame = async (
 
   return response.json();
 };
-
-export const acceptGo = async (
-  gameUuid: string,
-  accept: boolean
-) => {
-  const response = await fetch(`${BASE_URL}/games/${gameUuid}/accept/${accept}`, {
-    method: 'POST',
-    headers: getUserHeaders(),
-    body: null
-  });
-
-  if (!response.ok) {
-    throw new Error('Erro ao realizar o movimento');
-  }
-
-  return response.json();
-};
