@@ -620,6 +620,7 @@ const Game: React.FC = () => {
         return (
             !!gameDetails?.step.first && // Segunda rodada
             gameDetails?.step.table_cards.length >= 1 && // Pelo menos 1 carta na mesa
+            (gameDetails?.score_them !== 11 && gameDetails?.score_us !== 11) && // Não é mão de 11
             gameDetails?.step.player_time === name // É a vez do jogador
         );
     };
@@ -650,6 +651,25 @@ const Game: React.FC = () => {
         (gameDetails?.step.is_accept_first && gameDetails.step.is_accept_first.split('---')[0] === name) ||
         (gameDetails?.step.is_accept_second && gameDetails.step.is_accept_second.split('---')[0] === name)
     );
+
+    const isCardClickable = () => {
+        const scoreThem = gameDetails?.score_them;
+        const scoreUs = gameDetails?.score_us;
+        const isAcceptSecond = gameDetails?.step?.is_accept_second;
+    
+        // Se ambos os times tiverem 11 pontos, ignora a nova condição e segue o padrão anterior
+        if (scoreThem === 11 && scoreUs === 11) {
+            return isPlayerTurn && gameDetails?.step.table_cards.length < 4;
+        }
+    
+        // Se um dos times tiver 11 pontos, só pode clicar se "is_accept_second" tiver algum valor
+        if (scoreThem === 11 || scoreUs === 11) {
+            return isPlayerTurn && gameDetails?.step.table_cards.length < 4 && isAcceptSecond;
+        }
+    
+        // Caso normal, segue a lógica padrão
+        return isPlayerTurn && gameDetails?.step.table_cards.length < 4;
+    };
 
 
     if (loading) {
@@ -849,7 +869,7 @@ const Game: React.FC = () => {
                         {playerCards.map((card, index) => (
                             <div
                                 key={index}
-                                className={`card ${!isPlayerTurn || gameDetails?.step.table_cards.length === 4 ? 'disabled' : ''}`}
+                                className={`card ${!isCardClickable() ? 'disabled' : ''}`}
                                 onClick={() => isPlayerTurn && gameDetails?.step.table_cards.length < 4 && playTheCard(card, isEncobrir)}
                                 style={{ cursor: (isPlayerTurn && gameDetails?.step.table_cards.length < 4) ? 'pointer' : 'default' }}
                             >
